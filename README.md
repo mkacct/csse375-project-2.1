@@ -4,11 +4,11 @@
 Specified in pom.xml
 
 ## Contributors
-YOUR_NAME, YOUR_NAME, Kyle Asbury
+YOUR_NAME, Nolan Cales, Kyle Asbury
 
 ## Team Member's Engineering Notebooks (one per person)
 - NAME: LINK
-- NAME: LINK
+- Nolan Cales: (will add link later)
 - Kyle Asbury: add link later
 
 ## Features
@@ -16,5 +16,5 @@ YOUR_NAME, YOUR_NAME, Kyle Asbury
 | Developer       | Style Check | Principle Check | Pattern Check | A Feature (optional) |
 |:----------------|:------------|:----------------|:--------------|:---------------------|
 | NAME            |             |                 |               |                      |
-| NAME            |             |                 |               |                      |
+| Nolan Cales     |             |                 |               |                      |
 | Kyle Asbury     |             |                 |               |                      |
