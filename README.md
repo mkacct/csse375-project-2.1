@@ -4,17 +4,17 @@
 Specified in pom.xml
 
 ## Contributors
-YOUR_NAME, YOUR_NAME, YOUR_NAME
+YOUR_NAME, Nolan Cales, YOUR_NAME
 
 ## Team Member's Engineering Notebooks (one per person)
 - NAME: LINK
-- NAME: LINK
+- Nolan Cales: (will add link later)
 - NAME: LINK
 
 ## Features
 
-| Developer | Style Check | Principle Check | Pattern Check | A Feature (optional) |
-|:----------|:------------|:----------------|:--------------|:---------------------|
-| NAME      |             |                 |               |                      |
-| NAME      |             |                 |               |                      |
-| NAME      |             |                 |               |                      |
+| Developer   | Style Check | Principle Check | Pattern Check | A Feature (optional) |
+|:------------|:------------|:----------------|:--------------|:---------------------|
+| NAME        |             |                 |               |                      |
+| Nolan Cales |             |                 |               |                      |
+| NAME        |             |                 |               |                      |
