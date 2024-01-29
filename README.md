@@ -13,10 +13,8 @@ YOUR_NAME, YOUR_NAME, YOUR_NAME
 
 ## Features
 
-
 | Developer | Style Check | Principle Check | Pattern Check | A Feature (optional) |
 |:----------|:------------|:----------------|:--------------|:---------------------|
 | NAME      |             |                 |               |                      |
 | NAME      |             |                 |               |                      |
 | NAME      |             |                 |               |                      |
-
