@@ -4,17 +4,17 @@
 Specified in pom.xml
 
 ## Contributors
-YOUR_NAME, YOUR_NAME, YOUR_NAME
+Madeline Kahn, YOUR_NAME, YOUR_NAME
 
 ## Team Member's Engineering Notebooks (one per person)
-- NAME: LINK
+- Madeline Kahn: https://github.com/rhit-csse374/project-202420-s2-team05-202420/wiki/Madeline-Kahn's-Engineering-Notebook
 - NAME: LINK
 - NAME: LINK
 
 ## Features
 
-| Developer | Style Check | Principle Check | Pattern Check | A Feature (optional) |
-|:----------|:------------|:----------------|:--------------|:---------------------|
-| NAME      |             |                 |               |                      |
-| NAME      |             |                 |               |                      |
-| NAME      |             |                 |               |                      |
+| Developer     | Style Check | Principle Check | Pattern Check | A Feature (optional) |
+|:--------------|:------------|:----------------|:--------------|:---------------------|
+| Madeline Kahn |             |                 |               |                      |
+| NAME          |             |                 |               |                      |
+| NAME          |             |                 |               |                      |
