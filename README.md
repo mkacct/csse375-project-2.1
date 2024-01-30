@@ -7,7 +7,7 @@ Specified in pom.xml
 Madeline Kahn, Nolan Cales, Kyle Asbury
 
 ## Team Member's Engineering Notebooks (one per person)
-- Madeline Kahn: https://github.com/rhit-csse374/project-202420-s2-team05-202420/wiki/Madeline-Kahn's-Engineering-Notebook
+- Madeline Kahn: https://rosehulman.sharepoint.com/:w:/s/GrpCSSE374S2Team05/EXwbCk60sk9CoKpcOLIr8WUBLEtOJZcmxGJYRdQuGfPB0A?e=CvdqXj
 - Nolan Cales: (will add link later)
 - Kyle Asbury: add link later
 
