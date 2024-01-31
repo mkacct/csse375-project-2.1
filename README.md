@@ -4,17 +4,17 @@
 Specified in pom.xml
 
 ## Contributors
-YOUR_NAME, Nolan Cales, YOUR_NAME
+Madeline Kahn, Nolan Cales, Kyle Asbury
 
 ## Team Member's Engineering Notebooks (one per person)
-- NAME: LINK
+- Madeline Kahn: https://rosehulman.sharepoint.com/:w:/s/GrpCSSE374S2Team05/EXwbCk60sk9CoKpcOLIr8WUBLEtOJZcmxGJYRdQuGfPB0A?e=CvdqXj
 - Nolan Cales: https://rosehulman-my.sharepoint.com/:w:/g/personal/calesnm_rose-hulman_edu/ET2gjrVe5GVEtRich0NTHAIBt5ltUiNJJNkRClqD7VmwDw?e=jrwSiW
-- NAME: LINK
+- Kyle Asbury: add link later
 
 ## Features
 
-| Developer   | Style Check | Principle Check | Pattern Check | A Feature (optional) |
-|:------------|:------------|:----------------|:--------------|:---------------------|
-| NAME        |             |                 |               |                      |
-| Nolan Cales |             |                 |               |                      |
-| NAME        |             |                 |               |                      |
+| Developer       | Style Check         | Principle Check                          | Pattern Check | A Feature (optional) |
+|:----------------|:--------------------|:-----------------------------------------|:--------------|:---------------------|
+| Madeline Kahn   | Length limits       | Program to interface, not implementation | Adapter       | JSON configuration   |
+| Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      |                      |
+| Kyle Asbury     | Naming conventions  | Low coupling                             | Observer      |                      |
