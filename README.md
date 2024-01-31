@@ -8,7 +8,7 @@ Madeline Kahn, Nolan Cales, Kyle Asbury
 
 ## Team Member's Engineering Notebooks (one per person)
 - Madeline Kahn: https://rosehulman.sharepoint.com/:w:/s/GrpCSSE374S2Team05/EXwbCk60sk9CoKpcOLIr8WUBLEtOJZcmxGJYRdQuGfPB0A?e=CvdqXj
-- Nolan Cales: (will add link later)
+- Nolan Cales: https://rosehulman-my.sharepoint.com/:w:/g/personal/calesnm_rose-hulman_edu/ET2gjrVe5GVEtRich0NTHAIBt5ltUiNJJNkRClqD7VmwDw?e=jrwSiW
 - Kyle Asbury: add link later
 
 ## Features
