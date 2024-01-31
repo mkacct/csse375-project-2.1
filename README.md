@@ -8,7 +8,7 @@ YOUR_NAME, Nolan Cales, YOUR_NAME
 
 ## Team Member's Engineering Notebooks (one per person)
 - NAME: LINK
-- Nolan Cales: (will add link later)
+- Nolan Cales: https://rosehulman-my.sharepoint.com/:w:/g/personal/calesnm_rose-hulman_edu/ET2gjrVe5GVEtRich0NTHAIBt5ltUiNJJNkRClqD7VmwDw?e=jrwSiW
 - NAME: LINK
 
 ## Features
