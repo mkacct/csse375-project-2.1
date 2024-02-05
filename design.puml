@@ -10,6 +10,149 @@ package presentation {
 
 package domain {
 
+	package javadata {
+
+		+enum AccessModifier {
+			PUBLIC
+			PROTECTED
+			PACKAGE_PRIVATE
+			PRIVATE
+
+			~ {static} parseOpcodes(access: int): AccessModifier
+		}
+
+		AccessModifier ..> .asm.Opcodes
+
+		+enum ClassType {
+			CLASS
+			INTERFACE
+			ENUM
+
+			~ {static} parseOpcodes(access: int): ClassType
+		}
+
+		ClassType ..> .asm.Opcodes
+
+		+class VariableData {
+			+ <<final>> name: String
+			+ <<final>> typeFullName: String
+			+ <<final>> isFinal: boolean
+
+			+ VariableData(name: String, typeFullName: String, isFinal: boolean)
+			+ VariableData(name: String, typeFullName: String)
+			+ equals(obj: Object): boolean
+			+ hashCode(): int
+		}
+
+		+interface ClassData {
+			+ {abstract} getFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} getClassType(): ClassType
+			+ {abstract} isAbstract(): boolean
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+			+ {abstract} getTypeParamFullNames(): List<String>
+			+ {abstract} getSuperFullName(): String
+			+ {abstract} getInterfaceFullNames(): Set<String>
+			+ {abstract} getFields(): Set<FieldData>
+			+ {abstract} getMethods(): Set<MethodData>
+		}
+
+		ClassData ..> AccessModifier
+		ClassData ..> ClassType
+		ClassData ..> FieldData
+		ClassData ..> MethodData
+
+		+interface FieldData {
+			+ {abstract} getName(): String
+			+ {abstract} getTypeFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+		}
+
+		FieldData ..> AccessModifier
+
+		+interface MethodData {
+			+ {abstract} getName(): String
+			+ {abstract} getReturnTypeFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+			+ {abstract} isAbstract(): boolean
+			+ {abstract} getParams(): List<VariableData>
+			+ {abstract} getExceptionTypeFullNames(): Set<String>
+		}
+
+		MethodData ..> AccessModifier
+		MethodData ..> VariableData
+
+		+class ClassNodeAdapter {
+			- <<final>> classNode: ClassNode
+
+			+ ClassNodeAdapter(javaBytecode: byte[])
+			~ ClassNodeAdapter(classNode: ClassNode)
+			+ getFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ getClassType(): ClassType
+			+ isAbstract(): boolean
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+			+ getTypeParamFullNames(): List<String>
+			+ getSuperFullName(): String
+			+ getInterfaceFullNames(): Set<String>
+			+ getFields(): Set<FieldData>
+			+ getMethods(): Set<MethodData>
+		}
+
+		ClassData <|.. ClassNodeAdapter
+		ClassNodeAdapter --> .asm.tree.ClassNode
+		ClassNodeAdapter ..> FieldNodeAdapter
+		ClassNodeAdapter ..> MethodNodeAdapter
+		ClassNodeAdapter ..> .asm.ClassReader
+		ClassNodeAdapter ..> .asm.Opcodes
+		ClassNodeAdapter ..> .asm.Type
+		ClassNodeAdapter ..> .asm.tree.FieldNode
+		ClassNodeAdapter ..> .asm.tree.MethodNode
+
+		~class FieldNodeAdapter {
+			- <<final>> fieldNode: FieldNode
+
+			~ FieldNodeAdapter(fieldNode: FieldNode)
+			+ getName(): String
+			+ getTypeFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+		}
+
+		FieldData <|.. FieldNodeAdapter
+		FieldNodeAdapter --> .asm.tree.FieldNode
+		FieldNodeAdapter ..> .asm.Opcodes
+		FieldNodeAdapter ..> .asm.Type
+
+		~class MethodNodeAdapter {
+			- <<final>> methodNode: MethodNode
+
+			~ MethodNodeAdapter(methodNode: MethodNode)
+			+ getName(): String
+			+ getReturnTypeFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+			+ isAbstract(): boolean
+			+ getParams(): List<VariableData>
+			+ getExceptionTypeFullNames(): Set<String>
+		}
+
+		MethodData <|.. MethodNodeAdapter
+		MethodNodeAdapter --> .asm.tree.MethodNode
+		MethodNodeAdapter ..> .asm.Opcodes
+		MethodNodeAdapter ..> .asm.Type
+		MethodNodeAdapter ..> .asm.tree.ParameterNode
+
+	}
+
 }
 
 package datasource {
@@ -28,6 +171,46 @@ package datasource {
 	}
 
 	FilesLoader <|.. DirLoader
+
+}
+
+package asm {
+
+	+class Opcodes {
+		...
+	}
+
+	+class Type {
+		...
+	}
+
+	+class ClassReader {
+		...
+	}
+
+	hide methods
+
+	package tree {
+
+		+class ClassNode {
+			...
+		}
+
+		+class FieldNode {
+			...
+		}
+
+		+class MethodNode {
+			...
+		}
+
+		+class ParameterNode {
+			...
+		}
+
+		hide methods
+
+	}
 
 }
 
