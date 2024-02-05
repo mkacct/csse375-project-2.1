@@ -1,5 +1,34 @@
 @startuml
 
-note "Replace this with your work" as N1
+package presentation {
+
+	+class Main {
+		+ {static} main(args: String[]): void
+	}
+
+}
+
+package domain {
+
+}
+
+package datasource {
+
+	+interface FilesLoader {
+		+ {abstract} loadFiles(): Set<byte[]> <<throws>> IOException
+	}
+
+	+class DirLoader {
+		- <<final>> path: String
+
+		+ DirLoader(path: String)
+		+ loadFiles(): Set<byte[]> <<throws>> IOException
+		- addFilesFromDir(files: Set<byte[]>, dir: File): void\n<<throws>> IOException
+		- readFile(file: File): byte[] <<throws>> IOException
+	}
+
+	FilesLoader <|.. DirLoader
+
+}
 
 @enduml
