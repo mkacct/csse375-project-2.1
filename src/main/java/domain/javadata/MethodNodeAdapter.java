@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.ParameterNode;
 
 class MethodNodeAdapter implements MethodData {
 	private final MethodNode methodNode;
@@ -47,20 +47,15 @@ class MethodNodeAdapter implements MethodData {
 		return (this.methodNode.access & Opcodes.ACC_ABSTRACT) != 0;
 	}
 
-	@Override
 	public List<VariableData> getParams() {
-		if (this.methodNode.parameters == null) {throw new UnsupportedOperationException("Parameter names not available");} // TODO: is this really what is happening?
 		List<VariableData> params = new ArrayList<VariableData>();
 		Type[] asmParamTypes = Type.getArgumentTypes(this.methodNode.desc);
-		System.out.println("asmParamTypes: " + asmParamTypes.length);
-		System.out.println("this.methodNode.parameters: " + this.methodNode.parameters.size());
-		for (int i = 0; i < this.methodNode.parameters.size(); i++) {
-			ParameterNode asmParam = this.methodNode.parameters.get(i);
+		for (int i = 0; i < asmParamTypes.length; i++) {
+			LocalVariableNode asmParam = this.methodNode.localVariables.get(i);
 			Type asmParamType = asmParamTypes[i];
 			params.add(new VariableData(
 				asmParam.name,
-				asmParamType.getClassName(),
-				(asmParam.access & Opcodes.ACC_FINAL) != 0
+				asmParamType.getClassName()
 			));
 		}
 		return params;

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import domain.javadata.ClassData;
 import domain.javadata.ClassNodeAdapter;
 import domain.javadata.FieldData;
 import domain.javadata.MethodData;
+import domain.javadata.VariableData;
 
 /**
  * Test that the ASM adapters found in domain.javadata can do at least everything demonstrated in the ASM example code.
@@ -41,10 +43,9 @@ public class JavaDataAdapterTest {
 		assertEquals(false, classData.isAbstract());
 		assertEquals(false, classData.isStatic());
 		assertEquals(true, classData.isFinal());
-		// TODO: enable if implemented
 		// assertEquals(0, classData.getTypeParamFullNames().size());
 		assertEquals("java.lang.Object", classData.getSuperFullName());
-		assertEquals(Set.of( // TODO: you forgot to account for parameterized types (in this and possibly many other places)
+		assertEquals(Set.of(
 			"java.io.Serializable",
 			"java.lang.Comparable",
 			"java.lang.CharSequence"
@@ -86,12 +87,11 @@ public class JavaDataAdapterTest {
 		assertEquals(true, rangeCheckMethod.isStatic());
 		assertEquals(false, rangeCheckMethod.isFinal());
 		assertEquals(false, rangeCheckMethod.isAbstract());
-		// TODO: figure out why the following won't work
-		// assertEquals(List.of(
-		// 	new VariableData("value", "char[]"),
-		// 	new VariableData("offset", "int"),
-		// 	new VariableData("count", "int")
-		// ), rangeCheckMethod.getParams());
+		assertEquals(List.of(
+			new VariableData("value", "char[]"),
+			new VariableData("offset", "int"),
+			new VariableData("count", "int")
+		), rangeCheckMethod.getParams());
 		assertEquals(Set.of(), rangeCheckMethod.getExceptionTypeFullNames());
 	}
 

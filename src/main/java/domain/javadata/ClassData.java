@@ -12,7 +12,7 @@ public interface ClassData {
 	boolean isStatic();
 	boolean isFinal();
 
-	List<String> getTypeParamFullNames();
+	// List<String> getTypeParamFullNames();
 	String getSuperFullName();
 	Set<String> getInterfaceFullNames();
 

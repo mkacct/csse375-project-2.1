@@ -1,7 +1,6 @@
 package domain.javadata;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
@@ -52,11 +51,6 @@ public class ClassNodeAdapter implements ClassData {
 	@Override
 	public boolean isFinal() {
 		return (this.classNode.access & Opcodes.ACC_FINAL) != 0;
-	}
-
-	@Override
-	public List<String> getTypeParamFullNames() {
-		throw new UnsupportedOperationException("NYI"); // TODO: implement
 	}
 
 	@Override
