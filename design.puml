@@ -80,6 +80,7 @@ package domain {
 			+ {abstract} isAbstract(): boolean
 			+ {abstract} getParams(): List<VariableData>
 			+ {abstract} getExceptionTypeFullNames(): Set<String>
+			+ {abstract} getLocalVariables(): Set<VariableData>
 		}
 
 		MethodData ..> AccessModifier
@@ -141,6 +142,7 @@ package domain {
 			+ isAbstract(): boolean
 			+ getParams(): List<VariableData>
 			+ getExceptionTypeFullNames(): Set<String>
+			+ getLocalVariables(): Set<VariableData>
 		}
 
 		MethodData <|.. MethodNodeAdapter

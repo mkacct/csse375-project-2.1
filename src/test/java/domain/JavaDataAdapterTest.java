@@ -87,12 +87,14 @@ public class JavaDataAdapterTest {
 		assertEquals(true, rangeCheckMethod.isStatic());
 		assertEquals(false, rangeCheckMethod.isFinal());
 		assertEquals(false, rangeCheckMethod.isAbstract());
-		assertEquals(List.of(
+		List<VariableData> paramList = List.of(
 			new VariableData("value", "char[]"),
 			new VariableData("offset", "int"),
 			new VariableData("count", "int")
-		), rangeCheckMethod.getParams());
+		);
+		assertEquals(paramList, rangeCheckMethod.getParams());
 		assertEquals(Set.of(), rangeCheckMethod.getExceptionTypeFullNames());
+		assertEquals(Set.copyOf(paramList), rangeCheckMethod.getLocalVariables());
 	}
 
 	private MethodData findMethod(Set<MethodData> methods, String name) {

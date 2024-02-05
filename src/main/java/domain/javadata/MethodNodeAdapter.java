@@ -69,4 +69,16 @@ class MethodNodeAdapter implements MethodData {
 		}
 		return exceptions;
 	}
+
+	@Override
+	public Set<VariableData> getLocalVariables() {
+		Set<VariableData> localVariables = new HashSet<VariableData>();
+		for (LocalVariableNode localVariable : this.methodNode.localVariables) {
+			localVariables.add(new VariableData(
+				localVariable.name,
+				Type.getType(localVariable.desc).getClassName()
+			));
+		}
+		return localVariables;
+	}
 }
