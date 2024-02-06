@@ -277,5 +277,6 @@ n
 # Ignore entire build directory
 target/
 
-#Ignore IDEA files
+# Additional IDE metadata
 .idea/
+.vscode/
