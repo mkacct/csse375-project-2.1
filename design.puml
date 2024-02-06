@@ -83,10 +83,12 @@ package domain {
 			+ {abstract} getParams(): List<VariableData>
 			+ {abstract} getExceptionTypeFullNames(): Set<String>
 			+ {abstract} getLocalVariables(): Set<VariableData>
+			+ {abstract} getInstructions(): List<InstrData>
 		}
 
 		MethodData ..> AccessModifier
 		MethodData ..> VariableData
+		MethodData ..> InstrData
 
 		+class ClassNodeAdapter {
 			- <<final>> classNode: ClassNode
@@ -147,13 +149,120 @@ package domain {
 			+ getParams(): List<VariableData>
 			+ getExceptionTypeFullNames(): Set<String>
 			+ getLocalVariables(): Set<VariableData>
+			+ getInstructions(): List<InstrData>
+			- createInsnNodeAdapter(insn: AbstractInsnNode): InstrData
 		}
 
 		MethodData <|.. MethodNodeAdapter
+		MethodNodeAdapter ..> MethodInsnNodeAdapter
+		MethodNodeAdapter ..> VarInsnNodeAdapter
+		MethodNodeAdapter ..> FieldInsnNodeAdapter
+		MethodNodeAdapter ..> OtherInsnNodeAdapter
 		MethodNodeAdapter --> .asm.tree.MethodNode
 		MethodNodeAdapter ..> .asm.Opcodes
 		MethodNodeAdapter ..> .asm.Type
 		MethodNodeAdapter ..> .asm.tree.LocalVariableNode
+		MethodNodeAdapter ..> .asm.tree.AbstractInsnNode
+		MethodNodeAdapter ..> .asm.tree.MethodInsnNode
+		MethodNodeAdapter ..> .asm.tree.VarInsnNode
+		MethodNodeAdapter ..> .asm.tree.FieldInsnNode
+
+		+enum InstrType {
+			METHOD
+			LOCAL_VARIABLE
+			FIELD
+		}
+
+		+interface InstrData {
+			+ {abstract} getInstrType(): InstrType
+		}
+
+		InstrData ..> InstrType
+
+		+enum VariableOperation {
+			GET
+			SET
+			RETURN
+
+			~ {static} parseOpcode(opcode: int): VariableOperation
+		}
+
+		VariableOperation ..> .asm.Opcodes
+
+		+interface MethodInstrData {
+			+ {abstract} getMethodOwnerFullName(): String
+			+ {abstract} getMethodName(): String
+			+ {abstract} getMethodReturnTypeFullName(): String
+		}
+
+		InstrData <|.. MethodInstrData
+
+		+interface LocalVariableInstrData {
+			+ {abstract} getVarName(): String
+			+ {abstract} getVarTypeFullName(): String
+			+ {abstract} getOperation(): VariableOperation
+		}
+
+		InstrData <|.. LocalVariableInstrData
+		LocalVariableInstrData ..> VariableOperation
+
+		+interface FieldInstrData {
+			+ {abstract} getFieldOwnerFullName(): String
+			+ {abstract} getFieldName(): String
+			+ {abstract} getFieldTypeFullName(): String
+			+ {abstract} getOperation(): VariableOperation
+		}
+
+		InstrData <|.. FieldInstrData
+		FieldInstrData ..> VariableOperation
+
+		~class MethodInsnNodeAdapter {
+			- <<final>> insn: MethodInsnNode
+			~ MethodInsnNodeAdapter(insn: MethodInsnNode)
+			+ getInstrType(): InstrType
+			+ getMethodOwnerFullName(): String
+			+ getMethodName(): String
+			+ getMethodReturnTypeFullName(): String
+		}
+
+		MethodInstrData <|.. MethodInsnNodeAdapter
+		MethodInsnNodeAdapter --> .asm.tree.MethodInsnNode
+		MethodInsnNodeAdapter ..> .asm.Type
+
+		~class VarInsnNodeAdapter {
+			- <<final>> insn: VarInsnNode
+			- <<final>> localVariableNode: LocalVariableNode
+			~ VarInsnNodeAdapter(insn: VarInsnNode, localVars: List<LocalVariableNode>)
+			+ getInstrType(): InstrType
+			+ getVarName(): String
+			+ getVarTypeFullName(): String
+			+ getOperation(): VariableOperation
+		}
+
+		LocalVariableInstrData <|.. VarInsnNodeAdapter
+		VarInsnNodeAdapter --> .asm.tree.VarInsnNode
+		VarInsnNodeAdapter --> .asm.tree.LocalVariableNode
+		VarInsnNodeAdapter ..> .asm.Type
+
+		~class FieldInsnNodeAdapter {
+			- <<final>> insn: FieldInsnNode
+			~ FieldInsnNodeAdapter(insn: FieldInsnNode)
+			+ getInstrType(): InstrType
+			+ getOwnerFullName(): String
+			+ getFieldName(): String
+			+ getFieldTypeFullName(): String
+			+ getOperation(): VariableOperation
+		}
+
+		FieldInstrData <|.. FieldInsnNodeAdapter
+		FieldInsnNodeAdapter --> .asm.tree.FieldInsnNode
+		FieldInsnNodeAdapter ..> .asm.Type
+
+		~class OtherInsnNodeAdapter {
+			+ getInstrType(): InstrType
+		}
+
+		InstrData <|.. OtherInsnNodeAdapter
 
 	}
 
@@ -180,11 +289,11 @@ package datasource {
 
 package asm {
 
-	+class Opcodes {
+	+interface Opcodes {
 		...
 	}
 
-	+class Type {
+	+class Type <<final>> {
 		...
 	}
 
@@ -211,6 +320,26 @@ package asm {
 		+class LocalVariableNode {
 			...
 		}
+
+		+abstract AbstractInsnNode {
+			...
+		}
+
+		+class MethodInsnNode {
+			...
+		}
+
+		+class VarInsnNode {
+			...
+		}
+
+		+class FieldInsnNode {
+			...
+		}
+
+		AbstractInsnNode <|-- MethodInsnNode
+		AbstractInsnNode <|-- VarInsnNode
+		AbstractInsnNode <|-- FieldInsnNode
 
 		hide methods
 

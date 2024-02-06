@@ -7,8 +7,12 @@ import java.util.Set;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 class MethodNodeAdapter implements MethodData {
 	private final MethodNode methodNode;
@@ -51,7 +55,7 @@ class MethodNodeAdapter implements MethodData {
 		List<VariableData> params = new ArrayList<VariableData>();
 		Type[] asmParamTypes = Type.getArgumentTypes(this.methodNode.desc);
 		for (int i = 0; i < asmParamTypes.length; i++) {
-			LocalVariableNode asmParam = this.methodNode.localVariables.get(i);
+			LocalVariableNode asmParam = this.methodNode.localVariables.get(i + (this.isStatic() ? 0 : 1)); // Skip "this" for non-static methods
 			Type asmParamType = asmParamTypes[i];
 			params.add(new VariableData(
 				asmParam.name,
@@ -80,5 +84,27 @@ class MethodNodeAdapter implements MethodData {
 			));
 		}
 		return localVariables;
+	}
+
+	@Override
+	public List<InstrData> getInstructions() {
+		List<InstrData> instrs = new ArrayList<InstrData>();
+		for (AbstractInsnNode insn : this.methodNode.instructions) {
+			instrs.add(this.createInsnNodeAdapter(insn));
+		}
+		return instrs;
+	}
+
+	private InstrData createInsnNodeAdapter(AbstractInsnNode insn) {
+		switch (insn.getType()) {
+			case AbstractInsnNode.METHOD_INSN:
+				return new MethodInsnNodeAdapter((MethodInsnNode)insn);
+			case AbstractInsnNode.VAR_INSN:
+				return new VarInsnNodeAdapter((VarInsnNode)insn, this.methodNode.localVariables);
+			case AbstractInsnNode.FIELD_INSN:
+				return new FieldInsnNodeAdapter((FieldInsnNode)insn);
+			default:
+				return new OtherInsnNodeAdapter();
+		}
 	}
 }

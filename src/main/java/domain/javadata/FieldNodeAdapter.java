@@ -18,7 +18,7 @@ class FieldNodeAdapter implements FieldData {
 
 	@Override
 	public String getTypeFullName() {
-		return Type.getObjectType(this.fieldNode.desc).getClassName();
+		return Type.getType(this.fieldNode.desc).getClassName();
 	}
 
 	@Override

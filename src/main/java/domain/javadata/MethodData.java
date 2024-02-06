@@ -22,5 +22,6 @@ public interface MethodData {
 	 * @return the method's local variables, including any parameters
 	 */
 	Set<VariableData> getLocalVariables();
-	// TODO: add instruction functionality
+
+	List<InstrData> getInstructions();
 }

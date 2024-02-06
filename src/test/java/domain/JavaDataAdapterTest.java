@@ -9,15 +9,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import domain.javadata.AccessModifier;
 import domain.javadata.ClassData;
 import domain.javadata.ClassNodeAdapter;
 import domain.javadata.FieldData;
+import domain.javadata.FieldInstrData;
+import domain.javadata.InstrData;
+import domain.javadata.InstrType;
+import domain.javadata.LocalVarInstrData;
 import domain.javadata.MethodData;
+import domain.javadata.MethodInstrData;
 import domain.javadata.VariableData;
+import domain.javadata.VariableOperation;
 
 /**
  * Test that the ASM adapters found in domain.javadata can do at least everything demonstrated in the ASM example code.
@@ -117,8 +122,35 @@ public class JavaDataAdapterTest {
 	}
 
 	@Test
-	@Disabled("NYI") // TODO: write this test
 	public void testInstructions() {
 		ClassData classData = new ClassNodeAdapter(this.javaBytecode);
+		Set<MethodData> methods = classData.getMethods();
+		MethodData codePointAtMethod = findMethod(methods, "codePointAt");
+		List<InstrData> instrs = codePointAtMethod.getInstructions();
+
+		InstrData firstInstr = instrs.get(3); // INVOKEVIRTUAL java/lang/String.isLatin1 ()Z
+		assertEquals(InstrType.METHOD, firstInstr.getInstrType());
+		MethodInstrData methodInstr = (MethodInstrData)firstInstr;
+		assertEquals("java.lang.String", methodInstr.getMethodOwnerFullName());
+		assertEquals("isLatin1", methodInstr.getMethodName());
+		assertEquals("boolean", methodInstr.getMethodReturnTypeFullName());
+
+		InstrData secondInstr = instrs.get(7); // ILOAD 1
+		assertEquals(InstrType.LOCAL_VARIABLE, secondInstr.getInstrType());
+		LocalVarInstrData localVarInstr = (LocalVarInstrData)secondInstr;
+		assertEquals("index", localVarInstr.getVarName());
+		assertEquals("int", localVarInstr.getVarTypeFullName());
+		assertEquals(VariableOperation.GET, localVarInstr.getOperation());
+
+		InstrData thirdInstr = instrs.get(9); // IGETFIELD java/lang/String.value : [B
+		assertEquals(InstrType.FIELD, thirdInstr.getInstrType());
+		FieldInstrData fieldInstr = (FieldInstrData)thirdInstr;
+		assertEquals("java.lang.String", fieldInstr.getFieldOwnerFullName());
+		assertEquals("value", fieldInstr.getFieldName());
+		assertEquals("byte[]", fieldInstr.getFieldTypeFullName());
+		assertEquals(VariableOperation.GET, fieldInstr.getOperation());
+
+		InstrData unsupportedInstr = instrs.get(10); // ARRAYLENGTH
+		assertEquals(null, unsupportedInstr.getInstrType());
 	}
 }
