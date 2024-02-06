@@ -38,7 +38,7 @@ public final class Configuration {
 	public int getInt(String key, int fallback) {
 		try {
 			return this.getInt(key);
-		} catch (NullPointerException ex) {
+		} catch (IllegalArgumentException ex) {
 			return fallback;
 		}
 	}
@@ -46,7 +46,7 @@ public final class Configuration {
 	public String getString(String key, String fallback) {
 		try {
 			return this.getString(key);
-		} catch (NullPointerException ex) {
+		} catch (IllegalArgumentException ex) {
 			return fallback;
 		}
 	}
