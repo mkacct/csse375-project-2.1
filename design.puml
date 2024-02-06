@@ -20,9 +20,9 @@ package domain {
 		+ {abstract} run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
 	}
 
-	Check ..> Configuration
 	Check ..> Message
 	Check ..> javadata.ClassData
+	Check ..> .datasource.Configuration
 
 	+class Message <<final>> {
 		+ <<final>> level: MessageLevel
@@ -35,18 +35,6 @@ package domain {
 	}
 
 	Message --> MessageLevel
-
-	+class Configuration <<final>> {
-		- <<final>> data: Map<String, Object>
-
-		+ Configuration(data: Map<String, Object>)
-		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException
-		+ getInt(key: String): int\n<<throws>> IllegalArgumentException
-		+ getString(key: String): String\n<<throws>> IllegalArgumentException
-		+ getBoolean(key: String, fallback: boolean): boolean
-		+ getInt(key: String, fallback: int): int
-		+ getString(key: String, fallback: String): String
-	}
 
 	package javadata {
 
@@ -322,6 +310,18 @@ package datasource {
 	}
 
 	FilesLoader <|.. DirLoader
+
+	+class Configuration <<final>> {
+		- <<final>> data: Map<String, Object>
+
+		+ Configuration(data: Map<String, Object>)
+		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException
+		+ getInt(key: String): int\n<<throws>> IllegalArgumentException
+		+ getString(key: String): String\n<<throws>> IllegalArgumentException
+		+ getBoolean(key: String, fallback: boolean): boolean
+		+ getInt(key: String, fallback: int): int
+		+ getString(key: String, fallback: String): String
+	}
 
 }
 
