@@ -1,5 +1,350 @@
 @startuml
 
-note "Replace this with your work" as N1
+package presentation {
+
+	+class Main {
+		+ {static} main(args: String[]): void
+	}
+
+}
+
+package domain {
+
+	package javadata {
+
+		+enum AccessModifier {
+			PUBLIC
+			PROTECTED
+			PACKAGE_PRIVATE
+			PRIVATE
+
+			~ {static} parseOpcodes(access: int): AccessModifier
+		}
+
+		AccessModifier ..> .asm.Opcodes
+
+		+enum ClassType {
+			CLASS
+			INTERFACE
+			ENUM
+
+			~ {static} parseOpcodes(access: int): ClassType
+		}
+
+		ClassType ..> .asm.Opcodes
+
+		+class VariableData <<final>> {
+			+ <<final>> name: String
+			+ <<final>> typeFullName: String
+
+			+ VariableData(name: String, typeFullName: String)
+			+ equals(obj: Object): boolean
+			+ hashCode(): int
+		}
+
+		+interface ClassData {
+			+ {abstract} getFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} getClassType(): ClassType
+			+ {abstract} isAbstract(): boolean
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+			' + {abstract} getTypeParamFullNames(): List<String>
+			+ {abstract} getSuperFullName(): String
+			+ {abstract} getInterfaceFullNames(): Set<String>
+			+ {abstract} getFields(): Set<FieldData>
+			+ {abstract} getMethods(): Set<MethodData>
+			+ {abstract} getContainingClassFullName(): String
+			+ {abstract} getInnerClassFullNames(): Set<String>
+		}
+
+		ClassData ..> AccessModifier
+		ClassData ..> ClassType
+		ClassData ..> FieldData
+		ClassData ..> MethodData
+
+		+interface FieldData {
+			+ {abstract} getName(): String
+			+ {abstract} getTypeFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+		}
+
+		FieldData ..> AccessModifier
+
+		+interface MethodData {
+			+ {abstract} getName(): String
+			+ {abstract} getReturnTypeFullName(): String
+			+ {abstract} getAccessModifier(): AccessModifier
+			+ {abstract} isStatic(): boolean
+			+ {abstract} isFinal(): boolean
+			+ {abstract} isAbstract(): boolean
+			+ {abstract} getParams(): List<VariableData>
+			+ {abstract} getExceptionTypeFullNames(): Set<String>
+			+ {abstract} getLocalVariables(): Set<VariableData>
+			+ {abstract} getInstructions(): List<InstrData>
+		}
+
+		MethodData ..> AccessModifier
+		MethodData ..> VariableData
+		MethodData ..> InstrData
+
+		+class ClassNodeAdapter {
+			- <<final>> classNode: ClassNode
+
+			+ ClassNodeAdapter(javaBytecode: byte[])
+			~ ClassNodeAdapter(classNode: ClassNode)
+			+ getFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ getClassType(): ClassType
+			+ isAbstract(): boolean
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+			' + getTypeParamFullNames(): List<String>
+			+ getSuperFullName(): String
+			+ getInterfaceFullNames(): Set<String>
+			+ getFields(): Set<FieldData>
+			+ getMethods(): Set<MethodData>
+			+ getContainingClassFullName(): String
+			+ getInnerClassFullNames(): Set<String>
+		}
+
+		ClassData <|.. ClassNodeAdapter
+		ClassNodeAdapter --> .asm.tree.ClassNode
+		ClassNodeAdapter ..> FieldNodeAdapter
+		ClassNodeAdapter ..> MethodNodeAdapter
+		ClassNodeAdapter ..> .asm.ClassReader
+		ClassNodeAdapter ..> .asm.Opcodes
+		ClassNodeAdapter ..> .asm.Type
+		ClassNodeAdapter ..> .asm.tree.FieldNode
+		ClassNodeAdapter ..> .asm.tree.MethodNode
+
+		~class FieldNodeAdapter {
+			- <<final>> fieldNode: FieldNode
+
+			~ FieldNodeAdapter(fieldNode: FieldNode)
+			+ getName(): String
+			+ getTypeFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+		}
+
+		FieldData <|.. FieldNodeAdapter
+		FieldNodeAdapter --> .asm.tree.FieldNode
+		FieldNodeAdapter ..> .asm.Opcodes
+		FieldNodeAdapter ..> .asm.Type
+
+		~class MethodNodeAdapter {
+			- <<final>> methodNode: MethodNode
+
+			~ MethodNodeAdapter(methodNode: MethodNode)
+			+ getName(): String
+			+ getReturnTypeFullName(): String
+			+ getAccessModifier(): AccessModifier
+			+ isStatic(): boolean
+			+ isFinal(): boolean
+			+ isAbstract(): boolean
+			+ getParams(): List<VariableData>
+			+ getExceptionTypeFullNames(): Set<String>
+			+ getLocalVariables(): Set<VariableData>
+			+ getInstructions(): List<InstrData>
+			- createInsnNodeAdapter(insn: AbstractInsnNode): InstrData
+		}
+
+		MethodData <|.. MethodNodeAdapter
+		MethodNodeAdapter ..> MethodInsnNodeAdapter
+		MethodNodeAdapter ..> VarInsnNodeAdapter
+		MethodNodeAdapter ..> FieldInsnNodeAdapter
+		MethodNodeAdapter ..> OtherInsnNodeAdapter
+		MethodNodeAdapter --> .asm.tree.MethodNode
+		MethodNodeAdapter ..> .asm.Opcodes
+		MethodNodeAdapter ..> .asm.Type
+		MethodNodeAdapter ..> .asm.tree.LocalVariableNode
+		MethodNodeAdapter ..> .asm.tree.AbstractInsnNode
+		MethodNodeAdapter ..> .asm.tree.MethodInsnNode
+		MethodNodeAdapter ..> .asm.tree.VarInsnNode
+		MethodNodeAdapter ..> .asm.tree.FieldInsnNode
+
+		+enum InstrType {
+			METHOD
+			LOCAL_VARIABLE
+			FIELD
+		}
+
+		+interface InstrData {
+			+ {abstract} getInstrType(): InstrType
+		}
+
+		InstrData ..> InstrType
+
+		+enum VariableOperation {
+			GET
+			SET
+			RETURN
+
+			~ {static} parseOpcode(opcode: int): VariableOperation
+		}
+
+		VariableOperation ..> .asm.Opcodes
+
+		+interface MethodInstrData {
+			+ {abstract} getMethodOwnerFullName(): String
+			+ {abstract} getMethodName(): String
+			+ {abstract} getMethodReturnTypeFullName(): String
+		}
+
+		InstrData <|.. MethodInstrData
+
+		+interface LocalVariableInstrData {
+			+ {abstract} getVarName(): String
+			+ {abstract} getVarTypeFullName(): String
+			+ {abstract} getOperation(): VariableOperation
+		}
+
+		InstrData <|.. LocalVariableInstrData
+		LocalVariableInstrData ..> VariableOperation
+
+		+interface FieldInstrData {
+			+ {abstract} getFieldOwnerFullName(): String
+			+ {abstract} getFieldName(): String
+			+ {abstract} getFieldTypeFullName(): String
+			+ {abstract} getOperation(): VariableOperation
+		}
+
+		InstrData <|.. FieldInstrData
+		FieldInstrData ..> VariableOperation
+
+		~class MethodInsnNodeAdapter {
+			- <<final>> insn: MethodInsnNode
+			~ MethodInsnNodeAdapter(insn: MethodInsnNode)
+			+ getInstrType(): InstrType
+			+ getMethodOwnerFullName(): String
+			+ getMethodName(): String
+			+ getMethodReturnTypeFullName(): String
+		}
+
+		MethodInstrData <|.. MethodInsnNodeAdapter
+		MethodInsnNodeAdapter --> .asm.tree.MethodInsnNode
+		MethodInsnNodeAdapter ..> .asm.Type
+
+		~class VarInsnNodeAdapter {
+			- <<final>> insn: VarInsnNode
+			- <<final>> localVariableNode: LocalVariableNode
+			~ VarInsnNodeAdapter(insn: VarInsnNode, localVars: List<LocalVariableNode>)
+			+ getInstrType(): InstrType
+			+ getVarName(): String
+			+ getVarTypeFullName(): String
+			+ getOperation(): VariableOperation
+		}
+
+		LocalVariableInstrData <|.. VarInsnNodeAdapter
+		VarInsnNodeAdapter --> .asm.tree.VarInsnNode
+		VarInsnNodeAdapter --> .asm.tree.LocalVariableNode
+		VarInsnNodeAdapter ..> .asm.Type
+
+		~class FieldInsnNodeAdapter {
+			- <<final>> insn: FieldInsnNode
+			~ FieldInsnNodeAdapter(insn: FieldInsnNode)
+			+ getInstrType(): InstrType
+			+ getOwnerFullName(): String
+			+ getFieldName(): String
+			+ getFieldTypeFullName(): String
+			+ getOperation(): VariableOperation
+		}
+
+		FieldInstrData <|.. FieldInsnNodeAdapter
+		FieldInsnNodeAdapter --> .asm.tree.FieldInsnNode
+		FieldInsnNodeAdapter ..> .asm.Type
+
+		~class OtherInsnNodeAdapter {
+			+ getInstrType(): InstrType
+		}
+
+		InstrData <|.. OtherInsnNodeAdapter
+
+	}
+
+}
+
+package datasource {
+
+	+interface FilesLoader {
+		+ {abstract} loadFiles(): Set<byte[]> <<throws>> IOException
+	}
+
+	+class DirLoader {
+		- <<final>> path: String
+
+		+ DirLoader(path: String)
+		+ loadFiles(): Set<byte[]> <<throws>> IOException
+		- addFilesFromDir(files: Set<byte[]>, dir: File): void\n<<throws>> IOException
+		- readFile(file: File): byte[] <<throws>> IOException
+	}
+
+	FilesLoader <|.. DirLoader
+
+}
+
+package asm {
+
+	+interface Opcodes {
+		...
+	}
+
+	+class Type <<final>> {
+		...
+	}
+
+	+class ClassReader {
+		...
+	}
+
+	hide methods
+
+	package tree {
+
+		+class ClassNode {
+			...
+		}
+
+		+class FieldNode {
+			...
+		}
+
+		+class MethodNode {
+			...
+		}
+
+		+class LocalVariableNode {
+			...
+		}
+
+		+abstract AbstractInsnNode {
+			...
+		}
+
+		+class MethodInsnNode {
+			...
+		}
+
+		+class VarInsnNode {
+			...
+		}
+
+		+class FieldInsnNode {
+			...
+		}
+
+		AbstractInsnNode <|-- MethodInsnNode
+		AbstractInsnNode <|-- VarInsnNode
+		AbstractInsnNode <|-- FieldInsnNode
+
+		hide methods
+
+	}
+
+}
 
 @enduml
