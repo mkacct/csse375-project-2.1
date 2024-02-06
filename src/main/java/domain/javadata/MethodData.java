@@ -18,6 +18,9 @@ public interface MethodData {
 	List<VariableData> getParams();
 	Set<String> getExceptionTypeFullNames();
 
+	/**
+	 * @return the method's local variables, including any parameters
+	 */
 	Set<VariableData> getLocalVariables();
 	// TODO: add instruction functionality
 }
