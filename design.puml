@@ -10,6 +10,44 @@ package presentation {
 
 package domain {
 
+	+enum MessageLevel {
+		ERROR
+		WARNING
+		INFO
+	}
+
+	+interface Check {
+		+ {abstract} run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+	}
+
+	Check ..> Configuration
+	Check ..> Message
+	Check ..> javadata.ClassData
+
+	+class Message <<final>> {
+		+ <<final>> level: MessageLevel
+		+ <<final>> text: String
+		- <<final>> classFullNames: Set<String>
+
+		+ Message(level: MessageLevel, text: String, classFullNames: Set<String>)
+		+ Message(level: MessageLevel, text: String, classFullName: String)
+		+ getClassFullNames(): Set<String>
+	}
+
+	Message --> MessageLevel
+
+	+class Configuration <<final>> {
+		- <<final>> data: Map<String, Object>
+
+		+ Configuration(data: Map<String, Object>)
+		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException
+		+ getInt(key: String): int\n<<throws>> IllegalArgumentException
+		+ getString(key: String): String\n<<throws>> IllegalArgumentException
+		+ getBoolean(key: String, fallback: boolean): boolean
+		+ getInt(key: String, fallback: int): int
+		+ getString(key: String, fallback: String): String
+	}
+
 	package javadata {
 
 		+enum AccessModifier {
