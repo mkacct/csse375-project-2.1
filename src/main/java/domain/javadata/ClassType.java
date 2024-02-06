@@ -2,6 +2,9 @@ package domain.javadata;
 
 import org.objectweb.asm.Opcodes;
 
+/**
+ * One of the types of top-level entities in Java.
+ */
 public enum ClassType {
 	CLASS,
 	INTERFACE,

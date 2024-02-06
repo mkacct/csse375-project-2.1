@@ -2,7 +2,11 @@ package domain.javadata;
 
 import java.util.Objects;
 
-public class VariableData {
+/**
+ * Represents a variable with its name and fully qualified type name.
+ * Immutable. Just a data class. You can compare them with equals().
+ */
+public final class VariableData {
 	public final String name;
 	public final String typeFullName;
 

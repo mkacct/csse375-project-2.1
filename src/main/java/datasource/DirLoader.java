@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Loads files from a given directory as byte arrays.
+ */
 public class DirLoader implements FilesLoader {
 	private final String path;
 

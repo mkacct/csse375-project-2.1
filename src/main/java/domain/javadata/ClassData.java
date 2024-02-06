@@ -2,6 +2,9 @@ package domain.javadata;
 
 import java.util.Set;
 
+/**
+ * A representation of a Java class (or other top-level entity such as an interface).
+ */
 public interface ClassData {
 	String getFullName();
 

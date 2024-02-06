@@ -2,6 +2,9 @@ package domain.javadata;
 
 import org.objectweb.asm.Opcodes;
 
+/**
+ * One of the four access modifiers in Java.
+ */
 public enum AccessModifier {
 	PUBLIC,
 	PROTECTED,

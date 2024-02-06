@@ -33,7 +33,7 @@ package domain {
 
 		ClassType ..> .asm.Opcodes
 
-		+class VariableData {
+		+class VariableData <<final>> {
 			+ <<final>> name: String
 			+ <<final>> typeFullName: String
 

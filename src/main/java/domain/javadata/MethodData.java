@@ -3,6 +3,9 @@ package domain.javadata;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A representation of a method in a Java class.
+ */
 public interface MethodData {
 	String getName();
 	String getReturnTypeFullName();
