@@ -17,4 +17,7 @@ public interface ClassData {
 
 	Set<FieldData> getFields();
 	Set<MethodData> getMethods();
+
+	String getContainingClassFullName();
+	Set<String> getInnerClassFullNames();
 }

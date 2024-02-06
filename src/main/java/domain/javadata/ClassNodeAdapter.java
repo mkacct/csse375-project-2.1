@@ -8,6 +8,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class ClassNodeAdapter implements ClassData {
@@ -85,5 +86,18 @@ public class ClassNodeAdapter implements ClassData {
 		return methods;
 	}
 
-	// TODO: support for inner classes?
+	@Override
+	public String getContainingClassFullName() {
+		if (this.classNode.outerClass == null) {return null;}
+		return Type.getObjectType(this.classNode.outerClass).getClassName();
+	}
+
+	@Override
+	public Set<String> getInnerClassFullNames() {
+		Set<String> innerClassNames = new HashSet<String>();
+		for (InnerClassNode innerClassNode : this.classNode.innerClasses) {
+			innerClassNames.add(Type.getObjectType(innerClassNode.name).getClassName());
+		}
+		return innerClassNames;
+	}
 }

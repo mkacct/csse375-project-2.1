@@ -50,6 +50,15 @@ public class JavaDataAdapterTest {
 			"java.lang.Comparable",
 			"java.lang.CharSequence"
 		), classData.getInterfaceFullNames());
+		assertEquals(null, classData.getContainingClassFullName());
+		assertEquals(Set.of(
+			"java.util.Spliterator$OfInt",
+			"java.lang.String$CaseInsensitiveComparator",
+			"java.lang.StringCoding$Result",
+			"java.lang.StringUTF16$CodePointsSpliterator",
+			"java.lang.StringLatin1$CharsSpliterator",
+			"java.lang.StringUTF16$CharsSpliterator"
+		), classData.getInnerClassFullNames());
 	}
 
 	@Test

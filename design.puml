@@ -54,6 +54,8 @@ package domain {
 			+ {abstract} getInterfaceFullNames(): Set<String>
 			+ {abstract} getFields(): Set<FieldData>
 			+ {abstract} getMethods(): Set<MethodData>
+			+ {abstract} getContainingClassFullName(): String
+			+ {abstract} getInnerClassFullNames(): Set<String>
 		}
 
 		ClassData ..> AccessModifier
@@ -102,6 +104,8 @@ package domain {
 			+ getInterfaceFullNames(): Set<String>
 			+ getFields(): Set<FieldData>
 			+ getMethods(): Set<MethodData>
+			+ getContainingClassFullName(): String
+			+ getInnerClassFullNames(): Set<String>
 		}
 
 		ClassData <|.. ClassNodeAdapter
