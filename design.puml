@@ -17,6 +17,7 @@ package domain {
 	}
 
 	+interface Check {
+		+ {abstract} getName(): String
 		+ {abstract} run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
 	}
 
