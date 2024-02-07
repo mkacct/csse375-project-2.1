@@ -297,7 +297,7 @@ package domain {
 package datasource {
 
 	+interface FilesLoader {
-		+ {abstract} loadFiles(): Set<byte[]> <<throws>> IOException
+		+ {abstract} loadFiles(): Set<byte[]>\n<<throws>> IOException
 	}
 
 	+class DirLoader {
@@ -322,6 +322,22 @@ package datasource {
 		+ getInt(key: String, fallback: int): int
 		+ getString(key: String, fallback: String): String
 	}
+
+	+interface ConfigLoader {
+		+ {abstract} loadConfig(): Configuration\n<<throws>> IOException
+	}
+
+	ConfigLoader ..> Configuration
+
+	+class JsonFileConfigLoader {
+		- <<final>> path: String
+
+		+ JsonFileConfigLoader(path: String)
+		+ loadConfig(): Configuration\n<<throws>> IOException
+	}
+
+	ConfigLoader <|.. JsonFileConfigLoader
+	JsonFileConfigLoader ..> .json.JSONObject
 
 }
 
@@ -383,6 +399,15 @@ package asm {
 
 	}
 
+}
+
+package json {
+
+	+class JSONObject {
+		...
+	}
+
+	hide methods
 }
 
 @enduml
