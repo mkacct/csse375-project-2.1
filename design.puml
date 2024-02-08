@@ -45,6 +45,19 @@ package domain {
 
 	Message --> MessageLevel
 
+	+class MethodLengthCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> MAX_METHOD_LENGTH_KEY: String
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		- checkClass(classData: ClassData, maxMethodLengthInstrs: int, messages: Set<Message>): void
+	}
+
+	Check <|.. MethodLengthCheck
+	MethodLengthCheck ..> MessageLevel
+	MethodLengthCheck ..> javadata.MethodData
+	MethodLengthCheck ..> javadata.InstrData
+
 	package javadata {
 
 		+enum AccessModifier {
