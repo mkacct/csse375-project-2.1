@@ -3,8 +3,28 @@
 package presentation {
 
 	+class Main {
+		- {static} <<final>> CHECKS: Check[]
 		+ {static} main(args: String[]): void
+		- {static} printUsage(): void
 	}
+
+	Main -->"*" .domain.Check
+	Main ..> App
+	Main ..> .datasource.DirLoader
+	Main ..> .datasource.JsonFileConfigLoader
+
+	~class App {
+
+	}
+
+	App --> .datasource.FilesLoader
+	App --> .datasource.ConfigLoader
+	App ..> .domain.Check
+	App ..> .domain.Message
+	App ..> .domain.MessageLevel
+	App ..> .domain.javadata.ClassData
+	App ..> .domain.javadata.ClassNodeAdapter
+	App ..> .datasource.Configuration
 
 }
 
