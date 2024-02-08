@@ -7,6 +7,9 @@ import java.util.Set;
  * A representation of a method in a Java class.
  */
 public interface MethodData {
+	static final String CONSTRUCTOR_NAME = "<init>";
+	static final String STATIC_INITIALIZER_NAME = "<clinit>";
+
 	String getName();
 	String getReturnTypeFullName();
 
