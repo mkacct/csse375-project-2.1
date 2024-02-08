@@ -14,6 +14,10 @@ package domain {
 		ERROR
 		WARNING
 		INFO
+		__
+		+ <<final>> abbreviation: String
+		__
+		- MessageLevel(abbreviation: String)
 	}
 
 	+interface Check {
@@ -34,6 +38,9 @@ package domain {
 		+ Message(level: MessageLevel, text: String, classFullName: String)
 		+ Message(level: MessageLevel, text: String)
 		+ getClassFullNames(): Set<String>
+		+ toString(): String
+		+ equals(obj: Object): boolean
+		+ hashCode(): int
 	}
 
 	Message --> MessageLevel
