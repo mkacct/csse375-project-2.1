@@ -109,6 +109,9 @@ package domain {
 		FieldData ..> AccessModifier
 
 		+interface MethodData {
+			+ {static} <<final>> CONSTRUCTOR_NAME: String
+			+ {static} <<final>> STATIC_INITIALIZER_NAME: String
+
 			+ {abstract} getName(): String
 			+ {abstract} getReturnTypeFullName(): String
 			+ {abstract} getAccessModifier(): AccessModifier
@@ -172,6 +175,7 @@ package domain {
 		FieldNodeAdapter ..> .asm.Type
 
 		~class MethodNodeAdapter {
+			- {static} <<final>> THIS: String
 			- <<final>> methodNode: MethodNode
 
 			~ MethodNodeAdapter(methodNode: MethodNode)
@@ -182,6 +186,7 @@ package domain {
 			+ isFinal(): boolean
 			+ isAbstract(): boolean
 			+ getParams(): List<VariableData>
+			- {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
 			+ getExceptionTypeFullNames(): Set<String>
 			+ getLocalVariables(): Set<VariableData>
 			+ getInstructions(): List<InstrData>
@@ -268,6 +273,7 @@ package domain {
 			- <<final>> insn: VarInsnNode
 			- <<final>> localVariableNode: LocalVariableNode
 			~ VarInsnNodeAdapter(insn: VarInsnNode, localVars: List<LocalVariableNode>)
+			- {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
 			+ getInstrType(): InstrType
 			+ getVarName(): String
 			+ getVarTypeFullName(): String
