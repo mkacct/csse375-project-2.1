@@ -20,6 +20,10 @@ public final class Message {
 		this(level, text, Set.of(classFullName));
 	}
 
+	public Message(MessageLevel level, String text) {
+		this(level, text, Set.of());
+	}
+
 	public Set<String> getClassFullNames() {
 		return Set.copyOf(this.classFullNames);
 	}
