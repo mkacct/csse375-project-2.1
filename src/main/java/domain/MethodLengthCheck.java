@@ -55,7 +55,7 @@ public class MethodLengthCheck implements Check {
 				messages.add(new Message(
 					MessageLevel.WARNING,
 					MessageFormat.format(
-						"Method \"{0}\" is too long ({1} instrs, should be <= {2} instrs)",
+						"Method \"{0}\" is too long ({1} instrs, should be <= {2})",
 						method.getName(), instrs.size(), maxMethodLengthInstrs
 					),
 					Set.of(classData.getFullName())
