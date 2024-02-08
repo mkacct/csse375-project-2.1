@@ -14,7 +14,15 @@ package presentation {
 	Main ..> .datasource.JsonFileConfigLoader
 
 	~class App {
-
+		- filesLoader: FilesLoader
+		- configLoader: ConfigLoader
+		~ App(filesLoader: FilesLoader, configLoader: ConfigLoader)
+		~ run(checks: Check[]): boolean
+		- {static} readInClasses(classFiles: Set<byte[]>): Map<String, ClassData>
+		- {static} runAllChecksAndPrintResults(checks: Check[], classes: Map<String, ClassData>, config: Configuration): Map<MessageLevel, Integer>
+		- {static} runCheckAndPrintResults(check: Check, classes: Map<String, ClassData>, config: Configuration, msgTotals: Map<MessageLevel, Integer>): void
+		- {static} printTotals(msgTotals: Map<MessageLevel, Integer>): void
+		- {static} initMsgTotals(): Map<MessageLevel, Integer>
 	}
 
 	App --> .datasource.FilesLoader
