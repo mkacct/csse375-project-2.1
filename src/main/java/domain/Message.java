@@ -33,10 +33,17 @@ public final class Message {
 	@Override
 	public String toString() {
 		String classFullNamesStr = String.join(", ", this.classFullNames.toArray(new String[this.classFullNames.size()]));
-		return MessageFormat.format(
-			"[{0}] {1} ({2})",
-			this.level.abbreviation.toUpperCase(), this.text, classFullNamesStr
-		);
+		if (classFullNamesStr.isEmpty()) {
+			return MessageFormat.format(
+				"[{0}] {1}",
+				this.level.abbreviation.toUpperCase(), this.text
+			);
+		} else {
+			return MessageFormat.format(
+				"[{0}] {1} ({2})",
+				this.level.abbreviation.toUpperCase(), this.text, classFullNamesStr
+			);
+		}
 	}
 
 	@Override
