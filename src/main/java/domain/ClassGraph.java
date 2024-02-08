@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import domain.javadata.ClassData;
+
 public class ClassGraph {
     Set<String> packages;
-    Map<Object, Integer> classes; 
-    Map<Integer, Object> inverse; // inverse of the other map
+    Map<ClassData, Integer> classes; 
+    Map<Integer, ClassData> inverse; // inverse of the other map
     int[][] edges; // weighted
     int numClasses;
     public ClassGraph() {
@@ -63,15 +65,15 @@ public class ClassGraph {
         return numClasses;
     }
 
-    public Set<Object> getClasses() {
+    public Set<ClassData> getClasses() {
         return Set.copyOf(classes.keySet());
     }
 
-    public int getIndex(Object c) {
+    public int getIndex(ClassData c) {
         return classes.get(c);
     }
 
-    public Object indexToClass(int i) {
+    public ClassData indexToClass(int i) {
         return inverse.get(i);
     }
 
