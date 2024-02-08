@@ -32,6 +32,7 @@ package domain {
 
 		+ Message(level: MessageLevel, text: String, classFullNames: Set<String>)
 		+ Message(level: MessageLevel, text: String, classFullName: String)
+		+ Message(level: MessageLevel, text: String)
 		+ getClassFullNames(): Set<String>
 	}
 
