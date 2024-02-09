@@ -30,7 +30,7 @@ public final class Configuration {
 	public boolean getBoolean(String key, boolean fallback) {
 		try {
 			return this.getBoolean(key);
-		} catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException | ClassCastException ex) {
 			return fallback;
 		}
 	}
@@ -38,7 +38,7 @@ public final class Configuration {
 	public int getInt(String key, int fallback) {
 		try {
 			return this.getInt(key);
-		} catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException | ClassCastException ex) {
 			return fallback;
 		}
 	}
@@ -46,7 +46,7 @@ public final class Configuration {
 	public String getString(String key, String fallback) {
 		try {
 			return this.getString(key);
-		} catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException | ClassCastException ex) {
 			return fallback;
 		}
 	}
