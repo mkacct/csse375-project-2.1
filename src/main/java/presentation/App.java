@@ -18,6 +18,9 @@ import domain.javadata.ClassData;
 import domain.javadata.ClassNodeAdapter;
 
 class App {
+	private static final String ENABLE_KEY_PREFIX = "enable_";
+	private static final String SKIP_UNMARKED_CHECKS_KEY = "skipUnmarkedChecks";
+
 	private static final Map<MessageLevel, TerminalTextColor> MESSAGE_LEVEL_COLORS = Map.of(
 		MessageLevel.ERROR, TerminalTextColor.RED,
 		MessageLevel.WARNING, TerminalTextColor.YELLOW,
@@ -69,15 +72,30 @@ class App {
 	private static Map<MessageLevel, Integer> runAllChecksAndPrintResults(
 		Check[] checks, Map<String, ClassData> classes, Configuration config
 	) {
+		boolean skipUnmarked = readConfigBoolAndFallbackIfWrongType(config, SKIP_UNMARKED_CHECKS_KEY, false);
 		Map<MessageLevel, Integer> msgTotals = initMsgTotals();
 		int numChecksRun = 0;
-		for (Check check : checks) { // TODO be able to skip checks
-			runCheckAndPrintResults(check, classes, config, msgTotals);
-			numChecksRun++;
+		for (Check check : checks) {
+			if (readConfigBoolAndFallbackIfWrongType(config, ENABLE_KEY_PREFIX + check.getName(), !skipUnmarked)) {
+				runCheckAndPrintResults(check, classes, config, msgTotals);
+				numChecksRun++;
+			}
 		}
 		System.out.println(MessageFormat.format("Checks run: {0}", numChecksRun));
 		printTotals(msgTotals);
 		return msgTotals;
+	}
+
+	private static boolean readConfigBoolAndFallbackIfWrongType(Configuration config, String key, boolean fallback) {
+		try {
+			return config.getBoolean(key, fallback);
+		} catch (ClassCastException ex) {
+			System.err.println(MessageFormat.format(
+				"Error in config: property \"{0}\", if present, should be boolean; defaulting to {1}",
+				key, fallback
+			));
+			return fallback;
+		}
 	}
 
 	private static void runCheckAndPrintResults(
@@ -122,7 +140,7 @@ class App {
 	private static void generateTotalsTerm(List<String> totalsTerms, MessageLevel level, int count) {
 		if (count > 0) {
 			totalsTerms.add(MESSAGE_LEVEL_COLORS.get(level).applyTo(
-				MessageFormat.format("{0} {1}", count, level.name)
+				MessageFormat.format("{0} {1}", count, level.abbreviation)
 			));
 		}
 	}

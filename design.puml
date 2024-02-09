@@ -14,6 +14,8 @@ package presentation {
 	Main ..> .datasource.JsonFileConfigLoader
 
 	~class App {
+		- {static} <<final>> ENABLE_KEY_PREFIX: String
+		- {static} <<final>> SKIP_UNMARKED_CHECKS_KEY: String
 		- {static} <<final>> MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
 		- filesLoader: FilesLoader
 		- configLoader: ConfigLoader
@@ -22,6 +24,7 @@ package presentation {
 		~ run(checks: Check[]): boolean
 		- {static} readInClasses(classFiles: Set<byte[]>): Map<String, ClassData>
 		- {static} runAllChecksAndPrintResults(checks: Check[], classes: Map<String, ClassData>, config: Configuration): Map<MessageLevel, Integer>
+		- {static} readConfigBoolAndFallbackIfWrongType(config: Configuration, key: String, fallback: boolean): boolean
 		- {static} runCheckAndPrintResults(check: Check, classes: Map<String, ClassData>, config: Configuration, msgTotals: Map<MessageLevel, Integer>): void
 		- {static} colorMessageTag(msg: Message): String
 		- {static} printTotals(msgTotals: Map<MessageLevel, Integer>): void
@@ -65,10 +68,9 @@ package domain {
 		WARNING
 		INFO
 		__
-		+ <<final>> name: String
 		+ <<final>> abbreviation: String
 		__
-		- MessageLevel(name: String, abbreviation: String)
+		- MessageLevel(abbrev: String)
 	}
 
 	+interface Check {
@@ -387,12 +389,12 @@ package datasource {
 		- <<final>> data: Map<String, Object>
 
 		+ Configuration(data: Map<String, Object>)
-		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException
-		+ getInt(key: String): int\n<<throws>> IllegalArgumentException
-		+ getString(key: String): String\n<<throws>> IllegalArgumentException
-		+ getBoolean(key: String, fallback: boolean): boolean
-		+ getInt(key: String, fallback: int): int
-		+ getString(key: String, fallback: String): String
+		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getInt(key: String): int\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getString(key: String): String\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getBoolean(key: String, fallback: boolean): boolean\n<<throws>> ClassCastException
+		+ getInt(key: String, fallback: int): int\n<<throws>> ClassCastException
+		+ getString(key: String, fallback: String): String\n<<throws>> ClassCastException
 	}
 
 	+interface ConfigLoader {

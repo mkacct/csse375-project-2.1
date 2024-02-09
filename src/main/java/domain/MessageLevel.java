@@ -1,15 +1,13 @@
 package domain;
 
 public enum MessageLevel {
-	ERROR("error", "err"),
-	WARNING("warning", "warn"),
-	INFO("info", "info");
+	ERROR("err"),
+	WARNING("warn"),
+	INFO("info");
 
-	public final String name;
 	public final String abbreviation;
 
-	private MessageLevel(String name, String abbreviation) {
-		this.name = name;
-		this.abbreviation = abbreviation;
+	private MessageLevel(String abbrev) {
+		this.abbreviation = abbrev;
 	}
 }
