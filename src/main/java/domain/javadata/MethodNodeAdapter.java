@@ -58,7 +58,7 @@ class MethodNodeAdapter implements MethodData {
 		Type[] asmParamTypes = Type.getArgumentTypes(this.methodNode.desc);
 		for (int i = 0; i < asmParamTypes.length; i++) {
 			int varIndex = i + (this.isStatic() ? 0 : 1); // Skip "this" for non-static methods
-			LocalVariableNode asmParam = findLocalVariableNode(varIndex, this.methodNode.localVariables);
+			LocalVariableNode asmParam = LocalVariableUtil.findLocalVariableNode(varIndex, this.methodNode.localVariables);
 			Type asmParamType = asmParamTypes[i];
 			params.add(new VariableData(
 				(asmParam != null) ? asmParam.name : null,
@@ -66,14 +66,6 @@ class MethodNodeAdapter implements MethodData {
 			));
 		}
 		return params;
-	}
-
-	private static LocalVariableNode findLocalVariableNode(int var, List<LocalVariableNode> localVars) {
-		try {
-			return localVars.get(var);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
 	}
 
 	@Override
