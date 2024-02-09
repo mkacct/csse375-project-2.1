@@ -12,15 +12,7 @@ class VarInsnNodeAdapter implements LocalVarInstrData {
 
 	VarInsnNodeAdapter(VarInsnNode insn, List<LocalVariableNode> localVars) {
 		this.insn = insn;
-		this.localVariableNode = findLocalVariableNode(insn.var, localVars);
-	}
-
-	private static LocalVariableNode findLocalVariableNode(int var, List<LocalVariableNode> localVars) {
-		try {
-			return localVars.get(var);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
+		this.localVariableNode = LocalVariableUtil.findLocalVariableNode(insn.var, localVars);
 	}
 
 	@Override
