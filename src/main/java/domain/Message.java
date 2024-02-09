@@ -32,18 +32,18 @@ public final class Message {
 
 	@Override
 	public String toString() {
+		String msg = MessageFormat.format(
+			"[{0}] {1}",
+			this.level.abbreviation.toUpperCase(), this.text
+		);
 		String classFullNamesStr = String.join(", ", this.classFullNames.toArray(new String[this.classFullNames.size()]));
-		if (classFullNamesStr.isEmpty()) {
-			return MessageFormat.format(
-				"[{0}] {1}",
-				this.level.abbreviation.toUpperCase(), this.text
-			);
-		} else {
-			return MessageFormat.format(
-				"[{0}] {1} ({2})",
-				this.level.abbreviation.toUpperCase(), this.text, classFullNamesStr
+		if (!classFullNamesStr.isEmpty()) {
+			msg = MessageFormat.format(
+				"{0} ({1})",
+				msg, classFullNamesStr
 			);
 		}
+		return msg;
 	}
 
 	@Override

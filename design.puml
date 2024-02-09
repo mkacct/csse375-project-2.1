@@ -174,6 +174,12 @@ package domain {
 		FieldNodeAdapter ..> .asm.Opcodes
 		FieldNodeAdapter ..> .asm.Type
 
+		~class LocalVariableUtil {
+			~ {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
+		}
+
+		LocalVariableUtil ..> .asm.tree.LocalVariableNode
+
 		~class MethodNodeAdapter {
 			- {static} <<final>> THIS: String
 			- <<final>> methodNode: MethodNode
@@ -186,7 +192,6 @@ package domain {
 			+ isFinal(): boolean
 			+ isAbstract(): boolean
 			+ getParams(): List<VariableData>
-			- {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
 			+ getExceptionTypeFullNames(): Set<String>
 			+ getLocalVariables(): Set<VariableData>
 			+ getInstructions(): List<InstrData>
@@ -198,6 +203,7 @@ package domain {
 		MethodNodeAdapter ..> VarInsnNodeAdapter
 		MethodNodeAdapter ..> FieldInsnNodeAdapter
 		MethodNodeAdapter ..> OtherInsnNodeAdapter
+		MethodNodeAdapter ..> LocalVariableUtil
 		MethodNodeAdapter --> .asm.tree.MethodNode
 		MethodNodeAdapter ..> .asm.Opcodes
 		MethodNodeAdapter ..> .asm.Type
@@ -273,7 +279,6 @@ package domain {
 			- <<final>> insn: VarInsnNode
 			- <<final>> localVariableNode: LocalVariableNode
 			~ VarInsnNodeAdapter(insn: VarInsnNode, localVars: List<LocalVariableNode>)
-			- {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
 			+ getInstrType(): InstrType
 			+ getVarName(): String
 			+ getVarTypeFullName(): String
@@ -281,6 +286,7 @@ package domain {
 		}
 
 		LocalVariableInstrData <|.. VarInsnNodeAdapter
+		VarInsnNodeAdapter ..> LocalVariableUtil
 		VarInsnNodeAdapter --> .asm.tree.VarInsnNode
 		VarInsnNodeAdapter --> .asm.tree.LocalVariableNode
 		VarInsnNodeAdapter ..> .asm.Type
