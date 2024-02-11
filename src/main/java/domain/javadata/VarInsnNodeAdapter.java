@@ -12,7 +12,7 @@ class VarInsnNodeAdapter implements LocalVarInstrData {
 
 	VarInsnNodeAdapter(VarInsnNode insn, List<LocalVariableNode> localVars) {
 		this.insn = insn;
-		this.localVariableNode = localVars.get(insn.var);
+		this.localVariableNode = LocalVariableUtil.findLocalVariableNode(insn.var, localVars);
 	}
 
 	@Override
@@ -22,11 +22,13 @@ class VarInsnNodeAdapter implements LocalVarInstrData {
 
 	@Override
 	public String getVarName() {
+		if (this.localVariableNode == null) {return null;}
 		return this.localVariableNode.name;
 	}
 
 	@Override
 	public String getVarTypeFullName() {
+		if (this.localVariableNode == null) {return null;}
 		return Type.getType(this.localVariableNode.desc).getClassName();
 	}
 
