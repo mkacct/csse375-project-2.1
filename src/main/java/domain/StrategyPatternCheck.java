@@ -9,7 +9,7 @@ import java.util.Set;
 public class StrategyPatternCheck implements Check {
     @Override
     public String getName() {
-        return "strategyPatern";
+        return "strategyPattern";
     }
 
     @Override
