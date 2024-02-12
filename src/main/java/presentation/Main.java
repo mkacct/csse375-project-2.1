@@ -13,7 +13,7 @@ public class Main {
 	private static final Check[] CHECKS = {}; // TODO: add all checks
 
 	public static void main(String[] args) throws IOException {
-        FilesLoader fl = new DirLoader("target/classes/presentation");
+        FilesLoader fl = new DirLoader("target/classes/datasource");
         ClassGraph graph = new ClassGraph(GraphCheck.getMap(fl.loadFiles("class")));
         System.out.println(graph.getNumClasses());
         System.out.println(graph.getClasses().keySet().iterator().next());
