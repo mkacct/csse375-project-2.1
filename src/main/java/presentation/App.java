@@ -15,9 +15,10 @@ import domain.Check;
 import domain.Message;
 import domain.MessageLevel;
 import domain.javadata.ClassData;
-import domain.javadata.ClassNodeAdapter;
+import domain.javadata.ClassReaderUtil;
 
 class App {
+	private static final String CLASS_FILE_EXT = "class";
 	private static final String ENABLE_KEY_PREFIX = "enable_";
 	private static final String SKIP_UNMARKED_CHECKS_KEY = "skipUnmarkedChecks";
 
@@ -39,7 +40,7 @@ class App {
 		Set<byte[]> classFiles;
 		Configuration config;
 		try {
-			classFiles = this.filesLoader.loadFiles();
+			classFiles = this.filesLoader.loadFiles(CLASS_FILE_EXT);
 		} catch (IOException ex) {
 			System.err.println("Error loading classes: " + ex.getMessage());
 			return false;
@@ -63,7 +64,7 @@ class App {
 	private static Map<String, ClassData> readInClasses(Set<byte[]> classFiles) {
 		Map<String, ClassData> classes = new HashMap<>();
 		for (byte[] classFile : classFiles) {
-			ClassData classData = new ClassNodeAdapter(classFile);
+			ClassData classData = ClassReaderUtil.read(classFile);
 			classes.put(classData.getFullName(), classData);
 		}
 		return classes;
