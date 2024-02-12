@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import domain.javadata.AccessModifier;
 import domain.javadata.ClassData;
-import domain.javadata.ClassNodeAdapter;
+import domain.javadata.ClassReaderUtil;
 import domain.javadata.FieldData;
 import domain.javadata.FieldInstrData;
 import domain.javadata.InstrData;
@@ -41,7 +41,7 @@ public class JavaDataAdapterTest {
 
 	@Test
 	public void testClass() {
-		ClassData classData = new ClassNodeAdapter(this.javaBytecode);
+		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 
 		assertEquals("java.lang.String", classData.getFullName());
 		assertEquals(AccessModifier.PUBLIC, classData.getAccessModifier());
@@ -68,7 +68,7 @@ public class JavaDataAdapterTest {
 
 	@Test
 	public void testFields() {
-		ClassData classData = new ClassNodeAdapter(this.javaBytecode);
+		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 		Set<FieldData> fields = classData.getFields();
 		FieldData valueField = findField(fields, "value");
 
@@ -91,7 +91,7 @@ public class JavaDataAdapterTest {
 
 	@Test
 	public void testMethods() {
-		ClassData classData = new ClassNodeAdapter(this.javaBytecode);
+		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 		Set<MethodData> methods = classData.getMethods();
 		MethodData rangeCheckMethod = findMethod(methods, "rangeCheck");
 
@@ -123,7 +123,7 @@ public class JavaDataAdapterTest {
 
 	@Test
 	public void testInstructions() {
-		ClassData classData = new ClassNodeAdapter(this.javaBytecode);
+		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 		Set<MethodData> methods = classData.getMethods();
 		MethodData codePointAtMethod = findMethod(methods, "codePointAt");
 		List<InstrData> instrs = codePointAtMethod.getInstructions();
