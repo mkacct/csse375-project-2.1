@@ -15,6 +15,8 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 class MethodNodeAdapter implements MethodData {
+	private static final String THIS = "this";
+
 	private final MethodNode methodNode;
 
 	MethodNodeAdapter(MethodNode methodNode) {
@@ -55,10 +57,11 @@ class MethodNodeAdapter implements MethodData {
 		List<VariableData> params = new ArrayList<VariableData>();
 		Type[] asmParamTypes = Type.getArgumentTypes(this.methodNode.desc);
 		for (int i = 0; i < asmParamTypes.length; i++) {
-			LocalVariableNode asmParam = this.methodNode.localVariables.get(i + (this.isStatic() ? 0 : 1)); // Skip "this" for non-static methods
+			int varIndex = i + (this.isStatic() ? 0 : 1); // Skip "this" for non-static methods
+			LocalVariableNode asmParam = LocalVariableUtil.findLocalVariableNode(varIndex, this.methodNode.localVariables);
 			Type asmParamType = asmParamTypes[i];
 			params.add(new VariableData(
-				asmParam.name,
+				(asmParam != null) ? asmParam.name : null,
 				asmParamType.getClassName()
 			));
 		}
@@ -78,6 +81,7 @@ class MethodNodeAdapter implements MethodData {
 	public Set<VariableData> getLocalVariables() {
 		Set<VariableData> localVariables = new HashSet<VariableData>();
 		for (LocalVariableNode localVariable : this.methodNode.localVariables) {
+			if (localVariable.name.equals(THIS)) {continue;}
 			localVariables.add(new VariableData(
 				localVariable.name,
 				Type.getType(localVariable.desc).getClassName()
