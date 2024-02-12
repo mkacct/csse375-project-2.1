@@ -3,9 +3,12 @@ package presentation;
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.Check;
+import domain.MethodLengthCheck;
 
 public class Main {
-	private static final Check[] CHECKS = {}; // TODO: add all checks
+	private static final Check[] CHECKS = {
+		new MethodLengthCheck()
+	}; // TODO: add all checks
 
 	public static void main(String[] args) {
 		if (args.length == 0) {

@@ -13,6 +13,9 @@ package presentation {
 	Main ..> .datasource.DirLoader
 	Main ..> .datasource.JsonFileConfigLoader
 
+	' Check dependencies:
+	Main ..> .domain.MethodLengthCheck
+
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
 		- {static} <<final>> SKIP_UNMARKED_CHECKS_KEY: String
