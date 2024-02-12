@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 
+
 public class ClassGraphIterator { // "iterator"
     private final ClassGraph graph;
     private final int vertex;
