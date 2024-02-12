@@ -55,9 +55,9 @@ public class MethodLengthCheckTest {
 
 		Set<String> classFullNames = Set.of(this.classData.getFullName());
 		assertEquals(Set.of(
-			new Message(MessageLevel.WARNING, "Method \"split\" is too long (248 instrs, should be <= 150 instrs)", classFullNames),
-			new Message(MessageLevel.WARNING, "Method \"repeat\" is too long (171 instrs, should be <= 150 instrs)", classFullNames),
-			new Message(MessageLevel.WARNING, "Method \"regionMatches\" is too long (157 instrs, should be <= 150 instrs)", classFullNames)
+			new Message(MessageLevel.WARNING, "Method \"split\" is too long (248 instrs, should be <= 150)", classFullNames),
+			new Message(MessageLevel.WARNING, "Method \"repeat\" is too long (171 instrs, should be <= 150)", classFullNames),
+			new Message(MessageLevel.WARNING, "Method \"regionMatches\" is too long (157 instrs, should be <= 150)", classFullNames)
 		), messages);
 	}
 
