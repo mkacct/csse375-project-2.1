@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
-import domain.javadata.ClassNodeAdapter;
+import domain.javadata.ClassReaderUtil;
 
 public class MethodLengthCheckTest {
 	private static final String STRING_RESOURCE_PATH = "java/lang/String.class";
@@ -33,7 +33,7 @@ public class MethodLengthCheckTest {
 		try (InputStream in = this.getClass().getClassLoader().getResourceAsStream(STRING_RESOURCE_PATH)) {
 			javaBytecode = in.readAllBytes();
 		}
-		this.classData = new ClassNodeAdapter(javaBytecode);
+		this.classData = ClassReaderUtil.read(javaBytecode);
 	}
 
 	@Test
