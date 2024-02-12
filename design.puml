@@ -318,15 +318,15 @@ package domain {
 package datasource {
 
 	+interface FilesLoader {
-		+ {abstract} loadFiles(): Set<byte[]>\n<<throws>> IOException
+		+ {abstract} loadFiles(ext: String): Set<byte[]>\n<<throws>> IOException
 	}
 
 	+class DirLoader {
 		- <<final>> path: String
 
 		+ DirLoader(path: String)
-		+ loadFiles(): Set<byte[]> <<throws>> IOException
-		- addFilesFromDir(files: Set<byte[]>, dir: File): void\n<<throws>> IOException
+		+ loadFiles(ext: String): Set<byte[]> <<throws>> IOException
+		- addFilesFromDir(files: Set<byte[]>, dir: File, ext: String): void\n<<throws>> IOException
 		- readFile(file: File): byte[] <<throws>> IOException
 	}
 
