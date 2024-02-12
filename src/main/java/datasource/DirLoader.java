@@ -17,18 +17,20 @@ public class DirLoader implements FilesLoader {
 	}
 
 	@Override
-	public Set<byte[]> loadFiles() throws IOException {
+	public Set<byte[]> loadFiles(String ext) throws IOException {
 		Set<byte[]> files = new HashSet<byte[]>();
-		addFilesFromDir(files, new File(this.path));
+		addFilesFromDir(files, new File(this.path), ext);
 		return files;
 	}
 
-	private void addFilesFromDir(Set<byte[]> files, File dir) throws IOException {
+	private void addFilesFromDir(Set<byte[]> files, File dir, String ext) throws IOException {
 		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
-				addFilesFromDir(files, file);
+				addFilesFromDir(files, file, ext);
 			} else {
-				files.add(readFile(file));
+				if (ext == null || file.getName().endsWith("." + ext)) {
+					files.add(readFile(file));
+				}
 			}
 		}
 	}
