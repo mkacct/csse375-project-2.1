@@ -181,10 +181,17 @@ package domain {
 		MethodData ..> VariableData
 		MethodData ..> InstrData
 
-		+class ClassNodeAdapter {
+		+class ClassReaderUtil {
+			+ {static} read(javaBytecode: byte[]): ClassData
+		}
+
+		ClassReaderUtil ..> ClassNodeAdapter
+		ClassReaderUtil ..> .asm.ClassReader
+		ClassReaderUtil ..> .asm.tree.ClassNode
+
+		~class ClassNodeAdapter {
 			- <<final>> classNode: ClassNode
 
-			+ ClassNodeAdapter(javaBytecode: byte[])
 			~ ClassNodeAdapter(classNode: ClassNode)
 			+ getFullName(): String
 			+ getAccessModifier(): AccessModifier
@@ -205,7 +212,6 @@ package domain {
 		ClassNodeAdapter --> .asm.tree.ClassNode
 		ClassNodeAdapter ..> FieldNodeAdapter
 		ClassNodeAdapter ..> MethodNodeAdapter
-		ClassNodeAdapter ..> .asm.ClassReader
 		ClassNodeAdapter ..> .asm.Opcodes
 		ClassNodeAdapter ..> .asm.Type
 		ClassNodeAdapter ..> .asm.tree.FieldNode
@@ -371,15 +377,15 @@ package domain {
 package datasource {
 
 	+interface FilesLoader {
-		+ {abstract} loadFiles(): Set<byte[]>\n<<throws>> IOException
+		+ {abstract} loadFiles(ext: String): Set<byte[]>\n<<throws>> IOException
 	}
 
 	+class DirLoader {
 		- <<final>> path: String
 
 		+ DirLoader(path: String)
-		+ loadFiles(): Set<byte[]> <<throws>> IOException
-		- addFilesFromDir(files: Set<byte[]>, dir: File): void\n<<throws>> IOException
+		+ loadFiles(ext: String): Set<byte[]> <<throws>> IOException
+		- addFilesFromDir(files: Set<byte[]>, dir: File, ext: String): void\n<<throws>> IOException
 		- readFile(file: File): byte[] <<throws>> IOException
 	}
 
@@ -392,9 +398,9 @@ package datasource {
 		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getInt(key: String): int\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getString(key: String): String\n<<throws>> IllegalArgumentException,\nClassCastException
-		+ getBoolean(key: String, fallback: boolean): boolean\n<<throws>> ClassCastException
-		+ getInt(key: String, fallback: int): int\n<<throws>> ClassCastException
-		+ getString(key: String, fallback: String): String\n<<throws>> ClassCastException
+		+ getBoolean(key: String, fallback: boolean): boolean
+		+ getInt(key: String, fallback: int): int
+		+ getString(key: String, fallback: String): String
 	}
 
 	+interface ConfigLoader {
