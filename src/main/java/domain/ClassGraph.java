@@ -1,5 +1,7 @@
 package domain;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +10,12 @@ import java.util.Set;
 
 import domain.javadata.ClassData;
 import domain.javadata.FieldData;
+import domain.javadata.FieldInstrData;
+import domain.javadata.InstrData;
+import domain.javadata.InstrType;
+import domain.javadata.LocalVarInstrData;
+import domain.javadata.MethodData;
+import domain.javadata.MethodInstrData;
 import domain.javadata.VariableData;
 
 public class ClassGraph {
@@ -18,6 +26,8 @@ public class ClassGraph {
     int numClasses;
     public ClassGraph(Map<String, ClassData> strToClass) {
         this.stringToClass = strToClass;
+        classes = new HashMap<String, Integer>();
+        inverse = new HashMap<Integer, String>();
         numClasses = stringToClass.keySet().size();
         Iterator<String> it = stringToClass.keySet().iterator();
         int i = 0;
@@ -40,8 +50,19 @@ public class ClassGraph {
         Iterator<String> interIt;
         FieldData fdTemp;
         Iterator<FieldData> fdIt;
-        VariableData varTemp;
+        Set<String> depSet;
+        MethodData mdTemp;
+        Iterator<MethodData> mdIt;
         Iterator<VariableData> varIt;
+        InstrData instrTemp;
+        FieldInstrData fieldInstrTemp;
+        MethodInstrData methodInstrTemp;
+        LocalVarInstrData localVarInstrTemp;
+        Iterator<InstrData> instrIt;
+        Iterator<String> depIt;
+        String depTemp;
+        int index;
+
 
         for (i = 0; i < numClasses; i++) {
             for (j = 0; j < numClasses; j++) {
@@ -72,14 +93,41 @@ public class ClassGraph {
             }
 
             //depends-on
-
-            //TODO: finish depends-on creation in graph
-            //plan:
-            //create a set of the following:
-            //  methodReturnTypes
-            //  methodLocalVarTypes(including Params)
-            //  anything from "FullName" in instrTypes
-            //then check from that set
+            mdIt = stringToClass.get(inverse.get(i)).getMethods().iterator();
+            depSet = new HashSet<String>();
+            while (mdIt.hasNext()) {
+                mdTemp = mdIt.next();
+                varIt = mdTemp.getLocalVariables().iterator();
+                while (varIt.hasNext()) {
+                    depSet.add(varIt.next().typeFullName);
+                }
+                instrIt = mdTemp.getInstructions().iterator();
+                while (instrIt.hasNext()) {
+                    instrTemp = instrIt.next();
+                    if (instrTemp.getInstrType() == InstrType.METHOD) {
+                        methodInstrTemp = (MethodInstrData) instrTemp;
+                        depSet.add(methodInstrTemp.getMethodOwnerFullName());
+                        depSet.add(methodInstrTemp.getMethodReturnTypeFullName());
+                    } else if (instrTemp.getInstrType() == InstrType.FIELD) {
+                        fieldInstrTemp = (FieldInstrData) instrTemp;
+                        depSet.add(fieldInstrTemp.getFieldOwnerFullName());
+                        depSet.add(fieldInstrTemp.getFieldTypeFullName());
+                    } else if (instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE) {
+                        localVarInstrTemp = (LocalVarInstrData) instrTemp;
+                        depSet.add(localVarInstrTemp.getVarTypeFullName());
+                    }
+                }
+            }
+            depIt = depSet.iterator();
+            while (depIt.hasNext()) {
+                depTemp = depIt.next();
+                if (classes.containsKey(depTemp)) {
+                    index = classes.get(depTemp);
+                    if (i != index && edges[i][index] == 0) {
+                        edges[i][index] += 1;
+                    }
+                }
+            }
         }
     }
 
@@ -149,7 +197,7 @@ public class ClassGraph {
         return new ClassGraphIterator(this, start, list);
     }
 
-    // i.e. which classes extend/implement/etc on class i
+    // i.e. which classes extend/implement/etc class j
     public int[] column(int j) {
         int i = 0;
         int[] ret = new int[numClasses];
