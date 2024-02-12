@@ -1,5 +1,8 @@
 {
 	"name": "Jason",
 	"numTentacles": 10,
-	"isGood": true
+	"colors": ["pink", "green", "blue"],
+	"isGood": true,
+	"luckyNumbers": [7, 13, 21, 42],
+	"switchValues": [true, false, true, true, false]
 }

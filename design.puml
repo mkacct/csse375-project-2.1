@@ -400,9 +400,16 @@ package datasource {
 		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getInt(key: String): int\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getString(key: String): String\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfBoolean(key: String): List<boolean>\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfInt(key: String): List<int>\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfString(key: String): List<String>\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getBoolean(key: String, fallback: boolean): boolean
 		+ getInt(key: String, fallback: int): int
 		+ getString(key: String, fallback: String): String
+		+ getListOfBoolean(key: String, fallback: List<boolean>): List<boolean>
+		+ getListOfInt(key: String, fallback: List<int>): List<int>
+		+ getListOfString(key: String, fallback: List<String>): List<String>
+		- checkKey(key: String): void\n<<throws>> IllegalArgumentException
 	}
 
 	+interface ConfigLoader {
