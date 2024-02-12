@@ -18,3 +18,24 @@ Madeline Kahn, Nolan Cales, Kyle Asbury
 | Madeline Kahn   | Length limits       | Program to interface, not implementation | Adapter       | JSON configuration   |
 | Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      | I/O reccomendations  |
 | Kyle Asbury     | Naming conventions  | Low coupling                             | Observer      | PlantUML generation  |
+
+## Usage
+
+`<command to run LinterProject> <classdir> [<config>]`
+
+* `<command to run LinterProject>`: The call to `java` to run the `presentation.Main` class
+* `<classdir>`: Path to the directory containing the `.class` files to be linted
+* `[<config>]`: Optional path to a JSON configuration file
+
+### Configuration
+
+Global properties:
+
+* `"skipUnmarkedChecks"` (boolean): If true, checks not explicitly enabled will be skipped. Otherwise, checks not explicitly disabled will be run.
+* `"enable_<CHECK>"` (boolean): Whether to run <CHECK> (where <CHECK> is the name of a check).
+
+Properties used by specific checks shall be documented on the check's wiki page.
+
+## Demo video
+
+_TODO: Add link to demo video_

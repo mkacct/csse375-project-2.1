@@ -3,7 +3,60 @@
 package presentation {
 
 	+class Main {
+		- {static} <<final>> CHECKS: Check[]
 		+ {static} main(args: String[]): void
+		- {static} printUsage(): void
+	}
+
+	Main -->"*" .domain.Check
+	Main ..> App
+	Main ..> .datasource.DirLoader
+	Main ..> .datasource.JsonFileConfigLoader
+
+	~class App {
+		- {static} <<final>> ENABLE_KEY_PREFIX: String
+		- {static} <<final>> SKIP_UNMARKED_CHECKS_KEY: String
+		- {static} <<final>> MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
+		- filesLoader: FilesLoader
+		- configLoader: ConfigLoader
+
+		~ App(filesLoader: FilesLoader, configLoader: ConfigLoader)
+		~ run(checks: Check[]): boolean
+		- {static} readInClasses(classFiles: Set<byte[]>): Map<String, ClassData>
+		- {static} runAllChecksAndPrintResults(checks: Check[], classes: Map<String, ClassData>, config: Configuration): Map<MessageLevel, Integer>
+		- {static} readConfigBoolAndFallbackIfWrongType(config: Configuration, key: String, fallback: boolean): boolean
+		- {static} runCheckAndPrintResults(check: Check, classes: Map<String, ClassData>, config: Configuration, msgTotals: Map<MessageLevel, Integer>): void
+		- {static} colorMessageTag(msg: Message): String
+		- {static} printTotals(msgTotals: Map<MessageLevel, Integer>): void
+		- {static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
+		- {static} initMsgTotals(): Map<MessageLevel, Integer>
+	}
+
+	App --> .datasource.FilesLoader
+	App --> .datasource.ConfigLoader
+	App ..> TerminalTextColor
+	App ..> .domain.Check
+	App ..> .domain.Message
+	App ..> .domain.MessageLevel
+	App ..> .domain.javadata.ClassData
+	App ..> .domain.javadata.ClassNodeAdapter
+	App ..> .datasource.Configuration
+
+	~enum TerminalTextColor {
+		BLACK
+		RED
+		GREEN
+		YELLOW
+		BLUE
+		PURPLE
+		CYAN
+		WHITE
+		__
+		- {static} <<final>> RESET: String
+		- <<final>> ansiCode: String
+		__
+		- TerminalTextColor(ansiCode: String)
+		+ applyTo(text: String): String
 	}
 
 }
@@ -17,7 +70,7 @@ package domain {
 		__
 		+ <<final>> abbreviation: String
 		__
-		- MessageLevel(abbreviation: String)
+		- MessageLevel(abbrev: String)
 	}
 
 	+interface Check {
@@ -141,10 +194,17 @@ package domain {
 		MethodData ..> VariableData
 		MethodData ..> InstrData
 
-		+class ClassNodeAdapter {
+		+class ClassReaderUtil {
+			+ {static} read(javaBytecode: byte[]): ClassData
+		}
+
+		ClassReaderUtil ..> ClassNodeAdapter
+		ClassReaderUtil ..> .asm.ClassReader
+		ClassReaderUtil ..> .asm.tree.ClassNode
+
+		~class ClassNodeAdapter {
 			- <<final>> classNode: ClassNode
 
-			+ ClassNodeAdapter(javaBytecode: byte[])
 			~ ClassNodeAdapter(classNode: ClassNode)
 			+ getFullName(): String
 			+ getAccessModifier(): AccessModifier
@@ -165,7 +225,6 @@ package domain {
 		ClassNodeAdapter --> .asm.tree.ClassNode
 		ClassNodeAdapter ..> FieldNodeAdapter
 		ClassNodeAdapter ..> MethodNodeAdapter
-		ClassNodeAdapter ..> .asm.ClassReader
 		ClassNodeAdapter ..> .asm.Opcodes
 		ClassNodeAdapter ..> .asm.Type
 		ClassNodeAdapter ..> .asm.tree.FieldNode
@@ -331,15 +390,15 @@ package domain {
 package datasource {
 
 	+interface FilesLoader {
-		+ {abstract} loadFiles(): Set<byte[]>\n<<throws>> IOException
+		+ {abstract} loadFiles(ext: String): Set<byte[]>\n<<throws>> IOException
 	}
 
 	+class DirLoader {
 		- <<final>> path: String
 
 		+ DirLoader(path: String)
-		+ loadFiles(): Set<byte[]> <<throws>> IOException
-		- addFilesFromDir(files: Set<byte[]>, dir: File): void\n<<throws>> IOException
+		+ loadFiles(ext: String): Set<byte[]> <<throws>> IOException
+		- addFilesFromDir(files: Set<byte[]>, dir: File, ext: String): void\n<<throws>> IOException
 		- readFile(file: File): byte[] <<throws>> IOException
 	}
 
@@ -349,9 +408,9 @@ package datasource {
 		- <<final>> data: Map<String, Object>
 
 		+ Configuration(data: Map<String, Object>)
-		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException
-		+ getInt(key: String): int\n<<throws>> IllegalArgumentException
-		+ getString(key: String): String\n<<throws>> IllegalArgumentException
+		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getInt(key: String): int\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getString(key: String): String\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getBoolean(key: String, fallback: boolean): boolean
 		+ getInt(key: String, fallback: int): int
 		+ getString(key: String, fallback: String): String
