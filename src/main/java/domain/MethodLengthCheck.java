@@ -13,6 +13,7 @@ import domain.javadata.MethodData;
 
 public class MethodLengthCheck implements Check {
 	private static final String NAME = "methodLength";
+
 	private static final String MAX_METHOD_LENGTH_KEY = "maxMethodLengthInstrs";
 
 	@Override
@@ -58,7 +59,7 @@ public class MethodLengthCheck implements Check {
 						"Method \"{0}\" is too long ({1} instrs, should be <= {2})",
 						method.getName(), instrs.size(), maxMethodLengthInstrs
 					),
-					Set.of(classData.getFullName())
+					classData.getFullName()
 				));
 			}
 		}
