@@ -8,7 +8,7 @@ import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
-import domain.javadata.ClassNodeAdapter;
+import domain.javadata.ClassReaderUtil;
 
 public abstract class GraphCheck implements Check {
     protected ClassGraph graph;
@@ -26,7 +26,7 @@ public abstract class GraphCheck implements Check {
         Iterator<byte[]> it = files.iterator();
         ClassData temp;
         while (it.hasNext()) {
-            temp = new ClassNodeAdapter(it.next()); // will need to be updated to new thing
+            temp = ClassReaderUtil.read(it.next()); // will need to be updated to new thing
             map.put(temp.getFullName(), temp);
         }
         return map;
