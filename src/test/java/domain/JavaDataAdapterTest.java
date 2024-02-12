@@ -44,11 +44,11 @@ public class JavaDataAdapterTest {
 		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 
 		assertEquals("java.lang.String", classData.getFullName());
+		assertEquals("String", classData.getSimpleName());
 		assertEquals(AccessModifier.PUBLIC, classData.getAccessModifier());
 		assertEquals(false, classData.isAbstract());
 		assertEquals(false, classData.isStatic());
 		assertEquals(true, classData.isFinal());
-		// assertEquals(0, classData.getTypeParamFullNames().size());
 		assertEquals("java.lang.Object", classData.getSuperFullName());
 		assertEquals(Set.of(
 			"java.io.Serializable",
