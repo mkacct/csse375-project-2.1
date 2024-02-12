@@ -1,20 +1,86 @@
 package domain;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import domain.javadata.ClassData;
+import domain.javadata.FieldData;
+import domain.javadata.VariableData;
 
 public class ClassGraph {
-    Set<String> packages;
-    Map<ClassData, Integer> classes; 
-    Map<Integer, ClassData> inverse; // inverse of the other map
+    Map<String, ClassData> stringToClass;
+    Map<String, Integer> classes; 
+    Map<Integer, String> inverse; // inverse of the other map
     int[][] edges; // weighted
     int numClasses;
-    public ClassGraph() {
-        // TODO: constructor
+    public ClassGraph(Map<String, ClassData> strToClass) {
+        this.stringToClass = strToClass;
+        numClasses = stringToClass.keySet().size();
+        Iterator<String> it = stringToClass.keySet().iterator();
+        int i = 0;
+        String temp;
+
+        // retrieving all of the class information
+        while (it.hasNext()) {
+            temp = it.next();
+            classes.put(temp, i);
+            inverse.put(i, temp);
+            i++;
+        }
+
+        // initializing edges
+        edges = new int[numClasses][numClasses];
+
+        // populating edges
+        int j;
+        String interTemp;
+        Iterator<String> interIt;
+        FieldData fdTemp;
+        Iterator<FieldData> fdIt;
+        VariableData varTemp;
+        Iterator<VariableData> varIt;
+
+        for (i = 0; i < numClasses; i++) {
+            for (j = 0; j < numClasses; j++) {
+                edges[i][j] = 0;
+            }
+
+            // extends
+            if (classes.containsKey(stringToClass.get(inverse.get(i)).getSuperFullName())) {
+                    edges[i][classes.get(stringToClass.get(inverse.get(i)).getSuperFullName())] += 8;
+            }
+
+            // implements
+            interIt = stringToClass.get(inverse.get(i)).getInterfaceFullNames().iterator();
+            while (interIt.hasNext()) {
+                interTemp = interIt.next();
+                if (classes.containsKey(interTemp)) {
+                    edges[i][classes.get(interTemp)] += 4;
+                }
+            }
+            
+            // has-a
+            fdIt = stringToClass.get(inverse.get(i)).getFields().iterator();
+            while (fdIt.hasNext()) {
+                fdTemp = fdIt.next();
+                if (classes.containsKey(fdTemp.getTypeFullName())) {
+                    edges[i][classes.get(fdTemp.getTypeFullName())] += 2;
+                }
+            }
+
+            //depends-on
+
+            //TODO: finish depends-on creation in graph
+            //plan:
+            //create a set of the following:
+            //  methodReturnTypes
+            //  methodLocalVarTypes(including Params)
+            //  anything from "FullName" in instrTypes
+            //then check from that set
+        }
     }
 
     
@@ -65,15 +131,15 @@ public class ClassGraph {
         return numClasses;
     }
 
-    public Set<ClassData> getClasses() {
-        return Set.copyOf(classes.keySet());
+    public Map<String,ClassData> getClasses() {
+        return Map.copyOf(stringToClass);
     }
 
-    public int getIndex(ClassData c) {
+    public int getIndex(String c) {
         return classes.get(c);
     }
 
-    public ClassData indexToClass(int i) {
+    public String indexToClass(int i) {
         return inverse.get(i);
     }
 
