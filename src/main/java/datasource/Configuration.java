@@ -1,5 +1,6 @@
 package datasource;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,19 +13,37 @@ public final class Configuration {
 		this.data = data;
 	}
 
-	public boolean getBoolean(String key) {
-		if (!data.containsKey(key)) {throw new IllegalArgumentException("Key not found in configuration: " + key);}
-		return (boolean)data.get(key);
+	public boolean getBoolean(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (boolean)this.data.get(key);
 	}
 
-	public int getInt(String key) {
-		if (!data.containsKey(key)) {throw new IllegalArgumentException("Key not found in configuration: " + key);}
-		return (int)data.get(key);
+	public int getInt(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (int)this.data.get(key);
 	}
 
-	public String getString(String key) {
-		if (!data.containsKey(key)) {throw new IllegalArgumentException("Key not found in configuration: " + key);}
-		return (String)data.get(key);
+	public String getString(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (String)this.data.get(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Boolean> getListOfBoolean(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (List<Boolean>)this.data.get(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Integer> getListOfInt(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (List<Integer>)this.data.get(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> getListOfString(String key) throws IllegalArgumentException, ClassCastException {
+		this.checkKey(key);
+		return (List<String>)this.data.get(key);
 	}
 
 	public boolean getBoolean(String key, boolean fallback) {
@@ -49,5 +68,33 @@ public final class Configuration {
 		} catch (IllegalArgumentException | ClassCastException ex) {
 			return fallback;
 		}
+	}
+
+	public List<Boolean> getListOfBoolean(String key, List<Boolean> fallback) {
+		try {
+			return this.getListOfBoolean(key);
+		} catch (IllegalArgumentException | ClassCastException ex) {
+			return fallback;
+		}
+	}
+
+	public List<Integer> getListOfInt(String key, List<Integer> fallback) {
+		try {
+			return this.getListOfInt(key);
+		} catch (IllegalArgumentException | ClassCastException ex) {
+			return fallback;
+		}
+	}
+
+	public List<String> getListOfString(String key, List<String> fallback) {
+		try {
+			return this.getListOfString(key);
+		} catch (IllegalArgumentException | ClassCastException ex) {
+			return fallback;
+		}
+	}
+
+	private void checkKey(String key) throws IllegalArgumentException {
+		if (!this.data.containsKey(key)) {throw new IllegalArgumentException("Key not found in configuration: " + key);}
 	}
 }
