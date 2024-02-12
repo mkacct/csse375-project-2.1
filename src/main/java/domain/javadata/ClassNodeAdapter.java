@@ -3,7 +3,6 @@ package domain.javadata;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -11,14 +10,8 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public class ClassNodeAdapter implements ClassData {
+class ClassNodeAdapter implements ClassData {
 	private final ClassNode classNode;
-
-	public ClassNodeAdapter(byte[] javaBytecode) {
-		this(new ClassNode());
-		ClassReader reader = new ClassReader(javaBytecode);
-		reader.accept(this.classNode, ClassReader.EXPAND_FRAMES);
-	}
 
 	ClassNodeAdapter(ClassNode classNode) {
 		this.classNode = classNode;
