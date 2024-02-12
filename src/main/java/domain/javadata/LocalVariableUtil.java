@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.LocalVariableNode;
 
 class LocalVariableUtil {
 	static LocalVariableNode findLocalVariableNode(int var, List<LocalVariableNode> localVars) {
+		if (localVars == null) {return null;}
 		try {
 			return localVars.get(var);
 		} catch (IndexOutOfBoundsException e) {
