@@ -31,10 +31,12 @@ public class UnusedAbstractionsCheck implements Check {
                 }
                 if (implementors.isEmpty()) {
                     unsusedClasses.add(entry.getKey());
+                    continue;
                 }
 
             }
-            if (entry.getValue().isAbstract()) {
+
+            else if (entry.getValue().isAbstract()) {
                 ArrayList<String> extenders = new ArrayList<String>();
                 Map<String, ClassData> newMap = new HashMap<String, ClassData>(classes);
                 newMap.remove(entry.getKey());
@@ -52,7 +54,7 @@ public class UnusedAbstractionsCheck implements Check {
         Set<Message> messages = new HashSet<Message>();
         for (String badClass : unsusedClasses) {
             Message result = new Message(MessageLevel.WARNING, "The Following class is not used, please" +
-                    "consider using them or deleting them: ", badClass);
+                    " consider using them or deleting them: ", badClass);
             messages.add(result);
         }
 
