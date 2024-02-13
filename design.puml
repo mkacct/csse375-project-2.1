@@ -16,6 +16,7 @@ package presentation {
 	' Check dependencies:
 	Main ..> .domain.MethodLengthCheck
 	Main ..> .domain.ProgramToInterfaceNotImplementationCheck
+	Main ..> .domain.AdapterPatternCheck
 
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
@@ -140,6 +141,20 @@ package domain {
 	ProgramToInterfaceNotImplementationCheck ..> javadata.FieldData
 	ProgramToInterfaceNotImplementationCheck ..> javadata.MethodData
 	ProgramToInterfaceNotImplementationCheck ..> javadata.VariableData
+
+	+class AdapterPatternCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> ADAPTER_CLASS_NAME_REGEX_KEY: String
+		- {static} <<final>> DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+	}
+
+	Check <|.. AdapterPatternCheck
+	AdapterPatternCheck ..> javadata.FieldData
+	AdapterPatternCheck ..> javadata.MethodData
+	AdapterPatternCheck ..> javadata.VariableData
 
 	package javadata {
 

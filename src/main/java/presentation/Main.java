@@ -2,6 +2,7 @@ package presentation;
 
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
+import domain.AdapterPatternCheck;
 import domain.Check;
 import domain.MethodLengthCheck;
 import domain.ProgramToInterfaceNotImplementationCheck;
@@ -9,7 +10,8 @@ import domain.ProgramToInterfaceNotImplementationCheck;
 public class Main {
 	private static final Check[] CHECKS = {
 		new MethodLengthCheck(),
-		new ProgramToInterfaceNotImplementationCheck()
+		new ProgramToInterfaceNotImplementationCheck(),
+		new AdapterPatternCheck()
 	}; // TODO: add all checks
 
 	public static void main(String[] args) {
