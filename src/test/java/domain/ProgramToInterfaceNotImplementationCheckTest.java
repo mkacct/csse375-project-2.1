@@ -18,7 +18,7 @@ import domain.javadata.ClassData;
 import domain.javadata.ClassReaderUtil;
 
 public class ProgramToInterfaceNotImplementationCheckTest {
-	private static final String CLASS_DIR_PATH = "src/test/resources/maddie-test-classes";
+	private static final String CLASS_DIR_PATH = "src/test/resources/program-to-interface-not-implementation-check-test-classes";
 
 	private static final Configuration CONFIG_EMPTY = new Configuration(Map.of());
 
@@ -38,13 +38,13 @@ public class ProgramToInterfaceNotImplementationCheckTest {
 	@Test
 	public void testDefault() {
 		Check check = new ProgramToInterfaceNotImplementationCheck();
-		Set<Message> messages = check.run(this.classes, CONFIG_EMPTY);
-		assertEquals(messages, Set.of(
+		Set<Message> msgs = check.run(this.classes, CONFIG_EMPTY);
+		assertEquals(Set.of(
 			new Message(MessageLevel.WARNING, "Field \"uhOh\" is of type \"java.lang.Exception\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Method \"aBadArg\" has parameter \"gamma\" of type \"other.Gamma\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Method \"aBadReturn\" has return type \"javax.swing.JFrame\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Field \"gamma\" is of type \"other.Gamma\"", "domain.Beta")
-		));
+		), msgs);
 	}
 
 	private static final Configuration CONFIG_ALLOW_GAMMA = new Configuration(Map.of(
@@ -54,11 +54,11 @@ public class ProgramToInterfaceNotImplementationCheckTest {
 	@Test
 	public void tesAllowDependency() { // Gamma is an acceptable dependency
 		Check check = new ProgramToInterfaceNotImplementationCheck();
-		Set<Message> messages = check.run(this.classes, CONFIG_ALLOW_GAMMA);
-		assertEquals(messages, Set.of(
+		Set<Message> msgs = check.run(this.classes, CONFIG_ALLOW_GAMMA);
+		assertEquals(Set.of(
 			new Message(MessageLevel.WARNING, "Field \"uhOh\" is of type \"java.lang.Exception\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Method \"aBadReturn\" has return type \"javax.swing.JFrame\"", "domain.Alpha")
-		));
+		), msgs);
 	}
 
 	private static final Configuration CONFIG_OTHER_DOMAIN = new Configuration(Map.of(
@@ -68,10 +68,10 @@ public class ProgramToInterfaceNotImplementationCheckTest {
 	@Test
 	public void testDifferentDomainPkgName() { // other is the domain package now
 		Check check = new ProgramToInterfaceNotImplementationCheck();
-		Set<Message> messages = check.run(this.classes, CONFIG_OTHER_DOMAIN);
-		assertEquals(messages, Set.of(
+		Set<Message> msgs = check.run(this.classes, CONFIG_OTHER_DOMAIN);
+		assertEquals(Set.of(
 			new Message(MessageLevel.WARNING, "Field \"nothingWrong\" is of type \"javax.swing.JFrame\"", "other.Gamma")
-		));
+		), msgs);
 	}
 
 	private static final Configuration CONFIG_ADAPTER_BETA = new Configuration(Map.of(
@@ -81,11 +81,11 @@ public class ProgramToInterfaceNotImplementationCheckTest {
 	@Test
 	public void testExcludeAdapter() { // Beta is exempted because we are pretending it is an adapter
 		Check check = new ProgramToInterfaceNotImplementationCheck();
-		Set<Message> messages = check.run(this.classes, CONFIG_ADAPTER_BETA);
-		assertEquals(messages, Set.of(
+		Set<Message> msgs = check.run(this.classes, CONFIG_ADAPTER_BETA);
+		assertEquals(Set.of(
 			new Message(MessageLevel.WARNING, "Field \"uhOh\" is of type \"java.lang.Exception\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Method \"aBadArg\" has parameter \"gamma\" of type \"other.Gamma\"", "domain.Alpha"),
 			new Message(MessageLevel.WARNING, "Method \"aBadReturn\" has return type \"javax.swing.JFrame\"", "domain.Alpha")
-		));
+		), msgs);
 	}
 }

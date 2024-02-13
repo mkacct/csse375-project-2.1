@@ -39,17 +39,17 @@ public class MethodLengthCheckTest {
 	@Test
 	public void testAllPass() {
 		Check check = new MethodLengthCheck();
-		Set<Message> messages = check.run(Map.of(
+		Set<Message> msgs = check.run(Map.of(
 			this.classData.getFullName(), this.classData
 		), CONFIG_300);
 
-		assertEquals(Set.of(), messages);
+		assertEquals(Set.of(), msgs);
 	}
 
 	@Test
 	public void testWarnings() {
 		Check check = new MethodLengthCheck();
-		Set<Message> messages = check.run(Map.of(
+		Set<Message> msgs = check.run(Map.of(
 			this.classData.getFullName(), this.classData
 		), CONFIG_150);
 
@@ -58,18 +58,18 @@ public class MethodLengthCheckTest {
 			new Message(MessageLevel.WARNING, "Method \"split\" is too long (248 instrs, should be <= 150)", classFullNames),
 			new Message(MessageLevel.WARNING, "Method \"repeat\" is too long (171 instrs, should be <= 150)", classFullNames),
 			new Message(MessageLevel.WARNING, "Method \"regionMatches\" is too long (157 instrs, should be <= 150)", classFullNames)
-		), messages);
+		), msgs);
 	}
 
 	@Test
 	public void testNoMaxMethodLength() {
 		Check check = new MethodLengthCheck();
-		Set<Message> messages = check.run(Map.of(
+		Set<Message> msgs = check.run(Map.of(
 			this.classData.getFullName(), this.classData
 		), CONFIG_EMPTY);
 
 		assertEquals(Set.of(
 			new Message(MessageLevel.INFO, "Config property \"maxMethodLengthInstrs\" not found; skipping check")
-		), messages);
+		), msgs);
 	}
 }

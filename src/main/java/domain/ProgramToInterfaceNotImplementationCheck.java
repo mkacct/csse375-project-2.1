@@ -57,6 +57,7 @@ public class ProgramToInterfaceNotImplementationCheck implements Check {
 		Set<String> allowedDeps = Set.copyOf(config.getListOfString(ALLOWED_DEPENDENCIES_KEY, List.of()));
 
 		Set<Message> messages = new HashSet<Message>();
+
 		for (ClassData classData : classes.values()) {
 			if (!classData.getFullName().startsWith(domainPkgName + ".")) {continue;} // only check domain classes
 			if (adapterNamePattern.matcher(classData.getSimpleName()).find()) {continue;} // ignore adapter classes
@@ -97,6 +98,7 @@ public class ProgramToInterfaceNotImplementationCheck implements Check {
 				}
 			}
 		}
+
 		return messages;
 	}
 
