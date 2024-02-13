@@ -4,10 +4,12 @@ import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.Check;
 import domain.MethodLengthCheck;
+import domain.ProgramToInterfaceNotImplementationCheck;
 
 public class Main {
 	private static final Check[] CHECKS = {
-		new MethodLengthCheck()
+		new MethodLengthCheck(),
+		new ProgramToInterfaceNotImplementationCheck()
 	}; // TODO: add all checks
 
 	public static void main(String[] args) {

@@ -15,6 +15,7 @@ package presentation {
 
 	' Check dependencies:
 	Main ..> .domain.MethodLengthCheck
+	Main ..> .domain.ProgramToInterfaceNotImplementationCheck
 
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
@@ -104,6 +105,7 @@ package domain {
 	+class MethodLengthCheck {
 		- {static} <<final>> NAME: String
 		- {static} <<final>> MAX_METHOD_LENGTH_KEY: String
+
 		+ getName(): String
 		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
 		- checkClass(classData: ClassData, maxMethodLengthInstrs: int, messages: Set<Message>): void
@@ -113,6 +115,31 @@ package domain {
 	MethodLengthCheck ..> MessageLevel
 	MethodLengthCheck ..> javadata.MethodData
 	MethodLengthCheck ..> javadata.InstrData
+
+	+class ProgramToInterfaceNotImplementationCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> DOMAIN_PKG_NAME_KEY: String
+		- {static} <<final>> DEFAULT_DOMAIN_PKG_NAME: String
+		- {static} <<final>> ADAPTER_CLASS_NAME_REGEX_KEY: String
+		- {static} <<final>> DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+		- {static} <<final>> ALLOWED_DEPENDENCIES_KEY: String
+		- {static} <<final>> PRIMITIVE_TYPES: Set<String>
+		- {static} <<final>> OBJECT_TYPE: String
+		- {static} <<final>> PRIMITIVE_CLASSES: Set<String>
+		- {static} <<final>> COMMON_INTERFACES: Set<String>
+
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		- {static} isTypeOkay(typeFullName: String, classes: Map<String, ClassData>,\ndomainPkgName: String, allowedDeps: Set<String>): boolean
+		- {static} stripArrayIndicators(typeFullName: String): String
+	}
+
+	Check <|.. ProgramToInterfaceNotImplementationCheck
+	ProgramToInterfaceNotImplementationCheck ..> MessageLevel
+	ProgramToInterfaceNotImplementationCheck ..> javadata.ClassType
+	ProgramToInterfaceNotImplementationCheck ..> javadata.FieldData
+	ProgramToInterfaceNotImplementationCheck ..> javadata.MethodData
+	ProgramToInterfaceNotImplementationCheck ..> javadata.VariableData
 
 	package javadata {
 
