@@ -114,7 +114,6 @@ package domain {
 	}
 
 	Check <|.. MethodLengthCheck
-	MethodLengthCheck ..> MessageLevel
 	MethodLengthCheck ..> javadata.MethodData
 	MethodLengthCheck ..> javadata.InstrData
 
@@ -137,7 +136,6 @@ package domain {
 	}
 
 	Check <|.. ProgramToInterfaceNotImplementationCheck
-	ProgramToInterfaceNotImplementationCheck ..> MessageLevel
 	ProgramToInterfaceNotImplementationCheck ..> javadata.ClassType
 	ProgramToInterfaceNotImplementationCheck ..> javadata.FieldData
 	ProgramToInterfaceNotImplementationCheck ..> javadata.MethodData
