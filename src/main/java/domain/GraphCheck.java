@@ -26,7 +26,7 @@ public abstract class GraphCheck implements Check {
         Iterator<byte[]> it = files.iterator();
         ClassData temp;
         while (it.hasNext()) {
-            temp = ClassReaderUtil.read(it.next()); // will need to be updated to new thing
+            temp = ClassReaderUtil.read(it.next());
             map.put(temp.getFullName(), temp);
         }
         return map;

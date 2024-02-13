@@ -19,11 +19,11 @@ import domain.javadata.MethodInstrData;
 import domain.javadata.VariableData;
 
 public class ClassGraph {
-    Map<String, ClassData> stringToClass;
-    Map<String, Integer> classes; 
-    Map<Integer, String> inverse; // inverse of the other map
-    int[][] edges; // weighted
-    int numClasses;
+    private Map<String, ClassData> stringToClass;
+    private Map<String, Integer> classes; 
+    private Map<Integer, String> inverse; // inverse of the other map
+    private int[][] edges; // weighted
+    private int numClasses;
     public ClassGraph(Map<String, ClassData> strToClass) {
         this.stringToClass = strToClass;
         classes = new HashMap<String, Integer>();
@@ -159,7 +159,7 @@ public class ClassGraph {
         int i = 0;
         int ret = 0;
         while (i < numClasses) {
-            ret += (edges[i][ret] != 0)? 1 : 0;
+            ret += (edges[i][v] != 0)? 1 : 0;
             i++;
         }
         return ret;
@@ -169,7 +169,7 @@ public class ClassGraph {
         int j = 0;
         int ret = 0;
         while (j < numClasses) {
-            ret += (edges[ret][j] != 0)? 1 : 0;
+            ret += (edges[v][j] != 0)? 1 : 0;
             j++;
         }
         return ret;
