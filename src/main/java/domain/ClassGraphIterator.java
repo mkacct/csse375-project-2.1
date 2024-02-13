@@ -25,18 +25,7 @@ public class ClassGraphIterator { // "iterator"
     
 
     public Set<ClassGraphIterator> followEdge() {
-        Set<ClassGraphIterator> set = new HashSet<ClassGraphIterator>();
-        int j = 0;
-        List<Integer> temp;
-        while (j < graph.getNumClasses()) {
-            if (graph.getWeight(vertex, j) != 0) {
-                temp = new LinkedList<Integer>(path);
-                temp.add(j);
-                set.add(new ClassGraphIterator(graph, j, temp));
-            }
-            j++;
-        }
-        return set;
+        return followEdge(2, 2, 2, 2);
     }
 
     /**
