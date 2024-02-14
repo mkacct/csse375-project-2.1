@@ -32,7 +32,7 @@ Madeline Kahn, Nolan Cales, Kyle Asbury
 Global properties:
 
 * `"skipUnmarkedChecks"` (boolean): If true, checks not explicitly enabled will be skipped. Otherwise, checks not explicitly disabled will be run.
-* `"enable_<CHECK>"` (boolean): Whether to run <CHECK> (where <CHECK> is the name of a check).
+* `"enable_<CHECK>"` (boolean): Whether to run &lt;CHECK&gt; (where &lt;CHECK&gt; is the name of a check).
 
 Properties used by specific checks shall be documented on the check's wiki page.
 

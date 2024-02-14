@@ -38,6 +38,7 @@ package presentation {
 	App ..> .domain.Check
 	App ..> .domain.Message
 	App ..> .domain.MessageLevel
+	App ..> .domain.javadata.ClassReaderUtil
 	App ..> .domain.javadata.ClassData
 	App ..> .domain.javadata.ClassNodeAdapter
 	App ..> .datasource.Configuration
@@ -79,6 +80,7 @@ package domain {
 	}
 
 	Check ..> Message
+	Check ..> MessageLevel
 	Check ..> javadata.ClassData
 	Check ..> .datasource.Configuration
 
@@ -132,6 +134,7 @@ package domain {
 
 		+interface ClassData {
 			+ {abstract} getFullName(): String
+			+ {abstract} getSimpleName(): String
 			+ {abstract} getAccessModifier(): AccessModifier
 			+ {abstract} getClassType(): ClassType
 			+ {abstract} isAbstract(): boolean
@@ -194,6 +197,7 @@ package domain {
 
 			~ ClassNodeAdapter(classNode: ClassNode)
 			+ getFullName(): String
+			+ getSimpleName(): String
 			+ getAccessModifier(): AccessModifier
 			+ getClassType(): ClassType
 			+ isAbstract(): boolean
@@ -398,9 +402,16 @@ package datasource {
 		+ getBoolean(key: String): boolean\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getInt(key: String): int\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getString(key: String): String\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfBoolean(key: String): List<boolean>\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfInt(key: String): List<int>\n<<throws>> IllegalArgumentException,\nClassCastException
+		+ getListOfString(key: String): List<String>\n<<throws>> IllegalArgumentException,\nClassCastException
 		+ getBoolean(key: String, fallback: boolean): boolean
 		+ getInt(key: String, fallback: int): int
 		+ getString(key: String, fallback: String): String
+		+ getListOfBoolean(key: String, fallback: List<boolean>): List<boolean>
+		+ getListOfInt(key: String, fallback: List<int>): List<int>
+		+ getListOfString(key: String, fallback: List<String>): List<String>
+		- checkKey(key: String): void\n<<throws>> IllegalArgumentException
 	}
 
 	+interface ConfigLoader {
