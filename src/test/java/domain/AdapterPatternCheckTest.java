@@ -3,7 +3,6 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +13,6 @@ import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
 import domain.javadata.ClassData;
-import domain.javadata.ClassReaderUtil;
 
 public class AdapterPatternCheckTest {
 private static final String CLASS_DIR_PATH = "src/test/resources/adapter-pattern-check-test-classes";
@@ -26,12 +24,8 @@ private static final String CLASS_DIR_PATH = "src/test/resources/adapter-pattern
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader loader = new DirLoader(CLASS_DIR_PATH);
-		Set<byte[]> bytecodes = loader.loadFiles("class");
-		this.classes = new HashMap<String, ClassData>();
-		for (byte[] bytecode : bytecodes) {
-			ClassData classData = ClassReaderUtil.read(bytecode);
-			this.classes.put(classData.getFullName(), classData);
-		}
+		Set<byte[]> javaBytecodes = loader.loadFiles("class");
+		this.classes = TestUtility.getMap(javaBytecodes);
 	}
 
 	@Test
