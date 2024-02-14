@@ -19,11 +19,11 @@ import domain.javadata.MethodInstrData;
 import domain.javadata.VariableData;
 
 public class ClassGraph {
-    private Map<String, ClassData> stringToClass;
-    private Map<String, Integer> classes; 
-    private Map<Integer, String> inverse; // inverse of the other map
-    private int[][] edges; // weighted
-    private int numClasses;
+    private final Map<String, ClassData> stringToClass;
+    private final Map<String, Integer> classes; 
+    private final Map<Integer, String> inverse; // inverse of the other map
+    private final int[][] edges; // weighted
+    private final int numClasses;
     public ClassGraph(Map<String, ClassData> strToClass) {
         this.stringToClass = strToClass;
         classes = new HashMap<String, Integer>();
