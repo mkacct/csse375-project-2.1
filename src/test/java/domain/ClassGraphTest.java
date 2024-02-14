@@ -20,7 +20,7 @@ import datasource.FilesLoader;
 import domain.javadata.ClassData;
 
 /**
- * Test Class Graph on my 
+ * Test Class Graph on 
  */
 public class ClassGraphTest {
 	private static final String STRING_RESOURCE_PATH = "src/test/resources/graphtest";
@@ -35,11 +35,11 @@ public class ClassGraphTest {
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
-        graph = new ClassGraph(GraphCheck.getMap(fl.loadFiles("class")));
+        graph = new ClassGraph(TestUtility.getMap(fl.loadFiles("class")));
         stringToClass = graph.getClasses();
 
         fl = new DirLoader(STRING_RESOURCE_PATH2);
-        graph2 = new ClassGraph(GraphCheck.getMap(fl.loadFiles("class")));
+        graph2 = new ClassGraph(TestUtility.getMap(fl.loadFiles("class")));
         stringToClass2 = graph2.getClasses();
 	}
 

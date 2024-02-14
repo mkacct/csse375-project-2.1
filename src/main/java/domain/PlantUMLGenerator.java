@@ -25,6 +25,7 @@ public class PlantUMLGenerator {
     public String test() throws IOException {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         // Write the first image to "os"
+        @SuppressWarnings("deprecation")
         String desc = test.generateImage(os, new FileFormatOption(FileFormat.SVG));
         os.close();
 
