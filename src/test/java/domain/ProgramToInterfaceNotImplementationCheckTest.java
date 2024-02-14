@@ -52,7 +52,7 @@ public class ProgramToInterfaceNotImplementationCheckTest {
 	));
 
 	@Test
-	public void tesAllowDependency() { // Gamma is an acceptable dependency
+	public void testAllowDependency() { // Gamma is an acceptable dependency
 		Check check = new ProgramToInterfaceNotImplementationCheck();
 		Set<Message> msgs = check.run(this.classes, CONFIG_ALLOW_GAMMA);
 		assertEquals(Set.of(
