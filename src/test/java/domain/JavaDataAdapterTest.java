@@ -44,6 +44,7 @@ public class JavaDataAdapterTest {
 		ClassData classData = ClassReaderUtil.read(this.javaBytecode);
 
 		assertEquals("java.lang.String", classData.getFullName());
+		assertEquals("java.lang", classData.getPackageName());
 		assertEquals("String", classData.getSimpleName());
 		assertEquals(AccessModifier.PUBLIC, classData.getAccessModifier());
 		assertEquals(false, classData.isAbstract());
