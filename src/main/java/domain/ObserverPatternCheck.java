@@ -11,14 +11,14 @@ public class ObserverPatternCheck extends GraphCheck {
 
     @Override
     public String getName() {
-        return "Observer Pattern Check";
+        return "observerPattern";
     }
 
     @Override
     /**
-     * @param interface - whether to check for interface subject
-     * @param abstract - whether to check for abstract subject
-     * @param concrete - whether to check for concrete subject
+     * @param interface - boolean - whether to check for interface subject. Defaults to true
+     * @param abstract - boolean -whether to check for abstract subject. Defaults to true
+     * @param concrete - boolean - whether to check for concrete subject. Defaults to true
      * @return - uhh right now we dont have generics so it won't find any patterns with like List<Observer>
      */
     public Set<Message> gRun(Configuration config) {

@@ -33,7 +33,7 @@ public class ClassGraph {
         if (index == - 1) {
             return s;
         } else {
-            return s.substring(0, index);
+            return removeArray(s.substring(0, index));
         }
     }
     public ClassGraph(Map<String, ClassData> strToClass) {

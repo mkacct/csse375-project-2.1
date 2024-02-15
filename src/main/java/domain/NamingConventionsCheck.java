@@ -16,7 +16,7 @@ public class NamingConventionsCheck implements Check {
 
     @Override
     public String getName() {
-        return "Naming Conventions Check";
+        return "namingConventions";
     }
 
     private boolean checkConvention(String str, NamingConventions convention) {
@@ -82,6 +82,21 @@ public class NamingConventionsCheck implements Check {
     }
 
     @Override
+    /**
+     * @param package -- One of the NamingConvention enum values. No input defaults to standard convention. Invalid input defaults to ANY.
+     * @param class 
+     * @param interface
+     * @param abstract
+     * @param enum
+     * @param field
+     * @param method
+     * @param constant
+     * @param enumConstant
+     * @param localVar
+     * @param methodParam
+     * @param allowEmptyPackage - boolean - Whether to allow for "" a package name (i.e. no package). Defaults to false
+     * @param maxLength - int - Maximum name length. -1 for no max. Defaults to -1.
+     */
     public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
         
         Set<Message> messages = new HashSet<Message>();

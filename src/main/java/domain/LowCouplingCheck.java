@@ -14,10 +14,17 @@ public class LowCouplingCheck extends GraphCheck {
 
     @Override
     public String getName() {
-        return "Low Coupling Check";
+        return "lowCoupling";
     }
 
     @Override
+    /**
+     * @param maxInDegree - int - Maximum In-Degree for a class. -1 for no max. Defaults to -1
+     * @param maxOutDegree - int - Maximum Out-Degree for a class. -1 for no max. Defaults to -1
+     * @param ignorePackage - String - Full Package Name to not check (such as presentation). Defaults to null
+     * @param cycles - boolean - Whether to check for cycles. Defaults to true
+     * @param ignoreSelfCycles - boolean - Whether to ignore cycles produced by classes that depend on themselves, such as when they contain themselves as a field. Defaults to true
+     */
     public Set<Message> gRun(Configuration config) {
         if (graph.getNumClasses() <= 0) {
             return new HashSet<Message>();
