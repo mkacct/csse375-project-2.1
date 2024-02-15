@@ -1,14 +1,11 @@
 package domain;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
-import domain.javadata.ClassReaderUtil;
 
 public abstract class GraphCheck implements Check {
     protected ClassGraph graph;

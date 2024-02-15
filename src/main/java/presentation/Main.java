@@ -5,9 +5,11 @@ import java.io.IOException;
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.Check;
+import domain.NamingConventionsCheck;
 
 public class Main {
-	private static final Check[] CHECKS = {}; // TODO: add all checks
+	private static final Check[] CHECKS = {new NamingConventionsCheck()}; // TODO: add all checks
+	
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
