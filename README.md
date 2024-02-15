@@ -16,7 +16,7 @@ Madeline Kahn, Nolan Cales, Kyle Asbury
 | Developer       | Style Check         | Principle Check                          | Pattern Check | A Feature (optional) |
 |:----------------|:--------------------|:-----------------------------------------|:--------------|:---------------------|
 | Madeline Kahn   | Length limits       | Program to interface, not implementation | Adapter       | JSON configuration   |
-| Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      | I/O reccomendations  |
+| Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      | I/O recommendations  |
 | Kyle Asbury     | Naming conventions  | Low coupling                             | Observer      | PlantUML generation  |
 
 ## Usage
