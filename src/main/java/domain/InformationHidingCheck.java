@@ -6,7 +6,6 @@ import domain.javadata.ClassData;
 import domain.javadata.FieldData;
 import domain.javadata.MethodData;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class InformationHidingCheck implements Check {

@@ -1,4 +1,5 @@
 package presentation;
 
-public class IOrecommendations {
+class IOrecommendations {
+
 }

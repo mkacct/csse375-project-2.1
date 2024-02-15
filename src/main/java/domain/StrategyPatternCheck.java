@@ -76,7 +76,7 @@ public class StrategyPatternCheck implements Check {
         return Set.of(new Message(MessageLevel.INFO,"No Strategy Pattern Detected!"));
     }
 
-    public ClassData getClassFromName(String className, Map<String, ClassData> classes) {
+    private static ClassData getClassFromName(String className, Map<String, ClassData> classes) {
         for(Map.Entry<String,ClassData> entry : classes.entrySet()) {
             if(entry.getKey().toLowerCase().equals(className)) {
                 return entry.getValue();
