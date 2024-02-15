@@ -24,6 +24,18 @@ public class ClassGraph {
     private final Map<Integer, String> inverse; // inverse of the other map
     private final int[][] edges; // weighted
     private final int numClasses;
+
+    private String removeArray(String s) {
+        if (s == null) {
+            return null;
+        }
+        int index = s.lastIndexOf('[');
+        if (index == - 1) {
+            return s;
+        } else {
+            return s.substring(0, index);
+        }
+    }
     public ClassGraph(Map<String, ClassData> strToClass) {
         this.stringToClass = strToClass;
         classes = new HashMap<String, Integer>();
@@ -70,14 +82,14 @@ public class ClassGraph {
             }
 
             // extends
-            if (classes.containsKey(stringToClass.get(inverse.get(i)).getSuperFullName())) {
-                    edges[i][classes.get(stringToClass.get(inverse.get(i)).getSuperFullName())] += 8;
+            if (classes.containsKey(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))) {
+                    edges[i][classes.get(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))] += 8;
             }
 
             // implements
             interIt = stringToClass.get(inverse.get(i)).getInterfaceFullNames().iterator();
             while (interIt.hasNext()) {
-                interTemp = interIt.next();
+                interTemp = removeArray(interIt.next());
                 if (classes.containsKey(interTemp)) {
                     edges[i][classes.get(interTemp)] += 4;
                 }
@@ -87,8 +99,8 @@ public class ClassGraph {
             fdIt = stringToClass.get(inverse.get(i)).getFields().iterator();
             while (fdIt.hasNext()) {
                 fdTemp = fdIt.next();
-                if (classes.containsKey(fdTemp.getTypeFullName())) {
-                    edges[i][classes.get(fdTemp.getTypeFullName())] += 2;
+                if (classes.containsKey(removeArray(fdTemp.getTypeFullName()))) {
+                    edges[i][classes.get(removeArray(fdTemp.getTypeFullName()))] += 2;
                 }
             }
 
@@ -99,22 +111,22 @@ public class ClassGraph {
                 mdTemp = mdIt.next();
                 varIt = mdTemp.getLocalVariables().iterator();
                 while (varIt.hasNext()) {
-                    depSet.add(varIt.next().typeFullName);
+                    depSet.add(removeArray(varIt.next().typeFullName));
                 }
                 instrIt = mdTemp.getInstructions().iterator();
                 while (instrIt.hasNext()) {
                     instrTemp = instrIt.next();
                     if (instrTemp.getInstrType() == InstrType.METHOD) {
                         methodInstrTemp = (MethodInstrData) instrTemp;
-                        depSet.add(methodInstrTemp.getMethodOwnerFullName());
-                        depSet.add(methodInstrTemp.getMethodReturnTypeFullName());
+                        depSet.add(removeArray(methodInstrTemp.getMethodOwnerFullName()));
+                        depSet.add(removeArray(methodInstrTemp.getMethodReturnTypeFullName()));
                     } else if (instrTemp.getInstrType() == InstrType.FIELD) {
                         fieldInstrTemp = (FieldInstrData) instrTemp;
-                        depSet.add(fieldInstrTemp.getFieldOwnerFullName());
-                        depSet.add(fieldInstrTemp.getFieldTypeFullName());
+                        depSet.add(removeArray(fieldInstrTemp.getFieldOwnerFullName()));
+                        depSet.add(removeArray(fieldInstrTemp.getFieldTypeFullName()));
                     } else if (instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE) {
                         localVarInstrTemp = (LocalVarInstrData) instrTemp;
-                        depSet.add(localVarInstrTemp.getVarTypeFullName());
+                        depSet.add(removeArray(localVarInstrTemp.getVarTypeFullName()));
                     }
                 }
             }

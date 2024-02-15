@@ -96,6 +96,7 @@ public class NamingConventionsCheck implements Check {
         NamingConventions enumConstantNames = NamingConventions.getConvention(config.getString("enumConstant", "UPPER_CASE"));
         NamingConventions localVarNames = NamingConventions.getConvention(config.getString("localVar", "camelCase"));
         NamingConventions methodParamNames = NamingConventions.getConvention(config.getString("methodParam", "camelCase"));
+        boolean allowEmptyPackage = config.getBoolean("allowEmptyPackage", false);
 
         int maxLength = config.getInt("maxLength", -1);
         if (maxLength == -1) {
@@ -135,11 +136,14 @@ public class NamingConventionsCheck implements Check {
             // packages
             for (String pckg : classInfo.getPackageName().split("\\.|\\$")) {
                 if (packages.add(pckg)) {
+                    if (pckg.length() > maxLength) {
+                        messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Name exceeds {1} characters", pckg, maxLength)));
+                    }
                     if (!checkConvention(pckg, packageNames)) {
-                        if (pckg.length() > maxLength) {
-                            messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Name exceeds {1} characters", pckg, maxLength)));
+                        if (allowEmptyPackage && pckg.equals("")) {
+                        } else {
+                            messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Naming Violation", pckg)));
                         }
-                        messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Naming Violation", pckg)));
                     }
                     
                 }
