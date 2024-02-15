@@ -7,6 +7,7 @@ import java.util.Set;
  */
 public interface ClassData {
 	String getFullName();
+	String getSimpleName();
 
 	AccessModifier getAccessModifier();
 	ClassType getClassType();

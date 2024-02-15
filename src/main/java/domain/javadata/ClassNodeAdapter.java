@@ -23,6 +23,12 @@ class ClassNodeAdapter implements ClassData {
 	}
 
 	@Override
+	public String getSimpleName() {
+		String[] terms = this.getFullName().split("\\.|\\$");
+		return terms[terms.length - 1];
+	}
+
+	@Override
 	public AccessModifier getAccessModifier() {
 		return AccessModifier.parseOpcodes(this.classNode.access);
 	}
