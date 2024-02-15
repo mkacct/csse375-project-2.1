@@ -24,6 +24,9 @@ public class DirLoader implements FilesLoader {
 	}
 
 	private void addFilesFromDir(Set<byte[]> files, File dir, String ext) throws IOException {
+		if (dir.listFiles() == null) {
+			return;
+		}
 		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
 				addFilesFromDir(files, file, ext);
