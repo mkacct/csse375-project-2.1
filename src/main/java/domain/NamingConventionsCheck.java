@@ -83,37 +83,37 @@ public class NamingConventionsCheck implements Check {
 
     @Override
     /**
-     * @param package -- One of the NamingConvention enum values. No input defaults to standard convention. Invalid input defaults to ANY.
-     * @param class 
-     * @param interface
-     * @param abstract
-     * @param enum
-     * @param field
-     * @param method
-     * @param constant
-     * @param enumConstant
-     * @param localVar
-     * @param methodParam
-     * @param allowEmptyPackage - boolean - Whether to allow for "" a package name (i.e. no package). Defaults to false
-     * @param maxLength - int - Maximum name length. -1 for no max. Defaults to -1.
+     * @param convPackage -- One of the NamingConvention enum values. No input defaults to standard convention. Invalid input defaults to ANY.
+     * @param convClass 
+     * @param convInterface
+     * @param convAbstract
+     * @param convEnum
+     * @param convfield
+     * @param convMethod
+     * @param convConstant
+     * @param convEnumConstant
+     * @param convLocalVar
+     * @param convMethodParam
+     * @param convAllowEmptyPackage - boolean - Whether to allow for "" a package name (i.e. no package). Defaults to false
+     * @param convMaxLength - int - Maximum name length. -1 for no max. Defaults to -1.
      */
     public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
         
         Set<Message> messages = new HashSet<Message>();
-        NamingConventions packageNames = NamingConventions.getConvention(config.getString("package", "lowercase"));
-        NamingConventions classNames = NamingConventions.getConvention(config.getString("class", "PascalCase"));
-        NamingConventions interfaceNames = NamingConventions.getConvention(config.getString("interface", "PascalCase"));
-        NamingConventions abstractNames = NamingConventions.getConvention(config.getString("abstract", "PascalCase"));
-        NamingConventions enumNames = NamingConventions.getConvention(config.getString("enum", "PascalCase"));
-        NamingConventions fieldNames = NamingConventions.getConvention(config.getString("field", "camelCase"));
-        NamingConventions methodNames = NamingConventions.getConvention(config.getString("method", "camelCase"));
-        NamingConventions constantNames = NamingConventions.getConvention(config.getString("constant", "UPPER_CASE"));
-        NamingConventions enumConstantNames = NamingConventions.getConvention(config.getString("enumConstant", "UPPER_CASE"));
-        NamingConventions localVarNames = NamingConventions.getConvention(config.getString("localVar", "camelCase"));
-        NamingConventions methodParamNames = NamingConventions.getConvention(config.getString("methodParam", "camelCase"));
-        boolean allowEmptyPackage = config.getBoolean("allowEmptyPackage", false);
+        NamingConventions packageNames = NamingConventions.getConvention(config.getString("convPackage", "lowercase"));
+        NamingConventions classNames = NamingConventions.getConvention(config.getString("convClass", "PascalCase"));
+        NamingConventions interfaceNames = NamingConventions.getConvention(config.getString("convInterface", "PascalCase"));
+        NamingConventions abstractNames = NamingConventions.getConvention(config.getString("convAbstract", "PascalCase"));
+        NamingConventions enumNames = NamingConventions.getConvention(config.getString("convEnum", "PascalCase"));
+        NamingConventions fieldNames = NamingConventions.getConvention(config.getString("convField", "camelCase"));
+        NamingConventions methodNames = NamingConventions.getConvention(config.getString("convMethod", "camelCase"));
+        NamingConventions constantNames = NamingConventions.getConvention(config.getString("convConstant", "UPPER_CASE"));
+        NamingConventions enumConstantNames = NamingConventions.getConvention(config.getString("convEnumConstant", "UPPER_CASE"));
+        NamingConventions localVarNames = NamingConventions.getConvention(config.getString("convLocalVar", "camelCase"));
+        NamingConventions methodParamNames = NamingConventions.getConvention(config.getString("convMethodParam", "camelCase"));
+        boolean allowEmptyPackage = config.getBoolean("convAllowEmptyPackage", false);
 
-        int maxLength = config.getInt("maxLength", -1);
+        int maxLength = config.getInt("convMaxLength", -1);
         if (maxLength == -1) {
             maxLength = Integer.MAX_VALUE;
         }

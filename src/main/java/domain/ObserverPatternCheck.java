@@ -16,15 +16,15 @@ public class ObserverPatternCheck extends GraphCheck {
 
     @Override
     /**
-     * @param interface - boolean - whether to check for interface subject. Defaults to true
-     * @param abstract - boolean -whether to check for abstract subject. Defaults to true
-     * @param concrete - boolean - whether to check for concrete subject. Defaults to true
+     * @param obsInterface - boolean - whether to check for interface subject. Defaults to true
+     * @param obsAbstract - boolean -whether to check for abstract subject. Defaults to true
+     * @param obsConcrete - boolean - whether to check for concrete subject. Defaults to true
      * @return - uhh right now we dont have generics so it won't find any patterns with like List<Observer>
      */
     public Set<Message> gRun(Configuration config) {
-        boolean checkInterface = config.getBoolean("interface", true);
-        boolean checkAbstract = config.getBoolean("abstract", true);
-        boolean checkConcrete = config.getBoolean("concrete", true);
+        boolean checkInterface = config.getBoolean("obsInterface", true);
+        boolean checkAbstract = config.getBoolean("obsAbstract", true);
+        boolean checkConcrete = config.getBoolean("obsConcrete", true);
         Set<Message> messages = new HashSet<Message>();
         ClassGraphIterator it;
         ClassData dat;
