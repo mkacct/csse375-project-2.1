@@ -5,10 +5,12 @@ import java.io.IOException;
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.Check;
+import domain.LowCouplingCheck;
 import domain.NamingConventionsCheck;
+import domain.ObserverPatternCheck;
 
 public class Main {
-	private static final Check[] CHECKS = {new NamingConventionsCheck()}; // TODO: add all checks
+	private static final Check[] CHECKS = {new NamingConventionsCheck(), new ObserverPatternCheck(), new LowCouplingCheck()}; // TODO: add all checks
 	
 
 	public static void main(String[] args) throws IOException {
