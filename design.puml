@@ -15,7 +15,10 @@ package presentation {
 
 	' Check dependencies:
 	Main ..> .domain.MethodLengthCheck
+	Main ..> .domain.UnusedAbstractionsCheck
+	Main ..> .domain.InformationHidingCheck
 	Main ..> .domain.ProgramToInterfaceNotImplementationCheck
+	Main ..> .domain.StrategyPatternCheck
 	Main ..> .domain.AdapterPatternCheck
 
 	~class App {
@@ -35,6 +38,10 @@ package presentation {
 		- {static} printTotals(msgTotals: Map<MessageLevel, Integer>): void
 		- {static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
 		- {static} initMsgTotals(): Map<MessageLevel, Integer>
+	}
+
+	~class IOrecommendations {
+
 	}
 
 	App --> .datasource.FilesLoader
@@ -118,6 +125,24 @@ package domain {
 	MethodLengthCheck ..> javadata.MethodData
 	MethodLengthCheck ..> javadata.InstrData
 
+	+class UnusedAbstractionsCheck {
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+	}
+
+	Check <|.. UnusedAbstractionsCheck
+	UnusedAbstractionsCheck ..> javadata.ClassType
+
+	+class InformationHidingCheck {
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+	}
+
+	Check <|.. InformationHidingCheck
+	InformationHidingCheck ..> javadata.AccessModifier
+	InformationHidingCheck ..> javadata.FieldData
+	InformationHidingCheck ..> javadata.MethodData
+
 	+class ProgramToInterfaceNotImplementationCheck {
 		- {static} <<final>> NAME: String
 		- {static} <<final>> DOMAIN_PKG_NAME_KEY: String
@@ -142,13 +167,20 @@ package domain {
 	ProgramToInterfaceNotImplementationCheck ..> javadata.MethodData
 	ProgramToInterfaceNotImplementationCheck ..> javadata.VariableData
 
+	+class StrategyPatternCheck {
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		- {static} getClassFromName(className: String, classes: Map<String, ClassData>): ClassData
+	}
+
+	Check <|.. StrategyPatternCheck
+	StrategyPatternCheck ..> javadata.ClassType
+	StrategyPatternCheck ..> javadata.FieldData
+
 	+class AdapterPatternCheck {
 		- {static} <<final>> NAME: String
 		- {static} <<final>> ADAPTER_CLASS_NAME_REGEX_KEY: String
 		- {static} <<final>> DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
-
-		+ getName(): String
-		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
 	}
 
 	Check <|.. AdapterPatternCheck
