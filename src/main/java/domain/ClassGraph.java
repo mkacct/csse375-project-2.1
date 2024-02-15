@@ -113,6 +113,10 @@ public class ClassGraph {
                 while (varIt.hasNext()) {
                     depSet.add(removeArray(varIt.next().typeFullName));
                 }
+                varIt = mdTemp.getParams().iterator();
+                while (varIt.hasNext()) {
+                    depSet.add(removeArray(varIt.next().typeFullName));
+                }
                 instrIt = mdTemp.getInstructions().iterator();
                 while (instrIt.hasNext()) {
                     instrTemp = instrIt.next();
