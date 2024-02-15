@@ -46,9 +46,16 @@ public class InformationHidingCheckTest {
         Check check = new InformationHidingCheck();
         Set<Message> result = check.run(this.classes.get(0), CONFIG_EMPTY);
         //System.out.println(result.toString());
-        assertEquals("[[WARN] The class Class1 contains the following fields" +
-                " that violate information hiding: [bad_field], [WARN] The class Class2 contains" +
-                " the following fields that violate information hiding: [num2]]", result.toString());
+        Message message1 = new Message(MessageLevel.WARNING, "The class Class1 contains" +
+                " the following fields that violate information hiding: [bad_field]");
+        Message message2 = new Message(MessageLevel.WARNING,"The class Class2 contains" +
+                " the following fields that violate information hiding: [num2]");
+        Set<Message> actual = Set.of(message1,message2);
+        assertEquals(result,actual);
+//        assertEquals("[[WARN] The class Class1 contains the following fields" +
+//                " that violate information hiding: [bad_field], [WARN] The class Class2 contains" +
+//                " the following fields that violate information hiding: [num2]]", result.toString());
+
 
     }
 
@@ -57,9 +64,17 @@ public class InformationHidingCheckTest {
         Check check = new InformationHidingCheck();
         Set<Message> result = check.run(this.classes.get(1), CONFIG_EMPTY);
         //System.out.println(result.toString());
-        assertEquals("[[WARN] The class Class2 contains the following fields that violate" +
-                " information hiding: [num5, num4, num2], [WARN] The class Class1 contains the following" +
-                " fields that violate information hiding: [bad_field2, bad_field1]]", result.toString());
+        Message message1 = new Message(MessageLevel.WARNING, "The class Class1 contains" +
+                " the following fields that violate information hiding: [bad_field2, bad_field1]");
+        Message message2 = new Message(MessageLevel.WARNING,"The class Class2 contains" +
+                " the following fields that violate information hiding: [num5, num4, num2]");
+        Set<Message> actual = Set.of(message1,message2);
+        assertEquals(result,actual);
+
+
+//        assertEquals("[[WARN] The class Class2 contains the following fields that violate" +
+//                " information hiding: [num5, num4, num2], [WARN] The class Class1 contains the following" +
+//                " fields that violate information hiding: [bad_field2, bad_field1]]", result.toString());
 
 
     }
@@ -69,10 +84,16 @@ public class InformationHidingCheckTest {
         Check check = new InformationHidingCheck();
         Set<Message> result = check.run(this.classes.get(2), CONFIG_EMPTY);
         //System.out.println(result.toString());
-        assertEquals("[[WARN] The class Class1 contains the following fields that violate" +
-                " information hiding: [bad_field2, bad_field1, name, age], [WARN] The class" +
-                " Class2 contains the following fields that violate information hiding:" +
-                " [num1, num5, num4, num2]]", result.toString());
+        Message message1 = new Message(MessageLevel.WARNING, "The class Class1 contains" +
+                " the following fields that violate information hiding: [bad_field2, bad_field1, name, age]");
+        Message message2 = new Message(MessageLevel.WARNING,"The class Class2 contains" +
+                " the following fields that violate information hiding: [num1, num5, num4, num2]");
+        Set<Message> actual = Set.of(message1,message2);
+        assertEquals(result,actual);
+//        assertEquals("[[WARN] The class Class1 contains the following fields that violate" +
+//                " information hiding: [bad_field2, bad_field1, name, age], [WARN] The class" +
+//                " Class2 contains the following fields that violate information hiding:" +
+//                " [num1, num5, num4, num2]]", result.toString());
 
     }
 
