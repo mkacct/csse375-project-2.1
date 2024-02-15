@@ -13,7 +13,7 @@ import datasource.FilesLoader;
 import domain.javadata.ClassData;
 import domain.javadata.ClassReaderUtil;
 
-public class CalesnmChecksTest {
+public class UnusedClassesCheckTest {
     private static final String[] CLASS_DIR_PATHS = new String[] {"src/test/resources/UnusedClassesTest1",
             "src/test/resources/UnusedClassesTest2",
             "src/test/resources/UnusedClassesTest3",
@@ -43,13 +43,37 @@ public class CalesnmChecksTest {
 
 
     @Test
-    public void testUnusedAbstractionsCheck() {
+    public void UnusedAbstractionsCheckTest1 () {
         Check check = new UnusedAbstractionsCheck();
-        for(Map<String,ClassData> test : this.classes) {
-            System.out.println(check.run(test,CONFIG_EMPTY));
-        }
+        Set<Message> result = check.run(this.classes.get(0),CONFIG_EMPTY);
+        assertEquals("[[WARN] The Following class is not used, please consider" +
+                " using them or deleting them:  (BadClass)]",result.toString());
 
     }
+
+    @Test
+    public void UnusedAbstractionsCheckTest2 () {
+        Check check = new UnusedAbstractionsCheck();
+        Set<Message> result = check.run(this.classes.get(1),CONFIG_EMPTY);
+        assertEquals("[]",result.toString());
+    }
+
+    @Test
+    public void UnusedAbstractionsCheckTest3 () {
+        Check check = new UnusedAbstractionsCheck();
+        Set<Message> result = check.run(this.classes.get(2),CONFIG_EMPTY);
+        assertEquals("[[WARN] The Following class is not used, please consider" +
+                " using them or deleting them:  (BadInterface)]",result.toString());
+    }
+
+    @Test
+    public void UnusedAbstractionsCheckTest4 () {
+        Check check = new UnusedAbstractionsCheck();
+        Set<Message> result = check.run(this.classes.get(3),CONFIG_EMPTY);
+        assertEquals("[]",result.toString());
+    }
+
+
 
 
 
