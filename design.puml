@@ -172,6 +172,7 @@ package domain {
 		+interface ClassData {
 			+ {abstract} getFullName(): String
 			+ {abstract} getSimpleName(): String
+			+ {abstract} getPackageName(): String
 			+ {abstract} getAccessModifier(): AccessModifier
 			+ {abstract} getClassType(): ClassType
 			+ {abstract} isAbstract(): boolean
@@ -235,6 +236,7 @@ package domain {
 			~ ClassNodeAdapter(classNode: ClassNode)
 			+ getFullName(): String
 			+ getSimpleName(): String
+			+ getPackageName(): String
 			+ getAccessModifier(): AccessModifier
 			+ getClassType(): ClassType
 			+ isAbstract(): boolean
