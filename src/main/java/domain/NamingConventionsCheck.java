@@ -88,7 +88,7 @@ public class NamingConventionsCheck implements Check {
      * @param convInterface
      * @param convAbstract
      * @param convEnum
-     * @param convfield
+     * @param convField
      * @param convMethod
      * @param convConstant
      * @param convEnumConstant
