@@ -13,7 +13,7 @@ import domain.StrategyPatternCheck;
 import domain.UnusedAbstractionsCheck;
 
 public class Main {
-	private static final Check[] CHECKS = {new NamingConventionsCheck(), new ObserverPatternCheck(), new LowCouplingCheck(), new UnusedAbstractionsCheck(), new StrategyPatternCheck(), new InformationHidingCheck()}; // TODO: add all checks
+private static final Check[] CHECKS = {new NamingConventionsCheck(), new ObserverPatternCheck(), new LowCouplingCheck(), new UnusedAbstractionsCheck(), new StrategyPatternCheck(), new InformationHidingCheck()}; // TODO: add all checks
 	
 
 	public static void main(String[] args) throws IOException {
