@@ -55,6 +55,9 @@ public class InformationHidingCheck implements Check {
 
                     for (MethodData method : methods) {
                         String methodName = method.getName().toLowerCase();
+                        if (methodName.length() > 3) {
+
+
                         String string1 = methodName.substring(0, 3);
                         String string2 = methodName.substring(3, methodName.length());
                         //checks if the method name matches the field.
@@ -72,7 +75,7 @@ public class InformationHidingCheck implements Check {
                             }
                         }
 
-
+                    }
                     }
                 }
 
