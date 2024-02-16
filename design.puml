@@ -17,6 +17,9 @@ package presentation {
 	Main ..> .domain.UnusedAbstractionsCheck
 	Main ..> .domain.InformationHidingCheck
 	Main ..> .domain.StrategyPatternCheck
+	Main ..> .domain.ObserverPatternCheck
+	Main ..> .domain.NamingConventionsCheck
+	Main ..> .domain.LowCouplingCheck
 
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
@@ -136,6 +139,131 @@ package domain {
 	Check <|.. StrategyPatternCheck
 	StrategyPatternCheck ..> javadata.ClassType
 	StrategyPatternCheck ..> javadata.FieldData
+
+
+
+	+class ClassGraph {
+		-{final} stringToClass: Map<String, ClassData>
+		-{final} classes: Map<String, Integer>
+		-{final} inverse: Map<Integer, String>
+		-{final} edges: int[][]
+		-{final} numClasses: int
+		- removeArray(s: String): String
+		+ ClassGraph(strToClass: Map<String, ClassData>)
+		+ {static} checkExtend(weight: int): boolean
+		+ {static} checkImplement(weight: int): boolean
+		+ {static} checkHasA(weight: int): boolean
+		+ {static} checkDepends(weight: int): boolean
+		+ getWeight(i: int, j: int): int
+		+ inDegree(v: int): int
+		+ outDegree(v: int): int
+		+ getNumClasses(): int
+		+ getClasses(): Map<String,ClassData>
+		+ getIndex(c: String): int
+		+ indexToClass(i: int): String
+		+ graphIterator(start: int): ClassGraphIterator
+		+ column(j: int): int[]
+	}
+
+	ClassGraph --> javadata.ClassData
+	ClassGraph ..> javadata.FieldData
+	ClassGraph ..> javadata.FieldInstrData
+	ClassGraph ..> javadata.InstrData
+	ClassGraph ..> javadata.InstrType
+	ClassGraph ..> javadata.LocalVarInstrData
+	ClassGraph ..> javadata.MethodData
+	ClassGraph ..> javadata.MethodInstrData
+	ClassGraph ..> javadata.VariableData
+	ClassGraph ..> ClassGraphIterator
+
+	+class ClassGraphIterator {
+		-{final} graph: ClassGraph
+		-{final} vertex: int
+		-{final} path: List<Integer>
+		+ ClassGraphIterator(graph: ClassGraph, v: int, path: List<Integer>)
+		+ getCurrent(): int
+		+ followEdge(): Set<ClassGraphIterator>
+		+ followEdge(extend: int, implement: int, hasA: int, depends: int): Set<ClassGraphIterator>
+		+ getPath(): List<Integer>
+		+ hasCycle(): boolean
+	}
+
+	ClassGraphIterator --> ClassGraph
+
+	+abstract GraphCheck {
+		#graph: ClassGraph
+		+ {final} run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		+ {abstract} gRun(config: Configuration): Set<Message>
+	}
+
+	GraphCheck ..|> Check
+	GraphCheck --> ClassGraph
+
+	+class IntegerAndDegree {
+		-{final} index: int
+		-{final} inDegree: int
+		+ IntegerAndDegree(index: int, inDegree: int)
+		+ compareTo(o: IntegerAndDegree): int
+		+ equals(index: int): boolean
+	}
+
+	+enum NamingConventions {
+		lowercase,
+		UPPERCASE,
+		UPPER_CASE,
+		lower_case,
+		camelCase,
+		PascalCase,
+		ANY
+		__
+		+ {static} getConvention(str: String): NamingConventions
+	}
+
+	+class NamingConventionsCheck {
+		+ getName(): String
+		- checkConvention(str: String, convention: NamingConventions): boolean
+		+ run(classes: Map<String, ClassData, config: Configuration)
+	}
+
+	NamingConventionsCheck ..|> Check
+	NamingConventionsCheck ..> NamingConventions
+	NamingConventionsCheck ..> ClassType
+	NamingConventionsCheck ..> FieldData
+	NamingConventionsCheck ..> MethodData
+	NamingConventionsCheck ..> VariableData
+
+	+class LowCouplingCheck {
+		+ getName(): String
+		+ gRun(config: Configuration): Set<Message>
+		- recursion(it: ClassGraphIterator, messages: Set<Message>, pq: PriorityQueue<IntegerAndDegree>, ignoreSelf: boolean): void
+		- cyclePrint(classes: List<String>): String
+	}
+
+	LowCouplingCheck --|> GraphCheck
+	LowCouplingCheck ..> ClassGraphIterator
+	LowCouplingCheck ..> IntegerAndDegree
+
+	+class ObserverPatternCheck {
+		+ getName(): String
+		+ gRun(config: Configuration): Set<Message>
+	}
+
+	ObserverPatternCheck --|> GraphCheck
+	ObserverPatternCheck ..> ClassType
+
+	+class PlantUMLGenerator {
+		+ {static} generateSVG(source: SourceStringReader): String
+		+ getName(): String
+		+ gRun(config: Configuration): Set<Message>
+	}
+
+	PlantUMLGenerator --|> GraphCheck
+	PlantUMLGenerator ..> .plantuml.FileFormat
+	PlantUMLGenerator ..> .plantuml.FileFormatOption
+	PlantUMLGenerator ..> .plantuml.SourceStringReader
+
+
+
 
 	package javadata {
 
@@ -538,6 +666,19 @@ package json {
 	}
 
 	hide methods
+}
+
+package plantuml {
+	+class FileFormat {
+		...
+	}
+	+class FileFormatOption {
+		...
+	}
+
+	+class SourceStringReader {
+		...
+	}
 }
 
 @enduml

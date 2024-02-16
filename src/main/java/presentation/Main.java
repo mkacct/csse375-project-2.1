@@ -1,13 +1,22 @@
 package presentation;
 
+import java.io.IOException;
+
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.Check;
+import domain.InformationHidingCheck;
+import domain.LowCouplingCheck;
+import domain.NamingConventionsCheck;
+import domain.ObserverPatternCheck;
+import domain.StrategyPatternCheck;
+import domain.UnusedAbstractionsCheck;
 
 public class Main {
-	private static final Check[] CHECKS = {}; // TODO: add all checks
+private static final Check[] CHECKS = {new NamingConventionsCheck(), new ObserverPatternCheck(), new LowCouplingCheck(), new UnusedAbstractionsCheck(), new StrategyPatternCheck(), new InformationHidingCheck()}; // TODO: add all checks
+	
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
 			printUsage();
 			System.exit(1);
