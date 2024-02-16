@@ -1,6 +1,5 @@
 package domain.javadata;
 
-import java.util.Set;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -36,10 +35,5 @@ class FieldNodeAdapter implements FieldData {
 	@Override
 	public boolean isFinal() {
 		return (this.fieldNode.access & Opcodes.ACC_FINAL) != 0;
-	}
-
-	public Set<String> getTypeParams() {
-		 //return fieldNode.signature;
-		 return null;
 	}
 }
