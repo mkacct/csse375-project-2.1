@@ -14,12 +14,15 @@ package presentation {
 	Main ..> .datasource.JsonFileConfigLoader
 
 	' Check dependencies:
+	Main ..> .domain.NamingConventionsCheck
+	Main ..> .domain.MethodLengthCheck
 	Main ..> .domain.UnusedAbstractionsCheck
 	Main ..> .domain.InformationHidingCheck
+	Main ..> .domain.ProgramToInterfaceNotImplementationCheck
+	Main ..> .domain.LowCouplingCheck
 	Main ..> .domain.StrategyPatternCheck
 	Main ..> .domain.ObserverPatternCheck
-	Main ..> .domain.NamingConventionsCheck
-	Main ..> .domain.LowCouplingCheck
+	Main ..> .domain.AdapterPatternCheck
 
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
@@ -112,6 +115,19 @@ package domain {
 
 	Message --> MessageLevel
 
+	+class MethodLengthCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> MAX_METHOD_LENGTH_KEY: String
+
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		- checkClass(classData: ClassData, maxMethodLengthInstrs: int, messages: Set<Message>): void
+	}
+
+	Check <|.. MethodLengthCheck
+	MethodLengthCheck ..> javadata.MethodData
+	MethodLengthCheck ..> javadata.InstrData
+
 	+class UnusedAbstractionsCheck {
 		+ getName(): String
 		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
@@ -130,6 +146,30 @@ package domain {
 	InformationHidingCheck ..> javadata.FieldData
 	InformationHidingCheck ..> javadata.MethodData
 
+	+class ProgramToInterfaceNotImplementationCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> DOMAIN_PKG_NAME_KEY: String
+		- {static} <<final>> DEFAULT_DOMAIN_PKG_NAME: String
+		- {static} <<final>> ADAPTER_CLASS_NAME_REGEX_KEY: String
+		- {static} <<final>> DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+		- {static} <<final>> ALLOWED_DEPENDENCIES_KEY: String
+		- {static} <<final>> PRIMITIVE_TYPES: Set<String>
+		- {static} <<final>> OBJECT_TYPE: String
+		- {static} <<final>> PRIMITIVE_CLASSES: Set<String>
+		- {static} <<final>> COMMON_INTERFACES: Set<String>
+
+		+ getName(): String
+		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
+		- {static} isTypeOkay(typeFullName: String, classes: Map<String, ClassData>,\ndomainPkgName: String, allowedDeps: Set<String>): boolean
+		- {static} stripArrayIndicators(typeFullName: String): String
+	}
+
+	Check <|.. ProgramToInterfaceNotImplementationCheck
+	ProgramToInterfaceNotImplementationCheck ..> javadata.ClassType
+	ProgramToInterfaceNotImplementationCheck ..> javadata.FieldData
+	ProgramToInterfaceNotImplementationCheck ..> javadata.MethodData
+	ProgramToInterfaceNotImplementationCheck ..> javadata.VariableData
+
 	+class StrategyPatternCheck {
 		+ getName(): String
 		+ run(classes: Map<String, ClassData>, config: Configuration): Set<Message>
@@ -140,7 +180,16 @@ package domain {
 	StrategyPatternCheck ..> javadata.ClassType
 	StrategyPatternCheck ..> javadata.FieldData
 
+	+class AdapterPatternCheck {
+		- {static} <<final>> NAME: String
+		- {static} <<final>> ADAPTER_CLASS_NAME_REGEX_KEY: String
+		- {static} <<final>> DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+	}
 
+	Check <|.. AdapterPatternCheck
+	AdapterPatternCheck ..> javadata.FieldData
+	AdapterPatternCheck ..> javadata.MethodData
+	AdapterPatternCheck ..> javadata.VariableData
 
 	+class ClassGraph {
 		-{final} stringToClass: Map<String, ClassData>
@@ -261,9 +310,6 @@ package domain {
 	PlantUMLGenerator ..> .plantuml.FileFormat
 	PlantUMLGenerator ..> .plantuml.FileFormatOption
 	PlantUMLGenerator ..> .plantuml.SourceStringReader
-
-
-
 
 	package javadata {
 

@@ -4,17 +4,29 @@ import java.io.IOException;
 
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
+import domain.AdapterPatternCheck;
 import domain.Check;
 import domain.InformationHidingCheck;
 import domain.LowCouplingCheck;
+import domain.MethodLengthCheck;
 import domain.NamingConventionsCheck;
 import domain.ObserverPatternCheck;
+import domain.ProgramToInterfaceNotImplementationCheck;
 import domain.StrategyPatternCheck;
 import domain.UnusedAbstractionsCheck;
 
 public class Main {
-private static final Check[] CHECKS = {new NamingConventionsCheck(), new ObserverPatternCheck(), new LowCouplingCheck(), new UnusedAbstractionsCheck(), new StrategyPatternCheck(), new InformationHidingCheck()}; // TODO: add all checks
-	
+	private static final Check[] CHECKS = {
+		new NamingConventionsCheck(),
+		new MethodLengthCheck(),
+		new UnusedAbstractionsCheck(),
+		new InformationHidingCheck(),
+		new ProgramToInterfaceNotImplementationCheck(),
+		new LowCouplingCheck(),
+		new StrategyPatternCheck(),
+		new ObserverPatternCheck(),
+		new AdapterPatternCheck()
+	};
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
