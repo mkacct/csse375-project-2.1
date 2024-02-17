@@ -93,11 +93,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-    		<groupId>com.sample</groupId>
-    		<artifactId>sample</artifactId>
-    		<version>1.0</version>
+    		<groupId>com.plantuml</groupId>
+    		<artifactId>plantuml</artifactId>
+    		<version>1.2024.0</version>
     		<scope>system</scope>
-    	<systemPath>${project.basedir}/src/main/resources/plantuml-1.2024.0.jar</systemPath>
+    		<systemPath>${project.basedir}/lib/plantuml-1.2024.0.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
