@@ -103,9 +103,9 @@ public class JavaDataAdapterTest {
 		assertEquals(false, rangeCheckMethod.isFinal());
 		assertEquals(false, rangeCheckMethod.isAbstract());
 		List<VariableData> paramList = List.of(
-			new VariableData("value", "char[]"),
-			new VariableData("offset", "int"),
-			new VariableData("count", "int")
+			new VariableData("value", "char[]", null),
+			new VariableData("offset", "int", null),
+			new VariableData("count", "int", null)
 		);
 		assertEquals(paramList, rangeCheckMethod.getParams());
 		assertEquals(Set.of(), rangeCheckMethod.getExceptionTypeFullNames());

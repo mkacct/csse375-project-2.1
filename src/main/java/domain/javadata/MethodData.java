@@ -13,6 +13,10 @@ public interface MethodData {
 	String getName();
 	String getReturnTypeFullName();
 
+
+	TypeStructure getReturnTypeStructure();
+	Set<String> getAllReturnTypeFullName();
+
 	AccessModifier getAccessModifier();
 	boolean isStatic();
 	boolean isFinal();

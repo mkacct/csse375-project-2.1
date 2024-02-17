@@ -62,7 +62,8 @@ class MethodNodeAdapter implements MethodData {
 			Type asmParamType = asmParamTypes[i];
 			params.add(new VariableData(
 				(asmParam != null) ? asmParam.name : null,
-				asmParamType.getClassName()
+				asmParamType.getClassName(),
+				(asmParam != null) ? asmParam.signature : null
 			));
 		}
 		return params;
@@ -85,7 +86,8 @@ class MethodNodeAdapter implements MethodData {
 			if (localVariable.name.equals(THIS)) {continue;}
 			localVariables.add(new VariableData(
 				localVariable.name,
-				Type.getType(localVariable.desc).getClassName()
+				Type.getType(localVariable.desc).getClassName(),
+				localVariable.signature
 			));
 		}
 		return localVariables;
@@ -111,5 +113,21 @@ class MethodNodeAdapter implements MethodData {
 			default:
 				return new OtherInsnNodeAdapter();
 		}
+	}
+
+	@Override
+	public TypeStructure getReturnTypeStructure() {
+		String sig = this.methodNode.signature;
+		if (sig == null) {
+			String noArrays = getReturnTypeFullName().replace("[]", "");
+			return new TypeStructure(noArrays, (getReturnTypeFullName().length() - noArrays.length()) / 2);
+		} else {
+			return new TypeStructure(sig);
+		}
+	}
+
+	@Override
+	public Set<String> getAllReturnTypeFullName() {
+		return getReturnTypeStructure().getAllFullTypeNames();
 	}
 }
