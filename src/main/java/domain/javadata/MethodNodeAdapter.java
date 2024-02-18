@@ -118,7 +118,6 @@ class MethodNodeAdapter implements MethodData {
 	@Override
 	public TypeStructure getReturnTypeStructure() {
 		String sig = this.methodNode.signature;
-		System.out.println(sig);
 		if (sig == null) {
 			String noArrays = getReturnTypeFullName().replace("[]", "");
 			return new TypeStructure(noArrays, (getReturnTypeFullName().length() - noArrays.length()) / 2);
