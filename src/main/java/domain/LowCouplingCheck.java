@@ -74,7 +74,7 @@ public class LowCouplingCheck extends GraphCheck {
     }
 
     @SuppressWarnings("unlikely-arg-type") // its perfectly fine removing an int from a pq that does not contain ints
-    private void recursion(ClassGraphIterator it, Set<Message> messages, PriorityQueue<IntegerAndDegree> pq, boolean ignoreSelf) {
+    private void recursion(ClassGraphIterator it, Set<Message> messages, PriorityQueue<IntegerAndDegree> pq, boolean ignoreSelf) { // graph traversing
         pq.remove(it.getCurrent());
         if (it.hasCycle()) {
             List<Integer> pathImm = it.getPath();

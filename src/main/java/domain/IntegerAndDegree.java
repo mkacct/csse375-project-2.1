@@ -1,7 +1,11 @@
 package domain;
 
 
-// helper class for coupling check
+/**
+ * 
+ * Helper class for coupling check
+ * 
+ */ 
 public class IntegerAndDegree implements Comparable<IntegerAndDegree>{
     public final int index;
     public final int inDegree;

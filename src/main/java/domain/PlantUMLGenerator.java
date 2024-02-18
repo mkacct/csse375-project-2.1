@@ -41,6 +41,7 @@ public class PlantUMLGenerator extends GraphCheck {
         return "plantUMLGenerator";
     }
 
+    // java and user defined classes are shortened, but other class names are not (like net.sourceforge.plantuml.FileFormat would not be, for example)
     private String getSimpleName(String str) {
         if (!str.contains(".") || graph.getClasses().containsKey(str) || str.split("\\.")[0].equals("java")) {
             String[] split = str.split("\\.");
@@ -52,6 +53,10 @@ public class PlantUMLGenerator extends GraphCheck {
     
 
     @Override
+    /**
+     * @param .pumlOutputPath - The path to put the .puml output at - Defaults to pumlGen.puml
+     * @param .svgOutputPath - The path to put the .svg output at - Defaults to svgGen.svg
+     */
     public Set<Message> gRun(Configuration config) {
         try {
             String pumlOut = config.getString(".pumlOutputPath", "pumlGen.puml"); 
@@ -98,6 +103,7 @@ public class PlantUMLGenerator extends GraphCheck {
 
 
 
+            // file output
             puml.append("@enduml");
             DataPrinter pumlPrint = new FullFilePrinter(pumlOut);
             pumlPrint.print(puml.toString());
@@ -107,6 +113,7 @@ public class PlantUMLGenerator extends GraphCheck {
 
             return Set.of(new Message(MessageLevel.INFO, MessageFormat.format("PlantUML code and image outputted to {0} and {1}", pumlOut, svgOut)));
         } catch (Exception ex) {
+            // Probably a file error occured
             return Set.of(new Message(MessageLevel.ERROR, "Error creating .puml and .svg files"));
         }
     }
