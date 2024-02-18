@@ -115,19 +115,19 @@ class MethodNodeAdapter implements MethodData {
 		}
 	}
 
-	@Override
-	public TypeStructure getReturnTypeStructure() {
-		String sig = this.methodNode.signature;
-		if (sig == null) {
-			String noArrays = getReturnTypeFullName().replace("[]", "");
-			return new TypeStructure(noArrays, (getReturnTypeFullName().length() - noArrays.length()) / 2);
-		} else {
-			return new TypeStructure(sig);
-		}
-	}
+// 	@Override
+// 	public TypeStructure getReturnTypeStructure() {
+// 		String sig = Type.getMethodDescriptor());
+// 		if (sig == null) {
+// 			String noArrays = getReturnTypeFullName().replace("[]", "");
+// 			return new TypeStructure(noArrays, (getReturnTypeFullName().length() - noArrays.length()) / 2);
+// 		} else {
+// 			return new TypeStructure(sig);
+// 		}
+// 	}
 
-	@Override
-	public Set<String> getAllReturnTypeFullName() {
-		return getReturnTypeStructure().getAllFullTypeNames();
-	}
+// 	@Override
+// 	public Set<String> getAllReturnTypeFullName() {
+// 		return getReturnTypeStructure().getAllFullTypeNames();
+// 	}
 }

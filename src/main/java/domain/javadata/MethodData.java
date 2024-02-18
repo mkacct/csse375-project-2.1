@@ -13,9 +13,9 @@ public interface MethodData {
 	String getName();
 	String getReturnTypeFullName();
 
-
-	TypeStructure getReturnTypeStructure();
-	Set<String> getAllReturnTypeFullName();
+	// I couldn't get these to work, unfortunately
+	// TypeStructure getReturnTypeStructure();
+	// Set<String> getAllReturnTypeFullName();
 
 	AccessModifier getAccessModifier();
 	boolean isStatic();
