@@ -412,11 +412,14 @@ package domain {
 			+ {abstract} getExceptionTypeFullNames(): Set<String>
 			+ {abstract} getLocalVariables(): Set<VariableData>
 			+ {abstract} getInstructions(): List<InstrData>
+			+ {abstract} getReturnTypeStructure(): TypeStructure
+			+ {abstract} getAllReturnTypeFullName(): Set<String>
 		}
 
 		MethodData ..> AccessModifier
 		MethodData ..> VariableData
 		MethodData ..> InstrData
+		MethodData ..> TypeStructure
 
 		+class ClassReaderUtil {
 			+ {static} read(javaBytecode: byte[]): ClassData
@@ -496,6 +499,8 @@ package domain {
 			+ getExceptionTypeFullNames(): Set<String>
 			+ getLocalVariables(): Set<VariableData>
 			+ getInstructions(): List<InstrData>
+			+ {abstract} getReturnTypeStructure(): TypeStructure
+			+ {abstract} getAllReturnTypeFullName(): Set<String>
 			- createInsnNodeAdapter(insn: AbstractInsnNode): InstrData
 		}
 
@@ -513,6 +518,7 @@ package domain {
 		MethodNodeAdapter ..> .asm.tree.MethodInsnNode
 		MethodNodeAdapter ..> .asm.tree.VarInsnNode
 		MethodNodeAdapter ..> .asm.tree.FieldInsnNode
+		MethodNodeAdapter ..> TypeStructure
 
 		+enum InstrType {
 			METHOD

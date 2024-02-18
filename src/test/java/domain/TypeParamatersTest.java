@@ -203,6 +203,15 @@ public class TypeParamatersTest {
         ClassData classData = map.get(CLASS_NAME);
         for (MethodData m: classData.getMethods()) {
             if (m.getName().equals("z")) {
+                assertEquals(Set.of("java.lang.Integer", "java.util.Set"),m.getAllReturnTypeFullName());
+                assertEquals("java.util.Set", m.getReturnTypeStructure().getFullTypeName());
+                assertEquals(0, m.getReturnTypeStructure().getNumArrays());
+                assertEquals(1, m.getReturnTypeStructure().getSubTypes().size());
+                for (TypeStructure t1 : m.getReturnTypeStructure().getSubTypes()) {
+                    assertEquals("java.lang.Integer", t1.getFullTypeName());
+                    assertEquals(0, t1.getNumArrays());
+                    assertEquals(0, t1.getSubTypes().size());
+                }
                 int vi = 0;
                 for (VariableData v : m.getParams()) {
                     if (vi == 0) {

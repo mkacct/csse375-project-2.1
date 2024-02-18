@@ -11,6 +11,9 @@ public class TypeStructure {
     private List<TypeStructure> subtypes;
     public TypeStructure(String signature) { // base constructor
         StringBuilder typeFullName = new StringBuilder();
+        if (signature.contains(")")) { // credit to Eric Bender (using ChatGPT) for noticing that you can do this
+            signature = signature.split("\\)")[1];
+        }
         char[] chars = signature.toCharArray();
         int i = 0;
         while (chars[i] == '[') { // find the "array depth" of this type (i.e. char[][][][][] has 5 arrays or whatever)
