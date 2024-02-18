@@ -21,7 +21,7 @@ public class TypeStructure {
         }
         numOfArray = i;
         i++; // remove L prefix
-        while (chars[i] != '<' && chars[i] != ';') {
+        while (i < chars.length && chars[i] != '<' && chars[i] != ';') {
             if(chars[i] == '/') {
                 typeFullName.append('.');
             } else {
@@ -30,7 +30,7 @@ public class TypeStructure {
             i++;
         }
         baseTypeFullName = typeFullName.toString();
-        if (chars[i] == ';') {
+        if (i >= chars.length || chars[i] == ';') {
             subtypes = List.of();
         } else {
             StringBuilder strings = new StringBuilder();

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import domain.javadata.ClassData;
+import domain.javadata.ClassType;
 import domain.javadata.FieldData;
 import domain.javadata.FieldInstrData;
 import domain.javadata.InstrData;
@@ -103,7 +104,8 @@ public class ClassGraph {
                     if (classes.containsKey(s)) {
                         int otherClass = classes.get(s);
                         if (!checkHasA(edges[i][otherClass])) {
-                            edges[i][otherClass] += 2;
+                            if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
+                                edges[i][otherClass] += 2;
                         }
                     }
                 }
@@ -117,6 +119,7 @@ public class ClassGraph {
             depSet = new HashSet<String>();
             while (mdIt.hasNext()) {
                 mdTemp = mdIt.next();
+                depSet.addAll(mdTemp.getAllReturnTypeFullName());
                 varIt = mdTemp.getLocalVariables().iterator();
                 while (varIt.hasNext()) {
                     depSet.addAll(varIt.next().getAllTypeFullName());

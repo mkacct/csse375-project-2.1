@@ -23,6 +23,7 @@ package presentation {
 	Main ..> .domain.StrategyPatternCheck
 	Main ..> .domain.ObserverPatternCheck
 	Main ..> .domain.AdapterPatternCheck
+	Main ..> .domain.PlantUMLGenerator
 
 	~class App {
 		- {static} <<final>> ENABLE_KEY_PREFIX: String
@@ -215,6 +216,7 @@ package domain {
 	}
 
 	ClassGraph --> javadata.ClassData
+	ClassGraph ..> javadata.ClassType
 	ClassGraph ..> javadata.FieldData
 	ClassGraph ..> javadata.FieldInstrData
 	ClassGraph ..> javadata.InstrData
@@ -304,13 +306,44 @@ package domain {
 	+class PlantUMLGenerator {
 		+ {static} generateSVG(source: SourceStringReader): String
 		+ getName(): String
+		- getSimpleName(str: String): String
 		+ gRun(config: Configuration): Set<Message>
+		- generatePackage(ps: PackageStructure, puml: StringBuilder, numTabs: int): void
+		- writeClass(cd: ClassData, puml: StringBuilder, numTabs: int): void
+		- printClassName(c: String, cd: ClassData, puml: StringBuilder, numTabs: int): void
+		- appendAccessModifier(am: AccessModifier, puml: StringBuilder): void
+		- appendStatic(isStatic: boolean, puml: StringBuilder): void
+		- appendFinal(isFinal: boolean, puml: StringBuilder): void
+		- appendAbstract(isAbstract: boolean, puml: StringBuilder): void
+		- appendTabs(numTabs: int, puml: StringBuilder): void
+		- printType(t: TypeStructure, puml: StringBuilder): void
 	}
 
 	PlantUMLGenerator --|> GraphCheck
+	PlantUMLGenerator ..> .datasource.DataPrinter
+	PlantUMLGenerator ..> .datasource.FullFilePrinter
 	PlantUMLGenerator ..> .plantuml.FileFormat
 	PlantUMLGenerator ..> .plantuml.FileFormatOption
 	PlantUMLGenerator ..> .plantuml.SourceStringReader
+	PlantUMLGenerator ..> javadata.AccessModifier
+	PlantUMLGenerator ..> javadata.ClassType
+	PlantUMLGenerator ..> javadata.FieldData
+	PlantUMLGenerator ..> javadata.MethodData
+	PlantUMLGenerator ..> javadata.TypeStructure
+	PlantUMLGenerator ..> javadata.VariableData
+	PlantUMLGenerator ..> PackageStructure
+
+	+class PackageStructure {
+		- <<final>> thisPackageName: String
+		- <<final>> subPackages: Set<PackageStructure>
+		- <<final>> classes: Set<String
+		+ PackageStructure(classes: Set<String>)
+		- PackageStructure(thisPackageName: String, classes: Map<String, String>)
+		- parseClasses(classes: Map<String, String>): void
+		+ getPackageName(): String
+		+ getSubPackages(): Set<PackageStructure>
+		+ getClasses(): Set<String>
+	}
 
 	package javadata {
 
@@ -624,6 +657,17 @@ package domain {
 
 package datasource {
 
+	+interface DataPrinter {
+		+ {abstract} print(s: String): void
+	}
+
+	+class FullFilePrinter {
+		- <<final>> path: String
+		+ FullFilePrinter(path: String)
+		+ print(s: String): void
+	}
+
+	FullFilePrinter ..|> DataPrinter
 	+interface FilesLoader {
 		+ {abstract} loadFiles(ext: String): Set<byte[]>\n<<throws>> IOException
 	}
