@@ -11,6 +11,7 @@ import domain.LowCouplingCheck;
 import domain.MethodLengthCheck;
 import domain.NamingConventionsCheck;
 import domain.ObserverPatternCheck;
+import domain.PlantUMLGenerator;
 import domain.ProgramToInterfaceNotImplementationCheck;
 import domain.StrategyPatternCheck;
 import domain.UnusedAbstractionsCheck;
@@ -25,7 +26,8 @@ public class Main {
 		new LowCouplingCheck(),
 		new StrategyPatternCheck(),
 		new ObserverPatternCheck(),
-		new AdapterPatternCheck()
+		new AdapterPatternCheck(),
+		new PlantUMLGenerator()
 	};
 
 	public static void main(String[] args) throws IOException {

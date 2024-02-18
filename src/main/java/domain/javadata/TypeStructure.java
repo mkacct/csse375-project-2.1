@@ -9,7 +9,7 @@ public class TypeStructure {
     private final String baseTypeFullName;
     private final int numOfArray;
     private List<TypeStructure> subtypes;
-    public TypeStructure(String signature) { // base constructor
+    public TypeStructure(String signature) { // base constructor. Singature stores information about the entire type
         StringBuilder typeFullName = new StringBuilder();
         if (signature.contains(")")) { // credit to Eric Bender (using ChatGPT) for noticing that you can do this
             signature = signature.split("\\)")[1];
@@ -21,7 +21,7 @@ public class TypeStructure {
         }
         numOfArray = i;
         i++; // remove L prefix
-        while (chars[i] != '<' && chars[i] != ';') {
+        while (i < chars.length && chars[i] != '<' && chars[i] != ';') {
             if(chars[i] == '/') {
                 typeFullName.append('.');
             } else {
@@ -30,7 +30,7 @@ public class TypeStructure {
             i++;
         }
         baseTypeFullName = typeFullName.toString();
-        if (chars[i] == ';') {
+        if (i >= chars.length || chars[i] == ';') {
             subtypes = List.of();
         } else {
             StringBuilder strings = new StringBuilder();
@@ -72,6 +72,10 @@ public class TypeStructure {
     public String getFullTypeName() {
         return baseTypeFullName;
     }
+    /**
+     * 
+     * @return All of the Full Type Names used in this type, including itself and any type paramaters
+     */
     public Set<String> getAllFullTypeNames() {
         Set<String> ret = new HashSet<String>();
         ret.add(this.getFullTypeName());
@@ -80,9 +84,18 @@ public class TypeStructure {
         }
         return ret;
     }
+    /**
+     * 
+     * @return The number of arrays on this type (does not include any additional arrays in type paramaters)
+     */
     public int getNumArrays() {
         return numOfArray;
     }
+
+    /**
+     * 
+     * @return Gets all the type paramaters of this type
+     */
     public List<TypeStructure> getSubTypes() {
         return List.copyOf(subtypes);
     }

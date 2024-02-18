@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import domain.javadata.ClassData;
+import domain.javadata.ClassType;
 import domain.javadata.FieldData;
 import domain.javadata.FieldInstrData;
 import domain.javadata.InstrData;
@@ -103,7 +104,8 @@ public class ClassGraph {
                     if (classes.containsKey(s)) {
                         int otherClass = classes.get(s);
                         if (!checkHasA(edges[i][otherClass])) {
-                            edges[i][otherClass] += 2;
+                            if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
+                                edges[i][otherClass] += 2;
                         }
                     }
                 }
@@ -115,8 +117,9 @@ public class ClassGraph {
             //depends-on
             mdIt = stringToClass.get(inverse.get(i)).getMethods().iterator();
             depSet = new HashSet<String>();
-            while (mdIt.hasNext()) {
+            while (mdIt.hasNext()) { // first we find all the classes i depends on, and put them in a set to eliminate duplicates
                 mdTemp = mdIt.next();
+                depSet.addAll(mdTemp.getAllReturnTypeFullName());
                 varIt = mdTemp.getLocalVariables().iterator();
                 while (varIt.hasNext()) {
                     depSet.addAll(varIt.next().getAllTypeFullName());
@@ -147,7 +150,7 @@ public class ClassGraph {
                 depTemp = depIt.next();
                 if (classes.containsKey(depTemp)) {
                     index = classes.get(depTemp);
-                    if (i != index && edges[i][index] == 0) {
+                    if (i != index && edges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
                         edges[i][index] += 1;
                     }
                 }
@@ -221,7 +224,11 @@ public class ClassGraph {
         return new ClassGraphIterator(this, start, list);
     }
 
-    // i.e. which classes extend/implement/etc class j
+    /**
+     * 
+     * @param j 
+     * @return An array of weights (i,j) for all i
+     */
     public int[] column(int j) {
         int i = 0;
         int[] ret = new int[numClasses];

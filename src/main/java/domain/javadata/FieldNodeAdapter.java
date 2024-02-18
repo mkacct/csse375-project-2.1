@@ -41,7 +41,7 @@ class FieldNodeAdapter implements FieldData {
 
 	@Override
 	public TypeStructure typeParam() {
-		String sig = this.fieldNode.signature;
+		String sig = this.fieldNode.signature; // signature stores information about the type paramaters
 		if (sig == null) {
 			String noArrays = getTypeFullName().replace("[]", "");
 			return new TypeStructure(noArrays, (getTypeFullName().length() - noArrays.length()) / 2);

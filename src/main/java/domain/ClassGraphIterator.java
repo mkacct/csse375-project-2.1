@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 
-
-public class ClassGraphIterator { // "iterator"
+/**
+ * Iterator for Class Graph,
+ * This is immutable, so it isn't a normal iterator.
+ *  To use this, followEdge returns a set of ClassGraphIterators that contain the full path traversed.
+ */
+public class ClassGraphIterator { 
     private final ClassGraph graph;
     private final int vertex;
     private final List<Integer> path;
