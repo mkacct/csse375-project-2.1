@@ -1,6 +1,8 @@
 package domain.javadata;
 
 
+import java.util.Set;
+
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
@@ -35,5 +37,21 @@ class FieldNodeAdapter implements FieldData {
 	@Override
 	public boolean isFinal() {
 		return (this.fieldNode.access & Opcodes.ACC_FINAL) != 0;
+	}
+
+	@Override
+	public TypeStructure typeParam() {
+		String sig = this.fieldNode.signature;
+		if (sig == null) {
+			String noArrays = getTypeFullName().replace("[]", "");
+			return new TypeStructure(noArrays, (getTypeFullName().length() - noArrays.length()) / 2);
+		} else {
+			return new TypeStructure(sig);
+		}
+	}
+
+	@Override
+	public Set<String> getAllTypeFullName() {
+		return typeParam().getAllFullTypeNames();
 	}
 }

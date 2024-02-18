@@ -99,9 +99,17 @@ public class ClassGraph {
             fdIt = stringToClass.get(inverse.get(i)).getFields().iterator();
             while (fdIt.hasNext()) {
                 fdTemp = fdIt.next();
-                if (classes.containsKey(removeArray(fdTemp.getTypeFullName()))) {
-                    edges[i][classes.get(removeArray(fdTemp.getTypeFullName()))] += 2;
+                for (String s : fdTemp.getAllTypeFullName()) {
+                    if (classes.containsKey(s)) {
+                        int otherClass = classes.get(s);
+                        if (!checkHasA(edges[i][otherClass])) {
+                            edges[i][otherClass] += 2;
+                        }
+                    }
                 }
+                // if (classes.containsKey(removeArray(fdTemp.getTypeFullName()))) {
+                //     edges[i][classes.get(removeArray(fdTemp.getTypeFullName()))] += 2;
+                // }
             }
 
             //depends-on
@@ -111,11 +119,11 @@ public class ClassGraph {
                 mdTemp = mdIt.next();
                 varIt = mdTemp.getLocalVariables().iterator();
                 while (varIt.hasNext()) {
-                    depSet.add(removeArray(varIt.next().typeFullName));
+                    depSet.addAll(varIt.next().getAllTypeFullName());
                 }
                 varIt = mdTemp.getParams().iterator();
                 while (varIt.hasNext()) {
-                    depSet.add(removeArray(varIt.next().typeFullName));
+                    depSet.addAll(varIt.next().getAllTypeFullName());
                 }
                 instrIt = mdTemp.getInstructions().iterator();
                 while (instrIt.hasNext()) {

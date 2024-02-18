@@ -224,6 +224,7 @@ package domain {
 	ClassGraph ..> javadata.MethodInstrData
 	ClassGraph ..> javadata.VariableData
 	ClassGraph ..> ClassGraphIterator
+	ClassGraph ..> javadata.TypeStructure
 
 	+class ClassGraphIterator {
 		-{final} graph: ClassGraph
@@ -313,6 +314,19 @@ package domain {
 
 	package javadata {
 
+		+class TypeStructure {
+			- {final} baseTypeFullName: String
+			- {final} numOfArray: int
+			+ TypeStructure(signature: String)
+			+ TypeStructure(typeFullName: String, numArray: int)
+			+ getFullTypeName(): String
+			+ getAllFullTypeNames(): Set<String>
+			+ getNumArrays(): int
+			+ getSubTypes(): List<TypeStructure>
+		}
+		TypeStructure --> TypeStructure
+
+
 		+enum AccessModifier {
 			PUBLIC
 			PROTECTED
@@ -337,11 +351,16 @@ package domain {
 		+class VariableData <<final>> {
 			+ <<final>> name: String
 			+ <<final>> typeFullName: String
+			- <<final>> signature: String
 
-			+ VariableData(name: String, typeFullName: String)
+			+ VariableData(name: String, typeFullName: String, signature: String)
 			+ equals(obj: Object): boolean
 			+ hashCode(): int
+			+ typeParam(): TypeStructure
+			+ getAllFullTypeName(): Set<String>
 		}
+
+		VariableData ..> TypeStructure
 
 		+interface ClassData {
 			+ {abstract} getFullName(): String
@@ -372,9 +391,12 @@ package domain {
 			+ {abstract} getAccessModifier(): AccessModifier
 			+ {abstract} isStatic(): boolean
 			+ {abstract} isFinal(): boolean
+			+ {abstract} typeParam(): TypeStructure
+			+ {abstract} getAllFullTypeName(): Set<String>
 		}
 
 		FieldData ..> AccessModifier
+		FieldData ..> TypeStructure
 
 		+interface MethodData {
 			+ {static} <<final>> CONSTRUCTOR_NAME: String
@@ -390,11 +412,14 @@ package domain {
 			+ {abstract} getExceptionTypeFullNames(): Set<String>
 			+ {abstract} getLocalVariables(): Set<VariableData>
 			+ {abstract} getInstructions(): List<InstrData>
+			+ {abstract} getReturnTypeStructure(): TypeStructure
+			+ {abstract} getAllReturnTypeFullName(): Set<String>
 		}
 
 		MethodData ..> AccessModifier
 		MethodData ..> VariableData
 		MethodData ..> InstrData
+		MethodData ..> TypeStructure
 
 		+class ClassReaderUtil {
 			+ {static} read(javaBytecode: byte[]): ClassData
@@ -443,12 +468,15 @@ package domain {
 			+ getAccessModifier(): AccessModifier
 			+ isStatic(): boolean
 			+ isFinal(): boolean
+			+ {abstract} typeParam(): TypeStructure
+			+ {abstract} getAllFullTypeName(): Set<String>
 		}
 
 		FieldData <|.. FieldNodeAdapter
 		FieldNodeAdapter --> .asm.tree.FieldNode
 		FieldNodeAdapter ..> .asm.Opcodes
 		FieldNodeAdapter ..> .asm.Type
+		FieldNodeAdapter ..> TypeStructure
 
 		~class LocalVariableUtil {
 			~ {static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
@@ -471,6 +499,8 @@ package domain {
 			+ getExceptionTypeFullNames(): Set<String>
 			+ getLocalVariables(): Set<VariableData>
 			+ getInstructions(): List<InstrData>
+			+ {abstract} getReturnTypeStructure(): TypeStructure
+			+ {abstract} getAllReturnTypeFullName(): Set<String>
 			- createInsnNodeAdapter(insn: AbstractInsnNode): InstrData
 		}
 
@@ -488,6 +518,7 @@ package domain {
 		MethodNodeAdapter ..> .asm.tree.MethodInsnNode
 		MethodNodeAdapter ..> .asm.tree.VarInsnNode
 		MethodNodeAdapter ..> .asm.tree.FieldInsnNode
+		MethodNodeAdapter ..> TypeStructure
 
 		+enum InstrType {
 			METHOD

@@ -1,6 +1,7 @@
 package domain.javadata;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a variable with its name and fully qualified type name.
@@ -17,11 +18,14 @@ public final class VariableData {
 	 */
 	public final String typeFullName;
 
-	public VariableData(String name, String typeFullName) {
+
+	private final String signature;
+
+	public VariableData(String name, String typeFullName, String signature) {
 		this.name = name;
 		this.typeFullName = typeFullName;
+		this.signature = signature;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
@@ -33,5 +37,19 @@ public final class VariableData {
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.name, this.typeFullName);
+	}
+
+	public TypeStructure typeParam() {
+		String sig = this.signature;
+		if (sig == null) {
+			String noArrays = this.typeFullName.replace("[]", "");
+			return new TypeStructure(noArrays, (this.typeFullName.length() - noArrays.length()) / 2);
+		} else {
+			return new TypeStructure(sig);
+		}
+	}
+
+	public Set<String> getAllTypeFullName() {
+		return typeParam().getAllFullTypeNames();
 	}
 }
