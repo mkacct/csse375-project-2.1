@@ -1,0 +1,4 @@
+{
+  "maxMethodLengthInstrs" : 10,
+  "adapterClassNameRegex" : "Adapter$"
+}

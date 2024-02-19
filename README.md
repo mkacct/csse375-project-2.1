@@ -13,11 +13,11 @@ Madeline Kahn, Nolan Cales, Kyle Asbury
 
 ## Features
 
-| Developer       | Style Check         | Principle Check                          | Pattern Check | A Feature (optional) |
-|:----------------|:--------------------|:-----------------------------------------|:--------------|:---------------------|
-| Madeline Kahn   | Length limits       | Program to interface, not implementation | Adapter       | JSON configuration   |
-| Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      | I/O recommendations  |
-| Kyle Asbury     | Naming conventions  | Low coupling                             | Observer      | PlantUML generation  |
+| Developer       | Style Check         | Principle Check                          | Pattern Check | A Feature (optional)               |
+|:----------------|:--------------------|:-----------------------------------------|:--------------|:-----------------------------------|
+| Madeline Kahn   | Length limits       | Program to interface, not implementation | Adapter       | JSON configuration                 |
+| Nolan Cales     | Unused abstractions | Information hiding                       | Strategy      | I/O recommendations (not finished) |
+| Kyle Asbury     | Naming conventions  | Low coupling                             | Observer      | PlantUML generation                |
 
 ## Usage
 
@@ -38,4 +38,4 @@ Properties used by specific checks shall be documented on the check's wiki page.
 
 ## Demo video
 
-_TODO: Add link to demo video_
+https://youtu.be/rxCd_6Nzzto 
