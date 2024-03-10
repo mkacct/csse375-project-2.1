@@ -12,14 +12,15 @@ import domain.javadata.FieldData;
 import domain.javadata.MethodData;
 import domain.javadata.VariableData;
 
-public class AdapterPatternCheck implements Check {
+public class AdapterPatternCheck extends Check {
 	private static final String NAME = "adapterPattern";
 
 	private static final String ADAPTER_CLASS_NAME_REGEX_KEY = "adapterClassNameRegex";
 	private static final String DEFAULT_ADAPTER_CLASS_NAME_REGEX = "Adapter$";
 
-	@Override
-	public String getName() {return NAME;}
+	public AdapterPatternCheck() {
+		super(NAME);
+	}
 
 	@Override
 	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {

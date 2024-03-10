@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class StrategyPatternCheck implements Check {
-    @Override
-    public String getName() {
-        return "strategyPattern";
-    }
+public class StrategyPatternCheck extends Check {
+    private static final String NAME = "strategyPattern";
 
+    public StrategyPatternCheck() {
+        super(NAME, false);
+    }
 
     /**
      * This

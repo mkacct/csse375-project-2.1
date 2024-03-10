@@ -11,10 +11,10 @@ import java.util.Set;
 import datasource.Configuration;
 
 public class LowCouplingCheck extends GraphCheck {
+    private static final String NAME = "lowCoupling";
 
-    @Override
-    public String getName() {
-        return "lowCoupling";
+    public LowCouplingCheck() {
+        super(NAME);
     }
 
     @Override
@@ -111,5 +111,5 @@ public class LowCouplingCheck extends GraphCheck {
         }
         return str.toString();
     }
-    
+
 }

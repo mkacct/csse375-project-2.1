@@ -11,13 +11,14 @@ import domain.javadata.ClassData;
 import domain.javadata.InstrData;
 import domain.javadata.MethodData;
 
-public class MethodLengthCheck implements Check {
+public class MethodLengthCheck extends Check {
 	private static final String NAME = "methodLength";
 
 	private static final String MAX_METHOD_LENGTH_KEY = "maxMethodLengthInstrs";
 
-	@Override
-	public String getName() {return NAME;}
+	public MethodLengthCheck() {
+		super(NAME);
+	}
 
 	@Override
 	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {

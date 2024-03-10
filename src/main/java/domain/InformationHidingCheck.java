@@ -8,12 +8,12 @@ import domain.javadata.MethodData;
 
 import java.util.*;
 
-public class InformationHidingCheck implements Check {
-    @Override
-    public String getName() {
-        return "informationHiding";
-    }
+public class InformationHidingCheck extends Check {
+    private static final String NAME = "informationHiding";
 
+    public InformationHidingCheck() {
+        super(NAME);
+    }
 
     /**
      * This

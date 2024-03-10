@@ -8,10 +8,10 @@ import domain.javadata.ClassData;
 import domain.javadata.ClassType;
 
 public class ObserverPatternCheck extends GraphCheck {
+    private static final String NAME = "observerPattern";
 
-    @Override
-    public String getName() {
-        return "observerPattern";
+    public ObserverPatternCheck() {
+        super(NAME, false);
     }
 
     @Override
@@ -109,5 +109,5 @@ public class ObserverPatternCheck extends GraphCheck {
         }
         return messages;
     }
-    
+
 }

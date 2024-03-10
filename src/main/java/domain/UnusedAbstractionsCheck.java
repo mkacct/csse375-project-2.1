@@ -6,12 +6,12 @@ import domain.javadata.ClassType;
 
 import java.util.*;
 
-public class UnusedAbstractionsCheck implements Check {
-    @Override
-    public String getName() {
-        return "unusedAbstractions";
-    }
+public class UnusedAbstractionsCheck extends Check {
+    private static final String NAME = "unusedAbstractions";
 
+    public UnusedAbstractionsCheck() {
+        super(NAME);
+    }
 
     /**
      * This
