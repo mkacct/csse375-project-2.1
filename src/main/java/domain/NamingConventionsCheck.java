@@ -12,11 +12,11 @@ import domain.javadata.FieldData;
 import domain.javadata.MethodData;
 import domain.javadata.VariableData;
 
-public class NamingConventionsCheck implements Check {
+public class NamingConventionsCheck extends Check {
+    private static final String NAME = "namingConventions";
 
-    @Override
-    public String getName() {
-        return "namingConventions";
+    public NamingConventionsCheck() {
+        super(NAME);
     }
 
     private boolean checkConvention(String str, NamingConventions convention) {
@@ -84,7 +84,7 @@ public class NamingConventionsCheck implements Check {
     @Override
     /**
      * @param convPackage -- One of the NamingConvention enum values. No input defaults to standard convention. Invalid input defaults to ANY.
-     * @param convClass 
+     * @param convClass
      * @param convInterface
      * @param convAbstract
      * @param convEnum
@@ -98,7 +98,7 @@ public class NamingConventionsCheck implements Check {
      * @param convMaxLength - int - Maximum name length. -1 for no max. Defaults to -1.
      */
     public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
-        
+
         Set<Message> messages = new HashSet<Message>();
         NamingConventions packageNames = NamingConventions.getConvention(config.getString("convPackage", "lowercase"));
         NamingConventions classNames = NamingConventions.getConvention(config.getString("convClass", "PascalCase"));
@@ -133,7 +133,7 @@ public class NamingConventionsCheck implements Check {
                 if (!checkConvention(classInfo.getSimpleName(), abstractNames)) {
                     messages.add(new Message(MessageLevel.WARNING, "Abstract Class Naming Violation", classInfo.getFullName()));
                 }
-                
+
             } else if (ClassType.INTERFACE == classInfo.getClassType()) { // interface
                 if (!checkConvention(classInfo.getSimpleName(), interfaceNames)) {
                     messages.add(new Message(MessageLevel.WARNING, "Interface Naming Violation", classInfo.getFullName()));
@@ -160,7 +160,7 @@ public class NamingConventionsCheck implements Check {
                             messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Naming Violation", pckg)));
                         }
                     }
-                    
+
                 }
             }
 
@@ -175,7 +175,7 @@ public class NamingConventionsCheck implements Check {
                     if (f.getTypeFullName().equals(classInfo.getFullName())) {
                         if (!checkConvention(f.getName(), enumConstantNames)) { // the actual enum values
                             messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Enum Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
-                        } 
+                        }
                     } else if (f.isStatic() && f.isFinal()) {
                         if (!checkConvention(f.getName(), constantNames)) { // constant fields in enum
                             messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
@@ -212,7 +212,7 @@ public class NamingConventionsCheck implements Check {
 
                 // var checks
                 for (VariableData lvar : m.getLocalVariables()) {
-                    
+
                         if (lvar.name == null) {
                             continue;
                         }
@@ -226,11 +226,11 @@ public class NamingConventionsCheck implements Check {
                         } else if (!checkConvention(lvar.name, localVarNames)) {
                             messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable ({0} in {1}) Naming Violation", lvar.name, m.getName()), classInfo.getFullName()));
                         }
-                    
+
                 }
             }
         }
         return messages;
     }
-    
+
 }

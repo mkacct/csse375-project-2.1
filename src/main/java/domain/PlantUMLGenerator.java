@@ -22,6 +22,7 @@ import net.sourceforge.plantuml.SourceStringReader;
 
 
 public class PlantUMLGenerator extends GraphCheck {
+    private static final String NAME = "plantUMLGenerator";
 
     // got this code from the plantuml.com/api
     private static String generateSVG(SourceStringReader source) throws IOException {
@@ -36,9 +37,8 @@ public class PlantUMLGenerator extends GraphCheck {
         return svg;
     }
 
-    @Override
-    public String getName() {
-        return "plantUMLGenerator";
+    public PlantUMLGenerator() {
+        super(NAME, false);
     }
 
     // java and user defined classes are shortened, but other class names are not (like net.sourceforge.plantuml.FileFormat would not be, for example)
@@ -50,7 +50,7 @@ public class PlantUMLGenerator extends GraphCheck {
             return str;
         }
     }
-    
+
 
     @Override
     /**
@@ -59,7 +59,7 @@ public class PlantUMLGenerator extends GraphCheck {
      */
     public Set<Message> gRun(Configuration config) {
         try {
-            String pumlOut = config.getString(".pumlOutputPath", "pumlGen.puml"); 
+            String pumlOut = config.getString(".pumlOutputPath", "pumlGen.puml");
             String svgOut = config.getString(".svgOutputPath", "svgGen.svg");
             PackageStructure ps = new PackageStructure(graph.getClasses().keySet());
             StringBuilder puml = new StringBuilder();
@@ -203,12 +203,12 @@ public class PlantUMLGenerator extends GraphCheck {
                     if (vi + 1 != m.getParams().size()) {
                         puml.append(", ");
                     }
-                }   
+                }
                 vi++;
             }
             puml.append(")");
             if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
-                
+
             } else {
                 puml.append(": ");
                 printType(m.getReturnTypeStructure(), puml);

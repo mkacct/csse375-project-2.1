@@ -73,11 +73,12 @@ class App {
 	private static Map<MessageLevel, Integer> runAllChecksAndPrintResults(
 		Check[] checks, Map<String, ClassData> classes, Configuration config
 	) {
-		boolean skipUnmarked = readConfigBoolAndFallbackIfWrongType(config, SKIP_UNMARKED_CHECKS_KEY, false);
+		boolean skipUnmarked = Boolean.TRUE.equals(configBoolOrNull(config, SKIP_UNMARKED_CHECKS_KEY));
 		Map<MessageLevel, Integer> msgTotals = initMsgTotals();
 		int numChecksRun = 0;
 		for (Check check : checks) {
-			if (readConfigBoolAndFallbackIfWrongType(config, ENABLE_KEY_PREFIX + check.getName(), !skipUnmarked)) {
+			Boolean configVal = configBoolOrNull(config, ENABLE_KEY_PREFIX + check.name);
+			if (skipUnmarked ? Boolean.TRUE.equals(configVal) : check.isEnabled(configVal)) {
 				runCheckAndPrintResults(check, classes, config, msgTotals);
 				numChecksRun++;
 			}
@@ -87,15 +88,17 @@ class App {
 		return msgTotals;
 	}
 
-	private static boolean readConfigBoolAndFallbackIfWrongType(Configuration config, String key, boolean fallback) {
+	private static Boolean configBoolOrNull(Configuration config, String key) {
 		try {
-			return config.getBoolean(key, fallback);
+			return config.getBoolean(key);
+		} catch (IllegalArgumentException ex) {
+			return null;
 		} catch (ClassCastException ex) {
 			System.err.println(MessageFormat.format(
-				"Error in config: property \"{0}\", if present, should be boolean; defaulting to {1}",
-				key, fallback
+				"Error in config: property \"{0}\", if present, should be boolean",
+				key
 			));
-			return fallback;
+			return null;
 		}
 	}
 
@@ -103,7 +106,7 @@ class App {
 		Check check, Map<String, ClassData> classes, Configuration config, Map<MessageLevel, Integer> msgTotals
 	) {
 		Set<Message> generatedMsgs = check.run(classes, config);
-			System.out.println(MessageFormat.format("Check {0}:", check.getName()));
+			System.out.println(MessageFormat.format("Check {0}:", check.name));
 			for (Message msg : generatedMsgs) {
 				msgTotals.put(msg.level, msgTotals.get(msg.level) + 1);
 				System.out.println(MessageFormat.format("\t{0}", colorMessageTag(msg)));

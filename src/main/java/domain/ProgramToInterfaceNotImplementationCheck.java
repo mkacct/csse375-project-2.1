@@ -14,7 +14,7 @@ import domain.javadata.FieldData;
 import domain.javadata.MethodData;
 import domain.javadata.VariableData;
 
-public class ProgramToInterfaceNotImplementationCheck implements Check {
+public class ProgramToInterfaceNotImplementationCheck extends Check {
 	private static final String NAME = "programToInterface";
 
 	private static final String DOMAIN_PKG_NAME_KEY = "domainPackageName";
@@ -47,8 +47,9 @@ public class ProgramToInterfaceNotImplementationCheck implements Check {
 		"java.util.Queue"
 	);
 
-	@Override
-	public String getName() {return NAME;}
+	public ProgramToInterfaceNotImplementationCheck() {
+		super(NAME);
+	}
 
 	@Override
 	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
