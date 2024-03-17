@@ -4,13 +4,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.text.MessageFormat;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
-import domain.javadata.FieldData;
-import domain.javadata.MethodData;
-import domain.javadata.VariableData;
 
 public class AdapterPatternCheck extends Check {
 	private static final String NAME = "adapterPattern";
@@ -50,43 +46,15 @@ public class AdapterPatternCheck extends Check {
 	}
 
 	private static void validateUsageOfAdapters(Map<String, ClassData> classes, Set<String> adapterFullNames, Set<Message> messages) {
-		for (ClassData classData : classes.values()) {
-			for (FieldData field : classData.getFields()) {
-				if (adapterFullNames.contains(field.getTypeFullName())) {
-					messages.add(new Message(
-						MessageLevel.WARNING,
-						MessageFormat.format(
-							"Field \"{0}\" is of adapter type \"{1}\"",
-							field.getName(), field.getTypeFullName()
-						),
-						classData.getFullName()
-					));
-				}
-			}
-			for (MethodData method : classData.getMethods()) {
-				if (adapterFullNames.contains(method.getReturnTypeFullName())) {
-					messages.add(new Message(
-						MessageLevel.WARNING,
-						MessageFormat.format(
-							"Method \"{0}\" has adapter return type \"{1}\"",
-							method.getName(), method.getReturnTypeFullName()
-						),
-						classData.getFullName()
-					));
-				}
-				for (VariableData param : method.getParams()) {
-					if (adapterFullNames.contains(param.typeFullName)) {
-						messages.add(new Message(
-							MessageLevel.WARNING,
-							MessageFormat.format(
-								"Method \"{0}\" has parameter \"{1}\" of adapter type \"{2}\"",
-								method.getName(), param.name, param.typeFullName
-							),
-							classData.getFullName()
-						));
-					}
-				}
-			}
-		}
+		TypeValidator typeValidator = new TypeValidator(
+			(typeFullName) -> {return !adapterFullNames.contains(typeFullName);},
+			MessageLevel.WARNING
+		);
+		typeValidator.setMessagePatterns(
+			"Field \"{0}\" is of adapter type \"{1}\"",
+			"Method \"{0}\" has adapter return type \"{1}\"",
+			"Method \"{0}\" has parameter \"{1}\" of adapter type \"{2}\""
+		);
+		typeValidator.validateTypes(classes.values(), messages);
 	}
 }
