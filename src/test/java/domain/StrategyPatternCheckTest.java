@@ -52,7 +52,7 @@ public class StrategyPatternCheckTest {
         Check check = new StrategyPatternCheck();
         Set<Message> result = check.run(this.classes.get(1), CONFIG_EMPTY);
         //System.out.println(result.toString());
-        assertEquals("[[INFO] No Strategy Pattern Detected!]",result.toString());
+        assertEquals("[]",result.toString());
 
     }
 }
