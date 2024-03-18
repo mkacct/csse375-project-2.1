@@ -22,26 +22,12 @@ public class MethodLengthCheck extends Check {
 
 	@Override
 	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
-		int maxMethodLengthInstrs;
-		try {
-			maxMethodLengthInstrs = config.getInt(MAX_METHOD_LENGTH_KEY);
-		} catch (ClassCastException ex) {
-			return Set.of(new Message(
-				MessageLevel.ERROR,
-				MessageFormat.format(
-					"Config property \"{0}\" must be an integer; could not run check",
-					MAX_METHOD_LENGTH_KEY
-				)
-			));
-		} catch (IllegalArgumentException ex) {
-			return Set.of(new Message(
-				MessageLevel.INFO,
-				MessageFormat.format(
-					"Config property \"{0}\" not found; skipping check",
-					MAX_METHOD_LENGTH_KEY
-				)
-			));
+		CountCheckPropertyValidator validator = new CountCheckPropertyValidator();
+		Integer maxMethodLengthInstrs = validator.validateGetInt(config, MAX_METHOD_LENGTH_KEY);
+		if (maxMethodLengthInstrs == null) {
+			return Set.of(validator.getValidationFailureMessage());
 		}
+		// maxMethodLengthInstrs != null
 
 		Set<Message> messages = new HashSet<>();
 		for (ClassData classData : classes.values()) {
