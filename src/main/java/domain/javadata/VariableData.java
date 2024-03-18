@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * Represents a variable with its name and fully qualified type name.
- * Immutable. Just a data class. You can compare them with equals().
+ * Immutable. You can compare them with equals().
  */
 public final class VariableData {
 	/**
@@ -17,7 +17,6 @@ public final class VariableData {
 	 * The full name of the variable's type
 	 */
 	public final String typeFullName;
-
 
 	private final String signature;
 

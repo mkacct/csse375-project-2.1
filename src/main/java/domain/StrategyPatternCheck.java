@@ -73,7 +73,7 @@ public class StrategyPatternCheck extends Check {
             }
 
         }
-        return Set.of(new Message(MessageLevel.INFO,"No Strategy Pattern Detected!"));
+        return Set.of();
     }
 
     private static ClassData getClassFromName(String className, Map<String, ClassData> classes) {
