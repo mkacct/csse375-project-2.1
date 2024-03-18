@@ -1,4 +1,4 @@
-package presentation;
+package cli;
 
 enum TerminalTextColor {
 	BLACK("\u001B[30m"),
