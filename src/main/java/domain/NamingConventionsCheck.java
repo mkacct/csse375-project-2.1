@@ -27,58 +27,7 @@ public class NamingConventionsCheck extends Check {
         if (str.contains("$") || str.contains("<") || str.contains(">")) { // not user defined names
             return true;
         }
-        switch (convention) {
-            case PascalCase:
-                if (!Character.isUpperCase(chars[0])) {
-                    return false;
-                }
-                for (int i = 0; i < chars.length; i++) {
-                    if (!Character.isLetterOrDigit(chars[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            case UPPERCASE:
-                for (int i = 0; i < chars.length; i++) {
-                    if (!Character.isDigit(chars[i]) && !Character.isUpperCase(chars[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            case UPPER_CASE:
-                for (int i = 0; i < chars.length; i++) {
-                    if (!(chars[i] == ('_')) && !Character.isDigit(chars[i]) && !Character.isUpperCase(chars[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            case camelCase:
-                if (!Character.isLowerCase(chars[0])) {
-                    return false;
-                }
-                for (int i = 0; i < chars.length; i++) {
-                    if (!Character.isLetterOrDigit(chars[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            case lower_case:
-            for (int i = 0; i < chars.length; i++) {
-                if (!(chars[i] == ('_')) && !Character.isDigit(chars[i]) && !Character.isLowerCase(chars[i])) {
-                    return false;
-                }
-            }
-            return true;
-            case lowercase:
-            for (int i = 0; i < chars.length; i++) {
-                if (!Character.isDigit(chars[i]) && !Character.isLowerCase(chars[i])) {
-                    return false;
-                }
-            }
-            return true;
-            default:
-                return true;
-        }
+        return convention.check(chars);
     }
 
     @Override
