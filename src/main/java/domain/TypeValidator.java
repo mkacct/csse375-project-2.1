@@ -62,32 +62,44 @@ class TypeValidator {
 	public void validateTypes(Collection<ClassData> allClasses, Set<Message> messages) {
 		for (ClassData classData : allClasses) {
 			if (this.classExemptionFunc.apply(classData)) {continue;}
-			for (FieldData field : classData.getFields()) {
-				if (!this.validationFunc.apply(field.getTypeFullName())) {
-					messages.add(new Message(
-						this.messageLevel,
-						MessageFormat.format(this.fieldMessagePattern, field.getName(), field.getTypeFullName()),
-						classData.getFullName()
-					));
-				}
+			this.validateFieldTypes(classData, messages);
+			this.validateMethodTypes(classData, messages);
+		}
+	}
+
+	private void validateFieldTypes(ClassData classData, Set<Message> messages) {
+		for (FieldData field : classData.getFields()) {
+			if (!this.validationFunc.apply(field.getTypeFullName())) {
+				messages.add(new Message(
+					this.messageLevel,
+					MessageFormat.format(this.fieldMessagePattern, field.getName(), field.getTypeFullName()),
+					classData.getFullName()
+				));
 			}
-			for (MethodData method : classData.getMethods()) {
-				if (!this.validationFunc.apply(method.getReturnTypeFullName())) {
-					messages.add(new Message(
-						this.messageLevel,
-						MessageFormat.format(this.methodMessagePattern, method.getName(), method.getReturnTypeFullName()),
-						classData.getFullName()
-					));
-				}
-				for (VariableData param : method.getParams()) {
-					if (!this.validationFunc.apply(param.typeFullName)) {
-						messages.add(new Message(
-							this.messageLevel,
-							MessageFormat.format(this.paramMessagePattern, method.getName(), param.name, param.typeFullName),
-							classData.getFullName()
-						));
-					}
-				}
+		}
+	}
+
+	private void validateMethodTypes(ClassData classData, Set<Message> messages) {
+		for (MethodData method : classData.getMethods()) {
+			if (!this.validationFunc.apply(method.getReturnTypeFullName())) {
+				messages.add(new Message(
+					this.messageLevel,
+					MessageFormat.format(this.methodMessagePattern, method.getName(), method.getReturnTypeFullName()),
+					classData.getFullName()
+				));
+			}
+			this.validateParamTypes(classData, method, messages);
+		}
+	}
+
+	private void validateParamTypes(ClassData classData, MethodData method, Set<Message> messages) {
+		for (VariableData param : method.getParams()) {
+			if (!this.validationFunc.apply(param.typeFullName)) {
+				messages.add(new Message(
+					this.messageLevel,
+					MessageFormat.format(this.paramMessagePattern, method.getName(), param.name, param.typeFullName),
+					classData.getFullName()
+				));
 			}
 		}
 	}
