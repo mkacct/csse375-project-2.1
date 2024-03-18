@@ -1,6 +1,5 @@
 package domain;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +9,6 @@ import java.util.regex.Pattern;
 import datasource.Configuration;
 import domain.javadata.ClassData;
 import domain.javadata.ClassType;
-import domain.javadata.FieldData;
-import domain.javadata.MethodData;
-import domain.javadata.VariableData;
 
 public class ProgramToInterfaceNotImplementationCheck extends Check {
 	private static final String NAME = "programToInterface";
@@ -59,46 +55,16 @@ public class ProgramToInterfaceNotImplementationCheck extends Check {
 
 		Set<Message> messages = new HashSet<Message>();
 
-		for (ClassData classData : classes.values()) {
-			if (!classData.getFullName().startsWith(domainPkgName + ".")) {continue;} // only check domain classes
-			if (adapterNamePattern.matcher(classData.getSimpleName()).find()) {continue;} // ignore adapter classes
-			for (FieldData field : classData.getFields()) {
-				if (!isTypeOkay(field.getTypeFullName(), classes, domainPkgName, allowedDeps)) {
-					messages.add(new Message(
-						MessageLevel.WARNING,
-						MessageFormat.format(
-							"Field \"{0}\" is of type \"{1}\"",
-							field.getName(), field.getTypeFullName()
-						),
-						classData.getFullName()
-					));
-				}
-			}
-			for (MethodData method : classData.getMethods()) {
-				if (!isTypeOkay(method.getReturnTypeFullName(), classes, domainPkgName, allowedDeps)) {
-					messages.add(new Message(
-						MessageLevel.WARNING,
-						MessageFormat.format(
-							"Method \"{0}\" has return type \"{1}\"",
-							method.getName(), method.getReturnTypeFullName()
-						),
-						classData.getFullName()
-					));
-				}
-				for (VariableData param : method.getParams()) {
-					if (!isTypeOkay(param.typeFullName, classes, domainPkgName, allowedDeps)) {
-						messages.add(new Message(
-							MessageLevel.WARNING,
-							MessageFormat.format(
-								"Method \"{0}\" has parameter \"{1}\" of type \"{2}\"",
-								method.getName(), param.name, param.typeFullName
-							),
-							classData.getFullName()
-						));
-					}
-				}
-			}
-		}
+		TypeValidator typeValidator = new TypeValidator(
+			(typeFullName) -> {return isTypeOkay(typeFullName, classes, domainPkgName, allowedDeps);},
+			MessageLevel.WARNING
+		);
+		typeValidator.setClassExemptionFunc((classData) -> {
+			if (!classData.getFullName().startsWith(domainPkgName + ".")) {return true;} // only check domain classes
+			if (adapterNamePattern.matcher(classData.getSimpleName()).find()) {return true;} // ignore adapter classes
+			return false;
+		});
+		typeValidator.validateTypes(classes.values(), messages);
 
 		return messages;
 	}
