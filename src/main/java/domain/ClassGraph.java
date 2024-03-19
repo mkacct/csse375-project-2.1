@@ -1,12 +1,6 @@
 package domain;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import domain.javadata.ClassData;
 import domain.javadata.ClassType;
@@ -44,6 +38,8 @@ public class ClassGraph {
         numClasses = stringToClass.keySet().size();
         weightedEdges = new int[numClasses][numClasses];
         retrieveClassInformation();
+        initializeEdges();
+        populateEdges();
     }
 
     private void retrieveClassInformation() {
@@ -57,8 +53,14 @@ public class ClassGraph {
         }
     }
 
+    private void initializeEdges() {
+        for(int[] arr : weightedEdges) {
+            Arrays.fill(arr, 0);
+        }
+    }
+
     private void populateEdges() {
-        int i, j;
+        int i;
         String interTemp;
         Iterator<String> interIt;
         FieldData fdTemp;
@@ -77,24 +79,30 @@ public class ClassGraph {
         int index;
 
         for (i = 0; i < numClasses; i++) {
-            initializeEdges();
 
             // extends
-            if (classes.containsKey(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))) {
-                weightedEdges[i][classes.get(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))] += 8;
+            String inverseClassInfo = inverse.get(i);
+            ClassData classInfo= stringToClass.get(inverseClassInfo);
+            String className = classInfo.getSuperFullName();
+            String removedName = removeArray(className);
+            boolean classContainsRemovedName = classes.containsKey(removedName);
+
+            if (classContainsRemovedName) {
+                weightedEdges[i][classes.get(removedName)] += 8;
             }
 
             // implements
-            interIt = stringToClass.get(inverse.get(i)).getInterfaceFullNames().iterator();
+            interIt = classInfo.getInterfaceFullNames().iterator();
             while (interIt.hasNext()) {
                 interTemp = removeArray(interIt.next());
-                if (classes.containsKey(interTemp)) {
+                boolean classContainsInterface = classes.containsKey(interTemp);
+                if (classContainsInterface) {
                     weightedEdges[i][classes.get(interTemp)] += 4;
                 }
             }
 
             // has-a
-            fdIt = stringToClass.get(inverse.get(i)).getFields().iterator();
+            fdIt = classInfo.getFields().iterator();
             while (fdIt.hasNext()) {
                 fdTemp = fdIt.next();
                 for (String s : fdTemp.getAllTypeFullName()) {
@@ -106,9 +114,6 @@ public class ClassGraph {
                         }
                     }
                 }
-                // if (classes.containsKey(removeArray(fdTemp.getTypeFullName()))) {
-                //     edges[i][classes.get(removeArray(fdTemp.getTypeFullName()))] += 2;
-                // }
             }
 
             //depends-on
@@ -152,12 +157,6 @@ public class ClassGraph {
                     }
                 }
             }
-        }
-    }
-
-    private void initializeEdges() {
-        for (j = 0; j < numClasses; j++) {
-            weightedEdges[i][j] = 0;
         }
     }
 
