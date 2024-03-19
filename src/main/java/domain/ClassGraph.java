@@ -23,7 +23,7 @@ public class ClassGraph {
     private final Map<String, ClassData> stringToClass;
     private final Map<String, Integer> classes; 
     private final Map<Integer, String> inverse; // inverse of the other map
-    private final int[][] edges; // weighted
+    private final int[][] weightedEdges;
     private final int numClasses;
 
     private String removeArray(String s) {
@@ -42,23 +42,23 @@ public class ClassGraph {
         classes = new HashMap<String, Integer>();
         inverse = new HashMap<Integer, String>();
         numClasses = stringToClass.keySet().size();
+        weightedEdges = new int[numClasses][numClasses];
+        retrieveClassInformation();
+    }
+
+    private void retrieveClassInformation() {
         Iterator<String> it = stringToClass.keySet().iterator();
         int i = 0;
-        String temp;
-
-        // retrieving all of the class information
         while (it.hasNext()) {
-            temp = it.next();
+            String temp = it.next();
             classes.put(temp, i);
             inverse.put(i, temp);
             i++;
         }
+    }
 
-        // initializing edges
-        edges = new int[numClasses][numClasses];
-
-        // populating edges
-        int j;
+    private void populateEdges() {
+        int i, j;
         String interTemp;
         Iterator<String> interIt;
         FieldData fdTemp;
@@ -76,15 +76,12 @@ public class ClassGraph {
         String depTemp;
         int index;
 
-
         for (i = 0; i < numClasses; i++) {
-            for (j = 0; j < numClasses; j++) {
-                edges[i][j] = 0;
-            }
+            initializeEdges();
 
             // extends
             if (classes.containsKey(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))) {
-                    edges[i][classes.get(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))] += 8;
+                weightedEdges[i][classes.get(removeArray(stringToClass.get(inverse.get(i)).getSuperFullName()))] += 8;
             }
 
             // implements
@@ -92,10 +89,10 @@ public class ClassGraph {
             while (interIt.hasNext()) {
                 interTemp = removeArray(interIt.next());
                 if (classes.containsKey(interTemp)) {
-                    edges[i][classes.get(interTemp)] += 4;
+                    weightedEdges[i][classes.get(interTemp)] += 4;
                 }
             }
-            
+
             // has-a
             fdIt = stringToClass.get(inverse.get(i)).getFields().iterator();
             while (fdIt.hasNext()) {
@@ -103,9 +100,9 @@ public class ClassGraph {
                 for (String s : fdTemp.getAllTypeFullName()) {
                     if (classes.containsKey(s)) {
                         int otherClass = classes.get(s);
-                        if (!checkHasA(edges[i][otherClass])) {
+                        if (!checkHasA(weightedEdges[i][otherClass])) {
                             if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
-                                edges[i][otherClass] += 2;
+                                weightedEdges[i][otherClass] += 2;
                         }
                     }
                 }
@@ -150,15 +147,19 @@ public class ClassGraph {
                 depTemp = depIt.next();
                 if (classes.containsKey(depTemp)) {
                     index = classes.get(depTemp);
-                    if (i != index && edges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
-                        edges[i][index] += 1;
+                    if (i != index && weightedEdges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
+                        weightedEdges[i][index] += 1;
                     }
                 }
             }
         }
     }
 
-    
+    private void initializeEdges() {
+        for (j = 0; j < numClasses; j++) {
+            weightedEdges[i][j] = 0;
+        }
+    }
 
     // the edge weights are in [0,15]. binary representation would be
     // --|>, ..|>, -->, ..> in terms of plantuml arrows, left is MSB.
@@ -179,14 +180,14 @@ public class ClassGraph {
     }
 
     public int getWeight(int i, int j) {
-        return edges[i][j];
+        return weightedEdges[i][j];
     }
 
     public int inDegree(int v) {
         int i = 0;
         int ret = 0;
         while (i < numClasses) {
-            ret += (edges[i][v] != 0)? 1 : 0;
+            ret += (weightedEdges[i][v] != 0)? 1 : 0;
             i++;
         }
         return ret;
@@ -196,7 +197,7 @@ public class ClassGraph {
         int j = 0;
         int ret = 0;
         while (j < numClasses) {
-            ret += (edges[v][j] != 0)? 1 : 0;
+            ret += (weightedEdges[v][j] != 0)? 1 : 0;
             j++;
         }
         return ret;
@@ -233,7 +234,7 @@ public class ClassGraph {
         int i = 0;
         int[] ret = new int[numClasses];
         while (i < numClasses) {
-            ret[i] = edges[i][j];
+            ret[i] = weightedEdges[i][j];
             i++;
         }
         return ret;
