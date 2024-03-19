@@ -60,8 +60,6 @@ public class ClassGraph {
     }
 
     private void populateEdges() {
-        FieldData fdTemp;
-        Iterator<FieldData> fdIt;
         Set<String> depSet;
         MethodData mdTemp;
         Iterator<MethodData> mdIt;
@@ -76,30 +74,14 @@ public class ClassGraph {
         int index;
 
         for (int i = 0; i < numClasses; i++) {
-
-            // extends
             String inverseClassInfo = inverse.get(i);
             ClassData classInfo= stringToClass.get(inverseClassInfo);
-            checkForInheritance(classInfo);
 
-            // implements
+            checkForInheritance(classInfo);
             checkForImplements(classInfo);
 
-
             // has-a
-            fdIt = classInfo.getFields().iterator();
-            while (fdIt.hasNext()) {
-                fdTemp = fdIt.next();
-                for (String s : fdTemp.getAllTypeFullName()) {
-                    if (classes.containsKey(s)) {
-                        int otherClass = classes.get(s);
-                        if (!checkHasA(weightedEdges[i][otherClass])) {
-                            if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
-                                weightedEdges[i][otherClass] += 2;
-                        }
-                    }
-                }
-            }
+            checkForComposition(classInfo);
 
             //depends-on
             mdIt = stringToClass.get(inverse.get(i)).getMethods().iterator();
@@ -140,6 +122,26 @@ public class ClassGraph {
                     if (i != index && weightedEdges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
                         weightedEdges[i][index] += 1;
                     }
+                }
+            }
+        }
+    }
+
+    private void checkForComposition(ClassData classInfo) {
+        Iterator<FieldData> fdIt = classInfo.getFields().iterator();
+        while (fdIt.hasNext()) {
+            FieldData fdTemp = fdIt.next();
+            checkFieldTypes(fdTemp);
+        }
+    }
+
+    private void checkFieldTypes(FieldData fdTemp) {
+        for (String s : fdTemp.getAllTypeFullName()) {
+            if (classes.containsKey(s)) {
+                int otherClass = classes.get(s);
+                if (!checkHasA(weightedEdges[i][otherClass])) {
+                    if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
+                        weightedEdges[i][otherClass] += 2;
                 }
             }
         }
