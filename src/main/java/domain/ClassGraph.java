@@ -60,9 +60,6 @@ public class ClassGraph {
     }
 
     private void populateEdges() {
-        int i;
-        String interTemp;
-        Iterator<String> interIt;
         FieldData fdTemp;
         Iterator<FieldData> fdIt;
         Set<String> depSet;
@@ -78,28 +75,16 @@ public class ClassGraph {
         String depTemp;
         int index;
 
-        for (i = 0; i < numClasses; i++) {
+        for (int i = 0; i < numClasses; i++) {
 
             // extends
             String inverseClassInfo = inverse.get(i);
             ClassData classInfo= stringToClass.get(inverseClassInfo);
-            String className = classInfo.getSuperFullName();
-            String removedName = removeArray(className);
-            boolean classContainsRemovedName = classes.containsKey(removedName);
-
-            if (classContainsRemovedName) {
-                weightedEdges[i][classes.get(removedName)] += 8;
-            }
+            checkForInheritance(classInfo);
 
             // implements
-            interIt = classInfo.getInterfaceFullNames().iterator();
-            while (interIt.hasNext()) {
-                interTemp = removeArray(interIt.next());
-                boolean classContainsInterface = classes.containsKey(interTemp);
-                if (classContainsInterface) {
-                    weightedEdges[i][classes.get(interTemp)] += 4;
-                }
-            }
+            checkForImplements(classInfo);
+
 
             // has-a
             fdIt = classInfo.getFields().iterator();
@@ -157,6 +142,27 @@ public class ClassGraph {
                     }
                 }
             }
+        }
+    }
+
+    private void checkForImplements(ClassData classInfo) {
+        Iterator<String> interIt = interIt = classInfo.getInterfaceFullNames().iterator();
+        while (interIt.hasNext()) {
+            String interTemp = removeArray(interIt.next());
+            boolean classContainsInterface = classes.containsKey(interTemp);
+            if (classContainsInterface) {
+                weightedEdges[i][classes.get(interTemp)] += 4;
+            }
+        }
+    }
+
+    private void checkForInheritance(ClassData classInfo) {
+        String className = classInfo.getSuperFullName();
+        String removedName = removeArray(className);
+        boolean classContainsRemovedName = classes.containsKey(removedName);
+
+        if (classContainsRemovedName) {
+            weightedEdges[i][classes.get(removedName)] += 8;
         }
     }
 
