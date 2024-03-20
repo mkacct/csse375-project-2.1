@@ -60,68 +60,56 @@ public class ClassGraph {
     }
 
     private void populateEdges() {
-        Set<String> depSet;
-        MethodData mdTemp;
-        Iterator<MethodData> mdIt;
-        Iterator<VariableData> varIt;
-        InstrData instrTemp;
-        FieldInstrData fieldInstrTemp;
-        MethodInstrData methodInstrTemp;
-        LocalVarInstrData localVarInstrTemp;
-        Iterator<InstrData> instrIt;
-        Iterator<String> depIt;
-        String depTemp;
-        int index;
-
         for (int i = 0; i < numClasses; i++) {
             String inverseClassInfo = inverse.get(i);
-            ClassData classInfo= stringToClass.get(inverseClassInfo);
-
+            ClassData classInfo = stringToClass.get(inverseClassInfo);
             checkForInheritance(classInfo);
             checkForImplements(classInfo);
-
-            // has-a
             checkForComposition(classInfo);
+            checkForDependencies(classInfo);
+        }
+    }
 
-            //depends-on
-            mdIt = stringToClass.get(inverse.get(i)).getMethods().iterator();
-            depSet = new HashSet<String>();
-            while (mdIt.hasNext()) { // first we find all the classes i depends on, and put them in a set to eliminate duplicates
-                mdTemp = mdIt.next();
-                depSet.addAll(mdTemp.getAllReturnTypeFullName());
-                varIt = mdTemp.getLocalVariables().iterator();
-                while (varIt.hasNext()) {
-                    depSet.addAll(varIt.next().getAllTypeFullName());
-                }
-                varIt = mdTemp.getParams().iterator();
-                while (varIt.hasNext()) {
-                    depSet.addAll(varIt.next().getAllTypeFullName());
-                }
-                instrIt = mdTemp.getInstructions().iterator();
-                while (instrIt.hasNext()) {
-                    instrTemp = instrIt.next();
-                    if (instrTemp.getInstrType() == InstrType.METHOD) {
-                        methodInstrTemp = (MethodInstrData) instrTemp;
-                        depSet.add(removeArray(methodInstrTemp.getMethodOwnerFullName()));
-                        depSet.add(removeArray(methodInstrTemp.getMethodReturnTypeFullName()));
-                    } else if (instrTemp.getInstrType() == InstrType.FIELD) {
-                        fieldInstrTemp = (FieldInstrData) instrTemp;
-                        depSet.add(removeArray(fieldInstrTemp.getFieldOwnerFullName()));
-                        depSet.add(removeArray(fieldInstrTemp.getFieldTypeFullName()));
-                    } else if (instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE) {
-                        localVarInstrTemp = (LocalVarInstrData) instrTemp;
-                        depSet.add(removeArray(localVarInstrTemp.getVarTypeFullName()));
-                    }
+    private void checkForDependencies(ClassData classInfo) {
+        //depends-on
+        Set<MethodData> methods = classInfo.getMethods();
+        Iterator<MethodData> methodsIterator = methods.iterator();
+        Set<String> depSet = new HashSet<String>();
+        while (methodsIterator.hasNext()) { // first we find all the classes i depends on, and put them in a set to eliminate duplicates
+            MethodData mdTemp = methodsIterator.next();
+            depSet.addAll(mdTemp.getAllReturnTypeFullName());
+            Iterator<VariableData> varIt = mdTemp.getLocalVariables().iterator();
+            while (varIt.hasNext()) {
+                depSet.addAll(varIt.next().getAllTypeFullName());
+            }
+            varIt = mdTemp.getParams().iterator();
+            while (varIt.hasNext()) {
+                depSet.addAll(varIt.next().getAllTypeFullName());
+            }
+            Iterator<InstrData> instrIt = mdTemp.getInstructions().iterator();
+            while (instrIt.hasNext()) {
+                InstrData instrTemp = instrIt.next();
+                if (instrTemp.getInstrType() == InstrType.METHOD) {
+                    MethodInstrData methodInstrTemp = (MethodInstrData) instrTemp;
+                    depSet.add(removeArray(methodInstrTemp.getMethodOwnerFullName()));
+                    depSet.add(removeArray(methodInstrTemp.getMethodReturnTypeFullName()));
+                } else if (instrTemp.getInstrType() == InstrType.FIELD) {
+                    FieldInstrData fieldInstrTemp = (FieldInstrData) instrTemp;
+                    depSet.add(removeArray(fieldInstrTemp.getFieldOwnerFullName()));
+                    depSet.add(removeArray(fieldInstrTemp.getFieldTypeFullName()));
+                } else if (instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE) {
+                    LocalVarInstrData localVarInstrTemp = (LocalVarInstrData) instrTemp;
+                    depSet.add(removeArray(localVarInstrTemp.getVarTypeFullName()));
                 }
             }
-            depIt = depSet.iterator();
-            while (depIt.hasNext()) {
-                depTemp = depIt.next();
-                if (classes.containsKey(depTemp)) {
-                    index = classes.get(depTemp);
-                    if (i != index && weightedEdges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
-                        weightedEdges[i][index] += 1;
-                    }
+        }
+        Iterator<String> depIt = depSet.iterator();
+        while (depIt.hasNext()) {
+            String depTemp = depIt.next();
+            if (classes.containsKey(depTemp)) {
+                Integer index = classes.get(depTemp);
+                if (i != index && weightedEdges[i][index] == 0) { // check to see that i doesn't already have implement or extend this class.
+                    weightedEdges[i][index] += 1;
                 }
             }
         }
