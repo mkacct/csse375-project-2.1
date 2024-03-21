@@ -103,21 +103,24 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     private void checkImplementsRelationship(StringBuilder puml, int i, int j) {
-        if (ClassGraph.checkImplement(graph.getWeight(i, j))) {
+        boolean isImplements = ClassGraph.checkImplement(graph.getWeight(i, j));
+        if (isImplements) {
             String implementsArrow = " ..|> ";
             appendClassInfo(puml, i, j, implementsArrow);
         }
     }
 
     private void checkHasRelationship(StringBuilder puml, int i, int j) {
-        if (ClassGraph.checkHasA(graph.getWeight(i, j))) {
+        boolean isHas = ClassGraph.checkHasA(graph.getWeight(i, j));
+        if (isHas) {
             String hasArrow = " --> ";
             appendClassInfo(puml, i, j, hasArrow);
         }
     }
 
     private void checkExtendsRelationship(StringBuilder puml, int i, int j) {
-        if (ClassGraph.checkExtend(graph.getWeight(i, j))) {
+        boolean isExtends = ClassGraph.checkExtend(graph.getWeight(i, j));
+        if (isExtends) {
             String extendsArrow = " --|> ";
             appendClassInfo(puml, i, j, extendsArrow);
         }
