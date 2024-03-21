@@ -24,15 +24,12 @@ import net.sourceforge.plantuml.SourceStringReader;
 public class PlantUMLGenerator extends GraphCheck {
     private static final String NAME = "plantUMLGenerator";
 
-    // got this code from the plantuml.com/api
     private static String generateSVG(SourceStringReader source) throws IOException {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        // Write the first image to "os"
         @SuppressWarnings({ "deprecation", "unused" })
         String desc = source.generateImage(os, new FileFormatOption(FileFormat.SVG));
         os.close();
 
-        // The XML is stored into svg
         final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
         return svg;
     }
@@ -43,12 +40,14 @@ public class PlantUMLGenerator extends GraphCheck {
 
     // java and user defined classes are shortened, but other class names are not (like net.sourceforge.plantuml.FileFormat would not be, for example)
     private String getSimpleName(String str) {
-        if (!str.contains(".") || graph.getClasses().containsKey(str) || str.split("\\.")[0].equals("java")) {
+        boolean omitPeriods = !str.contains(".");
+        boolean classIsRecognized = graph.getClasses().containsKey(str);
+        boolean isJavaBased = str.split("\\.")[0].equals("java");
+        if (omitPeriods || classIsRecognized || isJavaBased) {
             String[] split = str.split("\\.");
             return split[split.length - 1];
-        } else {
-            return str;
         }
+        return str;
     }
 
 
