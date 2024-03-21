@@ -73,7 +73,7 @@ public class PlantUMLGenerator extends GraphCheck {
             for (int i = 0; i < classes; i++) {
                 for (int j = 0; j < classes; j++) {
                     int weight = graph.getWeight(i, j);
-                    checkClassRelationships(puml, i, j);
+                    checkClassRelationships(puml, i, j, weight);
                 }
             }
 
@@ -94,40 +94,41 @@ public class PlantUMLGenerator extends GraphCheck {
         }
     }
 
-    private void checkClassRelationships(StringBuilder puml, int i, int j) {
-        checkDependsRelationship(puml, i, j);
-        checkExtendsRelationship(puml, i, j);
-        checkHasRelationship(puml, i, j);
-        checkImplementsRelationship(puml, i, j);
+    private void checkClassRelationships(StringBuilder puml, int i, int j, int weight) {
+        checkDependsRelationship(puml, i, j, weight);
+        checkExtendsRelationship(puml, i, j, weight);
+        checkHasRelationship(puml, i, j, weight);
+        checkImplementsRelationship(puml, i, j, weight);
 
     }
 
-    private void checkImplementsRelationship(StringBuilder puml, int i, int j) {
-        boolean isImplements = ClassGraph.checkImplement(graph.getWeight(i, j));
+    private void checkImplementsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isImplements = ClassGraph.checkImplement(weight);
         if (isImplements) {
             String implementsArrow = " ..|> ";
             appendClassInfo(puml, i, j, implementsArrow);
         }
     }
 
-    private void checkHasRelationship(StringBuilder puml, int i, int j) {
-        boolean isHas = ClassGraph.checkHasA(graph.getWeight(i, j));
+    private void checkHasRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isHas = ClassGraph.checkHasA(weight);
         if (isHas) {
             String hasArrow = " --> ";
             appendClassInfo(puml, i, j, hasArrow);
         }
     }
 
-    private void checkExtendsRelationship(StringBuilder puml, int i, int j) {
-        boolean isExtends = ClassGraph.checkExtend(graph.getWeight(i, j));
+    private void checkExtendsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isExtends = ClassGraph.checkExtend(weight);
         if (isExtends) {
             String extendsArrow = " --|> ";
             appendClassInfo(puml, i, j, extendsArrow);
         }
     }
 
-    private void checkDependsRelationship(StringBuilder puml, int i, int j) {
-        if (ClassGraph.checkDepends(graph.getWeight(i, j))) {
+    private void checkDependsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isDepends = ClassGraph.checkDepends(weight);
+        if (isDepends) {
             String dependsArrow = " ..> ";
             appendClassInfo(puml, i, j, dependsArrow);
         }
