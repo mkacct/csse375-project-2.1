@@ -182,62 +182,74 @@ public class PlantUMLGenerator extends GraphCheck {
             }
         }
         for (FieldData f : cd.getFields()) {
-            if ((cd.getClassType() != ClassType.ENUM || !f.getTypeFullName().equals(cd.getFullName())) &&
-                     !f.getName().contains("$") && !f.getName().contains("<")) {
-                appendTabs(numTabs, puml);
-                appendAccessModifier(f.getAccessModifier(), puml);
-                appendStatic(f.isStatic(), puml);
-                appendFinal(f.isFinal(), puml);
-                puml.append(f.getName());
-                puml.append(": ");
-                printType(f.typeParam(), puml);
-                puml.append("\n");
+            boolean classTypeIsEnum = cd.getClassType() != ClassType.ENUM;
+            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
+            boolean fieldContainsNoSpecialCharacter = !f.getName().contains("$") && !f.getName().contains("<");
+            if ((classTypeIsEnum || !fieldTypeEqualsClassName) && fieldContainsNoSpecialCharacter) {
+                appendStaticFinalModifiers(numTabs, puml, f);
             }
-
         }
         for (MethodData m : cd.getMethods()) {
-            if (!m.getName().contains("$") && (!m.getName().contains("<") || m.getName().equals(MethodData.CONSTRUCTOR_NAME))) {
-            appendTabs(numTabs, puml);
-            appendAccessModifier(m.getAccessModifier(), puml);
-            appendAbstract(m.isAbstract(), puml);
-            appendStatic(m.isStatic(), puml);
-            appendFinal(m.isFinal(), puml);
-            if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
-                puml.append(getSimpleName(cd.getFullName()));
-            } else {
-                puml.append(m.getName());
-            }
-            puml.append("(");
-            int vi = 0;
-            for (VariableData v : m.getParams()) {
-                if (v.name == null) {
-                    printType(v.typeParam(), puml);
-                    if (vi + 1 != m.getParams().size()) {
-                        puml.append(", ");
-                    }
+            boolean methodIsTag = m.getName().contains("$");
+            boolean methodContainsInvalidCharacter = m.getName().contains("<");
+            boolean methodIsConstructor = m.getName().equals(MethodData.CONSTRUCTOR_NAME);
+            if (!methodIsTag && (!methodContainsInvalidCharacter || methodIsConstructor)) {
+                appendTabs(numTabs, puml);
+                appendAbstractStaticFinal(m, numTabs, puml);
+                if (methodIsConstructor) {
+                    puml.append(getSimpleName(cd.getFullName()));
                 } else {
-                    puml.append(v.name);
+                    puml.append(m.getName());
+                }
+                puml.append("(");
+                int vi = 0;
+                for (VariableData v : m.getParams()) {
+                    if (v.name == null) {
+                        printType(v.typeParam(), puml);
+                        if (vi + 1 != m.getParams().size()) {
+                            puml.append(", ");
+                        }
+                    } else {
+                        puml.append(v.name);
+                        puml.append(": ");
+                        printType(v.typeParam(), puml);
+                        if (vi + 1 != m.getParams().size()) {
+                            puml.append(", ");
+                        }
+                    }
+                    vi++;
+                }
+                puml.append(")");
+                if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
+
+                } else {
                     puml.append(": ");
-                    printType(v.typeParam(), puml);
-                    if (vi + 1 != m.getParams().size()) {
-                        puml.append(", ");
+                    printType(m.getReturnTypeStructure(), puml);
+                    if (puml.substring(puml.length()-2).equals(": ")) {
+                        puml.append(m.getReturnTypeFullName());
                     }
                 }
-                vi++;
+                puml.append("\n");
             }
-            puml.append(")");
-            if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
+        }
+    }
 
-            } else {
-                puml.append(": ");
-                printType(m.getReturnTypeStructure(), puml);
-                if (puml.substring(puml.length()-2).equals(": ")) {
-                    puml.append(m.getReturnTypeFullName());
-                }
-            }
-            puml.append("\n");
-        }
-        }
+    private void appendAbstractStaticFinal(MethodData m, int numTabs, StringBuilder puml) {
+        appendAccessModifier(m.getAccessModifier(), puml);
+        appendAbstract(m.isAbstract(), puml);
+        appendStatic(m.isStatic(), puml);
+        appendFinal(m.isFinal(), puml);
+    }
+
+    private void appendStaticFinalModifiers(int numTabs, StringBuilder puml, FieldData f) {
+        appendTabs(numTabs, puml);
+        appendAccessModifier(f.getAccessModifier(), puml);
+        appendStatic(f.isStatic(), puml);
+        appendFinal(f.isFinal(), puml);
+        puml.append(f.getName());
+        puml.append(": ");
+        printType(f.typeParam(), puml);
+        puml.append("\n");
     }
 
     private void handleEnumBasedOnField(ClassData cd, StringBuilder puml, int numTabs, FieldData f, int enums) {
@@ -257,7 +269,8 @@ public class PlantUMLGenerator extends GraphCheck {
     private int calculateEnums(ClassData cd) {
         int i = 0;
         for (FieldData f: cd.getFields()) {
-            if (f.getTypeFullName().equals(cd.getFullName())) {
+            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
+            if (fieldTypeEqualsClassName) {
                 i++;
             }
         }
