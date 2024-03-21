@@ -40,14 +40,18 @@ public class PlantUMLGenerator extends GraphCheck {
 
     // java and user defined classes are shortened, but other class names are not (like net.sourceforge.plantuml.FileFormat would not be, for example)
     private String getSimpleName(String str) {
-        boolean omitPeriods = !str.contains(".");
-        boolean classIsRecognized = graph.getClasses().containsKey(str);
-        boolean isJavaBased = str.split("\\.")[0].equals("java");
-        if (omitPeriods || classIsRecognized || isJavaBased) {
+        if (isValidFormat(str)) {
             String[] split = str.split("\\.");
             return split[split.length - 1];
         }
         return str;
+    }
+
+    private boolean isValidFormat(String str) {
+        boolean omitPeriods = !str.contains(".");
+        boolean classIsRecognized = graph.getClasses().containsKey(str);
+        boolean isJavaBased = str.split("\\.")[0].equals("java");
+        return omitPeriods || classIsRecognized || isJavaBased;
     }
 
 
