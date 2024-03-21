@@ -73,22 +73,7 @@ public class PlantUMLGenerator extends GraphCheck {
             for (int i = 0; i < classes; i++) {
                 for (int j = 0; j < classes; j++) {
                     int weight = graph.getWeight(i, j);
-                    if (ClassGraph.checkDepends(graph.getWeight(i, j))) {
-                        String dependsArrow = " ..> ";
-                        appendClassInfo(puml, i, j, dependsArrow);
-                    }
-                    if (ClassGraph.checkExtend(graph.getWeight(i, j))) {
-                        String extendsArrow = " --|> ";
-                        appendClassInfo(puml, i, j, extendsArrow);
-                    }
-                    if (ClassGraph.checkHasA(graph.getWeight(i, j))) {
-                        String hasArrow = " --> ";
-                        appendClassInfo(puml, i, j, hasArrow);
-                    }
-                    if (ClassGraph.checkImplement(graph.getWeight(i, j))) {
-                        String implementsArrow = " ..|> ";
-                        appendClassInfo(puml, i, j, implementsArrow);
-                    }
+                    checkClassRelationships(puml, i, j);
                 }
             }
 
@@ -106,6 +91,42 @@ public class PlantUMLGenerator extends GraphCheck {
         } catch (Exception ex) {
             // Probably a file error occured
             return Set.of(new Message(MessageLevel.ERROR, "Error creating .puml and .svg files"));
+        }
+    }
+
+    private void checkClassRelationships(StringBuilder puml, int i, int j) {
+        checkDependsRelationship(puml, i, j);
+        checkExtendsRelationship(puml, i, j);
+        checkHasRelationship(puml, i, j);
+        checkImplementsRelationship(puml, i, j);
+
+    }
+
+    private void checkImplementsRelationship(StringBuilder puml, int i, int j) {
+        if (ClassGraph.checkImplement(graph.getWeight(i, j))) {
+            String implementsArrow = " ..|> ";
+            appendClassInfo(puml, i, j, implementsArrow);
+        }
+    }
+
+    private void checkHasRelationship(StringBuilder puml, int i, int j) {
+        if (ClassGraph.checkHasA(graph.getWeight(i, j))) {
+            String hasArrow = " --> ";
+            appendClassInfo(puml, i, j, hasArrow);
+        }
+    }
+
+    private void checkExtendsRelationship(StringBuilder puml, int i, int j) {
+        if (ClassGraph.checkExtend(graph.getWeight(i, j))) {
+            String extendsArrow = " --|> ";
+            appendClassInfo(puml, i, j, extendsArrow);
+        }
+    }
+
+    private void checkDependsRelationship(StringBuilder puml, int i, int j) {
+        if (ClassGraph.checkDepends(graph.getWeight(i, j))) {
+            String dependsArrow = " ..> ";
+            appendClassInfo(puml, i, j, dependsArrow);
         }
     }
 
