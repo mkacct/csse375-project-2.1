@@ -179,8 +179,7 @@ public class PlantUMLGenerator extends GraphCheck {
             int i = 0;
             for (FieldData f: cd.getFields()) {
                 if (f.getTypeFullName().equals(cd.getFullName())) {
-                    i++; // this is to check how many enums there are
-                    // so we can change between putting a , or not at the end of a line
+                    i++;
                 }
             }
             for (FieldData f: cd.getFields()) {
@@ -198,9 +197,7 @@ public class PlantUMLGenerator extends GraphCheck {
         }
         for (FieldData f : cd.getFields()) {
             if ((cd.getClassType() != ClassType.ENUM || !f.getTypeFullName().equals(cd.getFullName())) &&
-                     !f.getName().contains("$") && !f.getName().contains("<")) { // all non-enum values.
-                                        // also ignoring fields with $ and < from java, although apparently
-                                        // $ is fine in user-defined fields.
+                     !f.getName().contains("$") && !f.getName().contains("<")) {
                 appendTabs(numTabs, puml);
                 appendAccessModifier(f.getAccessModifier(), puml);
                 appendStatic(f.isStatic(), puml);
@@ -227,7 +224,7 @@ public class PlantUMLGenerator extends GraphCheck {
             puml.append("(");
             int vi = 0;
             for (VariableData v : m.getParams()) {
-                if (v.name == null) { // I'm not exactly sure when this happens, but it seems to happen with all abstract methods, and some enum methods
+                if (v.name == null) {
                     printType(v.typeParam(), puml);
                     if (vi + 1 != m.getParams().size()) {
                         puml.append(", ");
