@@ -74,28 +74,20 @@ public class PlantUMLGenerator extends GraphCheck {
                 for (int j = 0; j < classes; j++) {
                     int weight = graph.getWeight(i, j);
                     if (ClassGraph.checkDepends(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" ..> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
+                        String dependsArrow = " ..> ";
+                        appendClassInfo(puml, i, j, dependsArrow);
                     }
                     if (ClassGraph.checkExtend(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" --|> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
+                        String extendsArrow = " --|> ";
+                        appendClassInfo(puml, i, j, extendsArrow);
                     }
                     if (ClassGraph.checkHasA(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" --> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
+                        String hasArrow = " --> ";
+                        appendClassInfo(puml, i, j, hasArrow);
                     }
                     if (ClassGraph.checkImplement(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" ..|> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
+                        String implementsArrow = " ..|> ";
+                        appendClassInfo(puml, i, j, implementsArrow);
                     }
                 }
             }
@@ -115,6 +107,13 @@ public class PlantUMLGenerator extends GraphCheck {
             // Probably a file error occured
             return Set.of(new Message(MessageLevel.ERROR, "Error creating .puml and .svg files"));
         }
+    }
+
+    private void appendClassInfo(StringBuilder puml, int i, int j, String dependsArrow) {
+        puml.append(graph.indexToClass(i));
+        puml.append(dependsArrow);
+        puml.append(graph.indexToClass(j));
+        puml.append("\n");
     }
 
     private void writeHeader(StringBuilder puml) {
