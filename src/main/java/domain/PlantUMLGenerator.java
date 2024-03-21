@@ -176,23 +176,9 @@ public class PlantUMLGenerator extends GraphCheck {
 
     private void writeClass(ClassData cd, StringBuilder puml, int numTabs) {
         if (cd.getClassType() == ClassType.ENUM) {
-            int i = 0;
+            int enums = calculateEnums(cd);
             for (FieldData f: cd.getFields()) {
-                if (f.getTypeFullName().equals(cd.getFullName())) {
-                    i++;
-                }
-            }
-            for (FieldData f: cd.getFields()) {
-                if (f.getTypeFullName().equals(cd.getFullName())) {
-                    i--;
-                    appendTabs(numTabs, puml);
-                    puml.append(f.getName());
-                    if (i != 0) {
-                        puml.append(",\n");
-                    } else {
-                        puml.append("\n");
-                    }
-                }
+                handleEnumBasedOnField(cd, puml, numTabs, f, enums);
             }
         }
         for (FieldData f : cd.getFields()) {
@@ -252,6 +238,30 @@ public class PlantUMLGenerator extends GraphCheck {
             puml.append("\n");
         }
         }
+    }
+
+    private void handleEnumBasedOnField(ClassData cd, StringBuilder puml, int numTabs, FieldData f, int enums) {
+        boolean fieldIsEnum = f.getTypeFullName().equals(cd.getFullName());
+        if (fieldIsEnum) {
+            enums--;
+            appendTabs(numTabs, puml);
+            puml.append(f.getName());
+            if (enums != 0) {
+                puml.append(",\n");
+            } else {
+                puml.append("\n");
+            }
+        }
+    }
+
+    private int calculateEnums(ClassData cd) {
+        int i = 0;
+        for (FieldData f: cd.getFields()) {
+            if (f.getTypeFullName().equals(cd.getFullName())) {
+                i++;
+            }
+        }
+        return i;
     }
 
     private void printClassName(String c, ClassData cd, StringBuilder puml, int numTabs) {
