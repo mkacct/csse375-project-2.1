@@ -68,7 +68,6 @@ public class PlantUMLGenerator extends GraphCheck {
             writeHeader(puml);
             generatePackage(ps, puml, 0);
 
-            // arrows
             int classes = graph.getNumClasses();
             for (int i = 0; i < classes; i++) {
                 for (int j = 0; j < classes; j++) {
@@ -76,22 +75,19 @@ public class PlantUMLGenerator extends GraphCheck {
                     checkClassRelationships(puml, i, j, weight);
                 }
             }
-
-
-
-            // file output
-            puml.append("@enduml");
-            DataPrinter pumlPrint = new FullFilePrinter(pumlOut);
-            pumlPrint.print(puml.toString());
-            DataPrinter svgPrint = new FullFilePrinter(svgOut);
-            svgPrint.print(generateSVG(new SourceStringReader(puml.toString())));
-
-
+            createFileOutput(puml, pumlOut, svgOut);
             return Set.of(new Message(MessageLevel.INFO, MessageFormat.format("PlantUML code and image outputted to {0} and {1}", pumlOut, svgOut)));
         } catch (Exception ex) {
-            // Probably a file error occured
             return Set.of(new Message(MessageLevel.ERROR, "Error creating .puml and .svg files"));
         }
+    }
+
+    private void createFileOutput(StringBuilder puml, String pumlOut, String svgOut) throws IOException {
+        puml.append("@enduml");
+        DataPrinter pumlPrint = new FullFilePrinter(pumlOut);
+        pumlPrint.print(puml.toString());
+        DataPrinter svgPrint = new FullFilePrinter(svgOut);
+        svgPrint.print(generateSVG(new SourceStringReader(puml.toString())));
     }
 
     private void checkClassRelationships(StringBuilder puml, int i, int j, int weight) {
@@ -150,23 +146,32 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     private void generatePackage(PackageStructure ps, StringBuilder puml, int numTabs) {
-        ClassData cd;
-        for (String c : ps.getClasses()) {
-            cd = graph.getClasses().get(c);
-            printClassName(c, cd, puml, numTabs);
-            writeClass(cd, puml, numTabs + 1);
-            appendTabs(numTabs, puml);
-            puml.append("}\n");
+
+        Set<String> classNames = ps.getClasses();
+        for (String c : classNames) {
+            addClassToUML(puml, c, numTabs);
         }
         for (PackageStructure p : ps.getSubPackages()) {
-            appendTabs(numTabs, puml);
-            puml.append("package ");
-            puml.append(p.getPackageName());
-            puml.append(" {\n");
-            generatePackage(p, puml, numTabs + 1);
-            appendTabs(numTabs, puml);
-            puml.append(" }\n");
+            addPackageToUML(puml, numTabs, p);
         }
+    }
+
+    private void addPackageToUML(StringBuilder puml, int numTabs, PackageStructure p) {
+        appendTabs(numTabs, puml);
+        puml.append("package ");
+        puml.append(p.getPackageName());
+        puml.append(" {\n");
+        generatePackage(p, puml, numTabs + 1);
+        appendTabs(numTabs, puml);
+        puml.append(" }\n");
+    }
+
+    private void addClassToUML(StringBuilder puml, String c, int numTabs) {
+        ClassData classData = graph.getClasses().get(c);
+        printClassName(c, classData, puml, numTabs);
+        writeClass(classData, puml, numTabs + 1);
+        appendTabs(numTabs, puml);
+        puml.append("}\n");
     }
 
     private void writeClass(ClassData cd, StringBuilder puml, int numTabs) {
