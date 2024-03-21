@@ -6,9 +6,10 @@ public class CheckRoster {
 	 */
 	public static final Check[] CHECKS = {
 		new NamingConventionsCheck(),
-		new NoGlobalVariablesCheck(),
 		new MethodLengthCheck(),
 		new ParameterCountCheck(),
+		new NoGlobalVariablesCheck(),
+		new RequiredOverridesCheck(),
 		new UnusedAbstractionsCheck(),
 		new InformationHidingCheck(),
 		new ProgramToInterfaceNotImplementationCheck(),
