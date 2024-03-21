@@ -158,7 +158,7 @@ public class ClassGraph {
     }
 
     private void checkForImplements(ClassData classInfo, int i) {
-        Iterator<String> interIt = interIt = classInfo.getInterfaceFullNames().iterator();
+        Iterator<String> interIt = classInfo.getInterfaceFullNames().iterator();
         while (interIt.hasNext()) {
             String interTemp = removeArray(interIt.next());
             boolean classContainsInterface = classes.containsKey(interTemp);
