@@ -206,16 +206,13 @@ public class PlantUMLGenerator extends GraphCheck {
                 for (VariableData v : m.getParams()) {
                     if (v.name == null) {
                         printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
                     } else {
                         puml.append(v.name);
                         puml.append(": ");
-                        printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
+                    }
+                    printType(v.typeParam(), puml);
+                    if (vi + 1 != m.getParams().size()) {
+                        puml.append(", ");
                     }
                     vi++;
                 }
