@@ -63,46 +63,24 @@ public class ClassGraph {
         for (int i = 0; i < numClasses; i++) {
             String inverseClassInfo = inverse.get(i);
             ClassData classInfo = stringToClass.get(inverseClassInfo);
-            checkForInheritance(classInfo);
-            checkForImplements(classInfo);
-            checkForComposition(classInfo);
-            checkForDependencies(classInfo);
+            checkForInheritance(classInfo, i);
+            checkForImplements(classInfo, i);
+            checkForComposition(classInfo, i);
+            checkForDependencies(classInfo, i);
         }
     }
 
-    private void checkForDependencies(ClassData classInfo) {
-        //depends-on
+    private void checkForDependencies(ClassData classInfo, int i) {
         Set<MethodData> methods = classInfo.getMethods();
         Iterator<MethodData> methodsIterator = methods.iterator();
         Set<String> depSet = new HashSet<String>();
         while (methodsIterator.hasNext()) { // first we find all the classes i depends on, and put them in a set to eliminate duplicates
-            MethodData mdTemp = methodsIterator.next();
-            depSet.addAll(mdTemp.getAllReturnTypeFullName());
-            Iterator<VariableData> varIt = mdTemp.getLocalVariables().iterator();
-            while (varIt.hasNext()) {
-                depSet.addAll(varIt.next().getAllTypeFullName());
-            }
-            varIt = mdTemp.getParams().iterator();
-            while (varIt.hasNext()) {
-                depSet.addAll(varIt.next().getAllTypeFullName());
-            }
-            Iterator<InstrData> instrIt = mdTemp.getInstructions().iterator();
-            while (instrIt.hasNext()) {
-                InstrData instrTemp = instrIt.next();
-                if (instrTemp.getInstrType() == InstrType.METHOD) {
-                    MethodInstrData methodInstrTemp = (MethodInstrData) instrTemp;
-                    depSet.add(removeArray(methodInstrTemp.getMethodOwnerFullName()));
-                    depSet.add(removeArray(methodInstrTemp.getMethodReturnTypeFullName()));
-                } else if (instrTemp.getInstrType() == InstrType.FIELD) {
-                    FieldInstrData fieldInstrTemp = (FieldInstrData) instrTemp;
-                    depSet.add(removeArray(fieldInstrTemp.getFieldOwnerFullName()));
-                    depSet.add(removeArray(fieldInstrTemp.getFieldTypeFullName()));
-                } else if (instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE) {
-                    LocalVarInstrData localVarInstrTemp = (LocalVarInstrData) instrTemp;
-                    depSet.add(removeArray(localVarInstrTemp.getVarTypeFullName()));
-                }
-            }
+            removeDuplicatesFromMethods(methodsIterator, depSet);
         }
+        checkForPreviousImplementsOrExtends(depSet, i);
+    }
+
+    private void checkForPreviousImplementsOrExtends(Set<String> depSet, int i) {
         Iterator<String> depIt = depSet.iterator();
         while (depIt.hasNext()) {
             String depTemp = depIt.next();
@@ -115,15 +93,59 @@ public class ClassGraph {
         }
     }
 
-    private void checkForComposition(ClassData classInfo) {
-        Iterator<FieldData> fdIt = classInfo.getFields().iterator();
-        while (fdIt.hasNext()) {
-            FieldData fdTemp = fdIt.next();
-            checkFieldTypes(fdTemp);
+    private void removeDuplicatesFromMethods(Iterator<MethodData> methodsIterator, Set<String> depSet) {
+        MethodData mdTemp = methodsIterator.next();
+        depSet.addAll(mdTemp.getAllReturnTypeFullName());
+        removeDuplicatesFromLocalVariables(mdTemp, depSet);
+        removeDuplicatesFromParameters(mdTemp, depSet);
+        removeDuplicatesFromInstructions(mdTemp, depSet);
+    }
+
+    private void removeDuplicatesFromInstructions(MethodData mdTemp, Set<String> depSet) {
+        Iterator<InstrData> instrIt = mdTemp.getInstructions().iterator();
+        while (instrIt.hasNext()) {
+            InstrData instrTemp = instrIt.next();
+            boolean isMethod = instrTemp.getInstrType() == InstrType.METHOD;
+            boolean isField = instrTemp.getInstrType() == InstrType.FIELD;
+            boolean isLocalVariable = instrTemp.getInstrType() == InstrType.LOCAL_VARIABLE;
+            if (isMethod) {
+                MethodInstrData methodInstrTemp = (MethodInstrData) instrTemp;
+                depSet.add(removeArray(methodInstrTemp.getMethodOwnerFullName()));
+                depSet.add(removeArray(methodInstrTemp.getMethodReturnTypeFullName()));
+            } else if (isField) {
+                FieldInstrData fieldInstrTemp = (FieldInstrData) instrTemp;
+                depSet.add(removeArray(fieldInstrTemp.getFieldOwnerFullName()));
+                depSet.add(removeArray(fieldInstrTemp.getFieldTypeFullName()));
+            } else if (isLocalVariable) {
+                LocalVarInstrData localVarInstrTemp = (LocalVarInstrData) instrTemp;
+                depSet.add(removeArray(localVarInstrTemp.getVarTypeFullName()));
+            }
         }
     }
 
-    private void checkFieldTypes(FieldData fdTemp) {
+    private void removeDuplicatesFromParameters(MethodData mdTemp, Set<String> depSet) {
+        Iterator<VariableData> varIt = mdTemp.getParams().iterator();
+        while (varIt.hasNext()) {
+            depSet.addAll(varIt.next().getAllTypeFullName());
+        }
+    }
+
+    private void removeDuplicatesFromLocalVariables(MethodData mdTemp, Set<String> depSet) {
+        Iterator<VariableData> varIt = mdTemp.getLocalVariables().iterator();
+        while (varIt.hasNext()) {
+            depSet.addAll(varIt.next().getAllTypeFullName());
+        }
+    }
+
+    private void checkForComposition(ClassData classInfo, int i) {
+        Iterator<FieldData> fdIt = classInfo.getFields().iterator();
+        while (fdIt.hasNext()) {
+            FieldData fdTemp = fdIt.next();
+            checkFieldTypes(fdTemp, i);
+        }
+    }
+
+    private void checkFieldTypes(FieldData fdTemp, int i) {
         for (String s : fdTemp.getAllTypeFullName()) {
             if (classes.containsKey(s)) {
                 int otherClass = classes.get(s);
@@ -135,7 +157,7 @@ public class ClassGraph {
         }
     }
 
-    private void checkForImplements(ClassData classInfo) {
+    private void checkForImplements(ClassData classInfo, int i) {
         Iterator<String> interIt = interIt = classInfo.getInterfaceFullNames().iterator();
         while (interIt.hasNext()) {
             String interTemp = removeArray(interIt.next());
@@ -146,7 +168,7 @@ public class ClassGraph {
         }
     }
 
-    private void checkForInheritance(ClassData classInfo) {
+    private void checkForInheritance(ClassData classInfo, int i) {
         String className = classInfo.getSuperFullName();
         String removedName = removeArray(className);
         boolean classContainsRemovedName = classes.containsKey(removedName);
