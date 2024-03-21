@@ -348,18 +348,24 @@ public class PlantUMLGenerator extends GraphCheck {
 
     private void printType(TypeStructure t, StringBuilder puml) {
         puml.append(getSimpleName(t.getFullTypeName()));
-        if (!t.getSubTypes().isEmpty()) {
-            puml.append("<");
-            for (int i = 0; i < t.getSubTypes().size(); i++) {
-                printType(t.getSubTypes().get(i), puml);
-                if (i + 1 != t.getSubTypes().size()) {
-                    puml.append(", ");
-                }
-            }
-            puml.append(">");
+        boolean containsSubtypes = !t.getSubTypes().isEmpty();
+        if (containsSubtypes) {
+            handeSubtypes(puml, t)
         }
         for (int i = 0; i < t.getNumArrays(); i++) {
             puml.append("[]");
         }
+    }
+
+    private void handeSubtypes(StringBuilder puml, TypeStructure t) {
+        puml.append("<");
+        for (int i = 0; i < t.getSubTypes().size(); i++) {
+            printType(t.getSubTypes().get(i), puml);
+            boolean reachedLastSubtype = i + 1 != t.getSubTypes().size();
+            if (reachedLastSubtype) {
+                puml.append(", ");
+            }
+        }
+        puml.append(">");
     }
 }
