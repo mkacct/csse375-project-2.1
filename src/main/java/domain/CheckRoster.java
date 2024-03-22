@@ -17,6 +17,8 @@ public class CheckRoster {
 		new StrategyPatternCheck(),
 		new ObserverPatternCheck(),
 		new AdapterPatternCheck(),
+		new ConstantInterfaceCheck(),
+
 		new PlantUMLGenerator()
 	};
 }
