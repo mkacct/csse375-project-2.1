@@ -7,6 +7,9 @@ public class CheckRoster {
 	public static final Check[] CHECKS = {
 		new NamingConventionsCheck(),
 		new MethodLengthCheck(),
+		new ParameterCountCheck(),
+		new NoGlobalVariablesCheck(),
+		new RequiredOverridesCheck(),
 		new UnusedAbstractionsCheck(),
 		new InformationHidingCheck(),
 		new ProgramToInterfaceNotImplementationCheck(),
@@ -14,6 +17,8 @@ public class CheckRoster {
 		new StrategyPatternCheck(),
 		new ObserverPatternCheck(),
 		new AdapterPatternCheck(),
+		new ConstantInterfaceCheck(),
+
 		new PlantUMLGenerator()
 	};
 }

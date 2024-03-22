@@ -15,7 +15,7 @@ import datasource.FilesLoader;
 import domain.javadata.ClassData;
 
 public class AdapterPatternCheckTest {
-private static final String CLASS_DIR_PATH = "src/test/resources/adapter-pattern-check-test-classes";
+	private static final String CLASS_DIR_PATH = "src/test/resources/adapter-pattern-check-test-classes";
 
 	private static final Configuration CONFIG_EMPTY = new Configuration(Map.of());
 

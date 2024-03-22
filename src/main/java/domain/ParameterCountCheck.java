@@ -8,43 +8,43 @@ import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
-import domain.javadata.InstrData;
 import domain.javadata.MethodData;
+import domain.javadata.VariableData;
 
-public class MethodLengthCheck extends Check {
-	private static final String NAME = "methodLength";
+public class ParameterCountCheck extends Check {
+	private static final String NAME = "parameterCount";
 
-	private static final String MAX_METHOD_LENGTH_KEY = "maxMethodLengthInstrs";
+	private static final String MAX_NUM_PARAMS_KEY = "maxNumParameters";
 
-	public MethodLengthCheck() {
+	public ParameterCountCheck() {
 		super(NAME);
 	}
 
 	@Override
 	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
 		CountCheckPropertyValidator validator = new CountCheckPropertyValidator();
-		Integer maxMethodLengthInstrs = validator.validateGetInt(config, MAX_METHOD_LENGTH_KEY);
-		if (maxMethodLengthInstrs == null) {
+		Integer maxNumParams = validator.validateGetInt(config, MAX_NUM_PARAMS_KEY);
+		if (maxNumParams == null) {
 			return Set.of(validator.getValidationFailureMessage());
 		}
-		// maxMethodLengthInstrs != null
+		// maxNumParams != null
 
 		Set<Message> messages = new HashSet<>();
 		for (ClassData classData : classes.values()) {
-			this.checkClass(classData, maxMethodLengthInstrs, messages);
+			this.checkClass(classData, maxNumParams, messages);
 		}
 		return messages;
 	}
 
-	private void checkClass(ClassData classData, int maxMethodLengthInstrs, Set<Message> messages) {
+	private void checkClass(ClassData classData, int maxNumParams, Set<Message> messages) {
 		for (MethodData method : classData.getMethods()) {
-			List<InstrData> instrs = method.getInstructions();
-			if (instrs.size() > maxMethodLengthInstrs) {
+			List<VariableData> params = method.getParams();
+			if (params.size() > maxNumParams) {
 				messages.add(new Message(
 					MessageLevel.WARNING,
 					MessageFormat.format(
-						"Method \"{0}\" is too long ({1} instrs, should be <= {2})",
-						method.getName(), instrs.size(), maxMethodLengthInstrs
+						"Method \"{0}\" has too many params ({1} params, should be <= {2})",
+						method.getName(), params.size(), maxNumParams
 					),
 					classData.getFullName()
 				));
