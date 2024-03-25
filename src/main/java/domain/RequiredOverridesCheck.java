@@ -33,7 +33,9 @@ public class RequiredOverridesCheck extends Check {
 	private void validateCompareToImpliesEquals(ClassData classData, Set<Message> messages) {
 		if (classData.getInterfaceFullNames().contains("java.lang.Comparable")) {
 			String[] compareToParamTypes = new String[] {classData.getFullName()};
-			if (classHasMethod(classData, "compareTo", compareToParamTypes) && !classHasMethod(classData, "equals", TYPES_1_OBJECT)) {
+			boolean hasCompareTo = classHasMethod(classData, "compareTo", compareToParamTypes);
+			boolean hasEquals = classHasMethod(classData, "equals", TYPES_1_OBJECT);
+			if (hasCompareTo && !hasEquals) {
 				messages.add(new Message(
 					MessageLevel.WARNING,
 					"Class implementing Comparable overrides compareTo but not equals",
@@ -44,7 +46,9 @@ public class RequiredOverridesCheck extends Check {
 	}
 
 	private void validateEqualsImpliesHashCode(ClassData classData, Set<Message> messages) {
-		if (classHasMethod(classData, "equals", TYPES_1_OBJECT) && !classHasMethod(classData, "hashCode", TYPES_EMPTY)) {
+		boolean hasEquals = classHasMethod(classData, "equals", TYPES_1_OBJECT);
+		boolean hasHashCode = classHasMethod(classData, "hashCode", TYPES_EMPTY);
+		if (hasEquals && !hasHashCode) {
 			messages.add(new Message(
 				MessageLevel.ERROR,
 				"Class overrides equals but not hashCode",
