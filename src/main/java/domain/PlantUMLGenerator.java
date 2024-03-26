@@ -1,7 +1,7 @@
 package domain;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Set;
 
@@ -30,8 +30,7 @@ public class PlantUMLGenerator extends GraphCheck {
         String desc = source.generateImage(os, new FileFormatOption(FileFormat.SVG));
         os.close();
 
-        final String svg = new String(os.toByteArray(), Charset.forName("UTF-8"));
-        return svg;
+        return os.toString(StandardCharsets.UTF_8);
     }
 
     public PlantUMLGenerator() {
@@ -55,10 +54,6 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     @Override
-    /**
-     * @param .pumlOutputPath - The path to put the .puml output at - Defaults to pumlGen.puml
-     * @param .svgOutputPath - The path to put the .svg output at - Defaults to svgGen.svg
-     */
     public Set<Message> gRun(Configuration config) {
         try {
             String pumlOut = config.getString(".pumlOutputPath", "pumlGen.puml");
@@ -195,7 +190,7 @@ public class PlantUMLGenerator extends GraphCheck {
             boolean methodIsConstructor = m.getName().equals(MethodData.CONSTRUCTOR_NAME);
             if (!methodIsTag && (!methodContainsInvalidCharacter || methodIsConstructor)) {
                 appendTabs(numTabs, puml);
-                appendAbstractStaticFinal(m, numTabs, puml);
+                appendAbstractStaticFinal(m, puml);
                 if (methodIsConstructor) {
                     puml.append(getSimpleName(cd.getFullName()));
                 } else {
@@ -243,7 +238,7 @@ public class PlantUMLGenerator extends GraphCheck {
         }
     }
 
-    private void appendAbstractStaticFinal(MethodData m, int numTabs, StringBuilder puml) {
+    private void appendAbstractStaticFinal(MethodData m, StringBuilder puml) {
         appendAccessModifier(m.getAccessModifier(), puml);
         appendAbstract(m.isAbstract(), puml);
         appendStatic(m.isStatic(), puml);
@@ -341,20 +336,16 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     private void appendTabs(int numTabs, StringBuilder puml) {
-        for (int i = 0; i < numTabs; i++) {
-            puml.append("\t");
-        }
+      puml.append("\t".repeat(Math.max(0, numTabs)));
     }
 
     private void printType(TypeStructure t, StringBuilder puml) {
         puml.append(getSimpleName(t.getFullTypeName()));
         boolean containsSubtypes = !t.getSubTypes().isEmpty();
         if (containsSubtypes) {
-            handeSubtypes(puml, t)
+            handeSubtypes(puml, t);
         }
-        for (int i = 0; i < t.getNumArrays(); i++) {
-            puml.append("[]");
-        }
+      puml.append("[]".repeat(Math.max(0, t.getNumArrays())));
     }
 
     private void handeSubtypes(StringBuilder puml, TypeStructure t) {
