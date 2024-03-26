@@ -24,6 +24,7 @@ import net.sourceforge.plantuml.SourceStringReader;
 public class PlantUMLGenerator extends GraphCheck {
     private static final String NAME = "plantUMLGenerator";
 
+    // got this code from the plantuml.com/api
     private static String generateSVG(SourceStringReader source) throws IOException {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         @SuppressWarnings({ "deprecation", "unused" })
