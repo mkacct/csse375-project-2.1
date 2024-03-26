@@ -175,20 +175,12 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     private void writeClass(ClassData cd, StringBuilder puml, int numTabs) {
-        if (cd.getClassType() == ClassType.ENUM) {
-            int enums = calculateEnums(cd);
-            for (FieldData f: cd.getFields()) {
-                handleEnumBasedOnField(cd, puml, numTabs, f, enums);
-            }
-        }
-        for (FieldData f : cd.getFields()) {
-            boolean classTypeIsEnum = cd.getClassType() != ClassType.ENUM;
-            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
-            boolean fieldContainsNoSpecialCharacter = !f.getName().contains("$") && !f.getName().contains("<");
-            if ((classTypeIsEnum || !fieldTypeEqualsClassName) && fieldContainsNoSpecialCharacter) {
-                appendStaticFinalModifiers(numTabs, puml, f);
-            }
-        }
+        handleEnumWriting(cd, puml, numTabs);
+        handleFieldWriting(cd, puml, numTabs);
+        handleMethodWriting(cd, puml, numTabs);
+    }
+
+    private void handleMethodWriting(ClassData cd, StringBuilder puml, int numTabs) {
         for (MethodData m : cd.getMethods()) {
             boolean methodIsTag = m.getName().contains("$");
             boolean methodContainsInvalidCharacter = m.getName().contains("<");
@@ -212,6 +204,26 @@ public class PlantUMLGenerator extends GraphCheck {
                 puml.append(")");
                 handleNonConstructorMethod(puml, m);
                 puml.append("\n");
+            }
+        }
+    }
+
+    private void handleFieldWriting(ClassData cd, StringBuilder puml, int numTabs) {
+        for (FieldData f : cd.getFields()) {
+            boolean classTypeIsEnum = cd.getClassType() != ClassType.ENUM;
+            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
+            boolean fieldContainsNoSpecialCharacter = !f.getName().contains("$") && !f.getName().contains("<");
+            if ((classTypeIsEnum || !fieldTypeEqualsClassName) && fieldContainsNoSpecialCharacter) {
+                appendStaticFinalModifiers(numTabs, puml, f);
+            }
+        }
+    }
+
+    private void handleEnumWriting(ClassData cd, StringBuilder puml, int numTabs) {
+        if (cd.getClassType() == ClassType.ENUM) {
+            int enums = calculateEnums(cd);
+            for (FieldData f: cd.getFields()) {
+                handleEnumBasedOnField(cd, puml, numTabs, f, enums);
             }
         }
     }
