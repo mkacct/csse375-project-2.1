@@ -68,52 +68,73 @@ public class PlantUMLGenerator extends GraphCheck {
             writeHeader(puml);
             generatePackage(ps, puml, 0);
 
-
-            // arrows
-            for (int i = 0; i < graph.getNumClasses(); i++) {
-                for (int j = 0; j < graph.getNumClasses(); j++) {
-                    if (ClassGraph.checkDepends(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" ..> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
-                    }
-                    if (ClassGraph.checkExtend(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" --|> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
-                    }
-                    if (ClassGraph.checkHasA(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" --> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
-                    }
-                    if (ClassGraph.checkImplement(graph.getWeight(i, j))) {
-                        puml.append(graph.indexToClass(i));
-                        puml.append(" ..|> ");
-                        puml.append(graph.indexToClass(j));
-                        puml.append("\n");
-                    }
+            int classes = graph.getNumClasses();
+            for (int i = 0; i < classes; i++) {
+                for (int j = 0; j < classes; j++) {
+                    int weight = graph.getWeight(i, j);
+                    checkClassRelationships(puml, i, j, weight);
                 }
             }
-
-
-
-            // file output
-            puml.append("@enduml");
-            DataPrinter pumlPrint = new FullFilePrinter(pumlOut);
-            pumlPrint.print(puml.toString());
-            DataPrinter svgPrint = new FullFilePrinter(svgOut);
-            svgPrint.print(generateSVG(new SourceStringReader(puml.toString())));
-
-
+            createFileOutput(puml, pumlOut, svgOut);
             return Set.of(new Message(MessageLevel.INFO, MessageFormat.format("PlantUML code and image outputted to {0} and {1}", pumlOut, svgOut)));
         } catch (Exception ex) {
-            // Probably a file error occured
             return Set.of(new Message(MessageLevel.ERROR, "Error creating .puml and .svg files"));
         }
+    }
+
+    private void createFileOutput(StringBuilder puml, String pumlOut, String svgOut) throws IOException {
+        puml.append("@enduml");
+        DataPrinter pumlPrint = new FullFilePrinter(pumlOut);
+        pumlPrint.print(puml.toString());
+        DataPrinter svgPrint = new FullFilePrinter(svgOut);
+        svgPrint.print(generateSVG(new SourceStringReader(puml.toString())));
+    }
+
+    private void checkClassRelationships(StringBuilder puml, int i, int j, int weight) {
+        checkDependsRelationship(puml, i, j, weight);
+        checkExtendsRelationship(puml, i, j, weight);
+        checkHasRelationship(puml, i, j, weight);
+        checkImplementsRelationship(puml, i, j, weight);
+
+    }
+
+    private void checkImplementsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isImplements = ClassGraph.checkImplement(weight);
+        if (isImplements) {
+            String implementsArrow = " ..|> ";
+            appendClassInfo(puml, i, j, implementsArrow);
+        }
+    }
+
+    private void checkHasRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isHas = ClassGraph.checkHasA(weight);
+        if (isHas) {
+            String hasArrow = " --> ";
+            appendClassInfo(puml, i, j, hasArrow);
+        }
+    }
+
+    private void checkExtendsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isExtends = ClassGraph.checkExtend(weight);
+        if (isExtends) {
+            String extendsArrow = " --|> ";
+            appendClassInfo(puml, i, j, extendsArrow);
+        }
+    }
+
+    private void checkDependsRelationship(StringBuilder puml, int i, int j, int weight) {
+        boolean isDepends = ClassGraph.checkDepends(weight);
+        if (isDepends) {
+            String dependsArrow = " ..> ";
+            appendClassInfo(puml, i, j, dependsArrow);
+        }
+    }
+
+    private void appendClassInfo(StringBuilder puml, int i, int j, String dependsArrow) {
+        puml.append(graph.indexToClass(i));
+        puml.append(dependsArrow);
+        puml.append(graph.indexToClass(j));
+        puml.append("\n");
     }
 
     private void writeHeader(StringBuilder puml) {
@@ -125,71 +146,57 @@ public class PlantUMLGenerator extends GraphCheck {
     }
 
     private void generatePackage(PackageStructure ps, StringBuilder puml, int numTabs) {
-        ClassData cd;
-        for (String c : ps.getClasses()) {
-            cd = graph.getClasses().get(c);
-            printClassName(c, cd, puml, numTabs);
-            writeClass(cd, puml, numTabs + 1);
-            appendTabs(numTabs, puml);
-            puml.append("}\n");
+
+        Set<String> classNames = ps.getClasses();
+        for (String c : classNames) {
+            addClassToUML(puml, c, numTabs);
         }
         for (PackageStructure p : ps.getSubPackages()) {
-            appendTabs(numTabs, puml);
-            puml.append("package ");
-            puml.append(p.getPackageName());
-            puml.append(" {\n");
-            generatePackage(p, puml, numTabs + 1);
-            appendTabs(numTabs, puml);
-            puml.append(" }\n");
+            addPackageToUML(puml, numTabs, p);
         }
+    }
+
+    private void addPackageToUML(StringBuilder puml, int numTabs, PackageStructure p) {
+        appendTabs(numTabs, puml);
+        puml.append("package ");
+        puml.append(p.getPackageName());
+        puml.append(" {\n");
+        generatePackage(p, puml, numTabs + 1);
+        appendTabs(numTabs, puml);
+        puml.append(" }\n");
+    }
+
+    private void addClassToUML(StringBuilder puml, String c, int numTabs) {
+        ClassData classData = graph.getClasses().get(c);
+        printClassName(c, classData, puml, numTabs);
+        writeClass(classData, puml, numTabs + 1);
+        appendTabs(numTabs, puml);
+        puml.append("}\n");
     }
 
     private void writeClass(ClassData cd, StringBuilder puml, int numTabs) {
         if (cd.getClassType() == ClassType.ENUM) {
-            int i = 0;
+            int enums = calculateEnums(cd);
             for (FieldData f: cd.getFields()) {
-                if (f.getTypeFullName().equals(cd.getFullName())) {
-                    i++; // this is to check how many enums there are
-                    // so we can change between putting a , or not at the end of a line
-                }
-            }
-            for (FieldData f: cd.getFields()) {
-                if (f.getTypeFullName().equals(cd.getFullName())) {
-                    i--;
-                    appendTabs(numTabs, puml);
-                    puml.append(f.getName());
-                    if (i != 0) {
-                        puml.append(",\n");
-                    } else {
-                        puml.append("\n");
-                    }
-                }
+                handleEnumBasedOnField(cd, puml, numTabs, f, enums);
             }
         }
         for (FieldData f : cd.getFields()) {
-            if ((cd.getClassType() != ClassType.ENUM || !f.getTypeFullName().equals(cd.getFullName())) &&
-                    !f.getName().contains("$") && !f.getName().contains("<")) { // all non-enum values.
-                // also ignoring fields with $ and < from java, although apparently
-                // $ is fine in user-defined fields.
-                appendTabs(numTabs, puml);
-                appendAccessModifier(f.getAccessModifier(), puml);
-                appendStatic(f.isStatic(), puml);
-                appendFinal(f.isFinal(), puml);
-                puml.append(f.getName());
-                puml.append(": ");
-                printType(f.typeParam(), puml);
-                puml.append("\n");
+            boolean classTypeIsEnum = cd.getClassType() != ClassType.ENUM;
+            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
+            boolean fieldContainsNoSpecialCharacter = !f.getName().contains("$") && !f.getName().contains("<");
+            if ((classTypeIsEnum || !fieldTypeEqualsClassName) && fieldContainsNoSpecialCharacter) {
+                appendStaticFinalModifiers(numTabs, puml, f);
             }
-
         }
         for (MethodData m : cd.getMethods()) {
-            if (!m.getName().contains("$") && (!m.getName().contains("<") || m.getName().equals(MethodData.CONSTRUCTOR_NAME))) {
+            boolean methodIsTag = m.getName().contains("$");
+            boolean methodContainsInvalidCharacter = m.getName().contains("<");
+            boolean methodIsConstructor = m.getName().equals(MethodData.CONSTRUCTOR_NAME);
+            if (!methodIsTag && (!methodContainsInvalidCharacter || methodIsConstructor)) {
                 appendTabs(numTabs, puml);
-                appendAccessModifier(m.getAccessModifier(), puml);
-                appendAbstract(m.isAbstract(), puml);
-                appendStatic(m.isStatic(), puml);
-                appendFinal(m.isFinal(), puml);
-                if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
+                appendAbstractStaticFinal(m, numTabs, puml);
+                if (methodIsConstructor) {
                     puml.append(getSimpleName(cd.getFullName()));
                 } else {
                     puml.append(m.getName());
@@ -197,18 +204,15 @@ public class PlantUMLGenerator extends GraphCheck {
                 puml.append("(");
                 int vi = 0;
                 for (VariableData v : m.getParams()) {
-                    if (v.name == null) { // I'm not exactly sure when this happens, but it seems to happen with all abstract methods, and some enum methods
+                    if (v.name == null) {
                         printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
                     } else {
                         puml.append(v.name);
                         puml.append(": ");
-                        printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
+                    }
+                    printType(v.typeParam(), puml);
+                    if (vi + 1 != m.getParams().size()) {
+                        puml.append(", ");
                     }
                     vi++;
                 }
@@ -225,6 +229,49 @@ public class PlantUMLGenerator extends GraphCheck {
                 puml.append("\n");
             }
         }
+    }
+
+    private void appendAbstractStaticFinal(MethodData m, int numTabs, StringBuilder puml) {
+        appendAccessModifier(m.getAccessModifier(), puml);
+        appendAbstract(m.isAbstract(), puml);
+        appendStatic(m.isStatic(), puml);
+        appendFinal(m.isFinal(), puml);
+    }
+
+    private void appendStaticFinalModifiers(int numTabs, StringBuilder puml, FieldData f) {
+        appendTabs(numTabs, puml);
+        appendAccessModifier(f.getAccessModifier(), puml);
+        appendStatic(f.isStatic(), puml);
+        appendFinal(f.isFinal(), puml);
+        puml.append(f.getName());
+        puml.append(": ");
+        printType(f.typeParam(), puml);
+        puml.append("\n");
+    }
+
+    private void handleEnumBasedOnField(ClassData cd, StringBuilder puml, int numTabs, FieldData f, int enums) {
+        boolean fieldIsEnum = f.getTypeFullName().equals(cd.getFullName());
+        if (fieldIsEnum) {
+            enums--;
+            appendTabs(numTabs, puml);
+            puml.append(f.getName());
+            if (enums != 0) {
+                puml.append(",\n");
+            } else {
+                puml.append("\n");
+            }
+        }
+    }
+
+    private int calculateEnums(ClassData cd) {
+        int i = 0;
+        for (FieldData f: cd.getFields()) {
+            boolean fieldTypeEqualsClassName = f.getTypeFullName().equals(cd.getFullName());
+            if (fieldTypeEqualsClassName) {
+                i++;
+            }
+        }
+        return i;
     }
 
     private void printClassName(String c, ClassData cd, StringBuilder puml, int numTabs) {
