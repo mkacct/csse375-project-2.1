@@ -60,7 +60,7 @@ public class NamingConventionsCheck extends Check {
             // packages
             for (String pckg : classInfo.getPackageName().split("\\.|\\$")) {
                 if (packages.add(pckg)) {
-                    maxLengthCheck(pckg.length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Name exceeds {1} characters", pckg, maxLength)));
+                    concreteClassCheck(pckg.length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Name exceeds {1} characters", pckg, maxLength)));
                     if (!checkConvention(pckg, packageNames)) {
                         if (allowEmptyPackage && pckg.equals("")) {
                         } else {
@@ -70,35 +70,32 @@ public class NamingConventionsCheck extends Check {
 
                 }
             }
-
-
-
             // field-like checks
             if (ClassType.ENUM == classInfo.getClassType()) {
                 for (FieldData f : classInfo.getFields()) {
-                    maxLengthCheck(f.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field (or constant or Enum constant) ({0}) name exceeds {1} characters", f.getName(), maxLength), classInfo.getFullName()));
+                    concreteClassCheck(f.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field (or constant or Enum constant) ({0}) name exceeds {1} characters", f.getName(), maxLength), classInfo.getFullName()));
                     if (f.getTypeFullName().equals(classInfo.getFullName())) {
-                        maxLengthCheck(!checkConvention(f.getName(), enumConstantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Enum Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(f.getName(), enumConstantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Enum Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
                     } else if (f.isStatic() && f.isFinal()) {
-                        maxLengthCheck(!checkConvention(f.getName(), constantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(f.getName(), constantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
                     } else
-                        maxLengthCheck(!checkConvention(f.getName(), fieldNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(f.getName(), fieldNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
                 }
             } else {
                 for (FieldData f : classInfo.getFields()) {
-                    maxLengthCheck(f.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field (or constant) ({0}) name exceeds {1} characters", f.getName(), maxLength), classInfo.getFullName()));
+                    concreteClassCheck(f.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field (or constant) ({0}) name exceeds {1} characters", f.getName(), maxLength), classInfo.getFullName()));
                     if (f.isStatic() && f.isFinal()) {
-                        maxLengthCheck(!checkConvention(f.getName(), constantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(f.getName(), constantNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Constant ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
                     } else
-                        maxLengthCheck(!checkConvention(f.getName(), fieldNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(f.getName(), fieldNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Field ({0}) Naming Violation", f.getName()), classInfo.getFullName()));
                 }
             }
 
 
             // method checks
             for (MethodData m : classInfo.getMethods()) {
-                maxLengthCheck(m.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method ({0}) name exceeds {1} characters", m.getName(), maxLength), classInfo.getFullName()));
-                maxLengthCheck(!checkConvention(m.getName(), methodNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method ({0}) Naming Violation", m.getName()), classInfo.getFullName()));
+                concreteClassCheck(m.getName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method ({0}) name exceeds {1} characters", m.getName(), maxLength), classInfo.getFullName()));
+                concreteClassCheck(!checkConvention(m.getName(), methodNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method ({0}) Naming Violation", m.getName()), classInfo.getFullName()));
 
 
                 // var checks
@@ -107,11 +104,11 @@ public class NamingConventionsCheck extends Check {
                         if (lvar.name == null) {
                             continue;
                         }
-                    maxLengthCheck(lvar.name.length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable or Method Param ({0} in {1}) name exceeds {2} characters", lvar.name, m.getName(), maxLength), classInfo.getFullName()));
+                    concreteClassCheck(lvar.name.length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable or Method Param ({0} in {1}) name exceeds {2} characters", lvar.name, m.getName(), maxLength), classInfo.getFullName()));
                     if (m.getParams().contains(lvar)) {
-                        maxLengthCheck(!checkConvention(lvar.name, methodParamNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method Paramater ({0} of {1}) Naming Violation", lvar.name, m.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(lvar.name, methodParamNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Method Paramater ({0} of {1}) Naming Violation", lvar.name, m.getName()), classInfo.getFullName()));
                     } else
-                        maxLengthCheck(!checkConvention(lvar.name, localVarNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable ({0} in {1}) Naming Violation", lvar.name, m.getName()), classInfo.getFullName()));
+                        concreteClassCheck(!checkConvention(lvar.name, localVarNames), messages, new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable ({0} in {1}) Naming Violation", lvar.name, m.getName()), classInfo.getFullName()));
 
                 }
             }
@@ -120,15 +117,32 @@ public class NamingConventionsCheck extends Check {
     }
 
     private void runClassNameChecks(ClassData classInfo, int maxLength, Set<Message> messages, NamingConventions abstractNames, NamingConventions interfaceNames, NamingConventions enumNames, NamingConventions classNames) {
-        maxLengthCheck(classInfo.getSimpleName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Class Name exceeds {0} characters", maxLength), classInfo.getFullName()));
+        concreteClassCheck(classInfo.getSimpleName().length() > maxLength, messages, new Message(MessageLevel.WARNING, MessageFormat.format("Class Name exceeds {0} characters", maxLength), classInfo.getFullName()));
+        abstractClassCheck(classInfo, messages, abstractNames);
+        interfaceCheck(classInfo, messages, interfaceNames);
+        enumCheck(classInfo, messages, enumNames);
+        concreteClassCheck(!checkConvention(classInfo.getSimpleName(), classNames), messages, new Message(MessageLevel.WARNING, "Class Naming Violation", classInfo.getFullName()));
+    }
+
+    private void concreteClassCheck(boolean classInfo, Set<Message> messages, Message WARNING) {
+        maxLengthCheck(classInfo, messages, WARNING);
+    }
+
+    private void enumCheck(ClassData classInfo, Set<Message> messages, NamingConventions enumNames) {
+        if (ClassType.ENUM == classInfo.getClassType()) { //enum
+            concreteClassCheck(!checkConvention(classInfo.getSimpleName(), enumNames), messages, new Message(MessageLevel.WARNING, "Enum Naming Violation", classInfo.getFullName()));
+        }
+    }
+
+    private void interfaceCheck(ClassData classInfo, Set<Message> messages, NamingConventions interfaceNames) {
+        if (ClassType.INTERFACE == classInfo.getClassType()) { // interface
+            concreteClassCheck(!checkConvention(classInfo.getSimpleName(), interfaceNames), messages, new Message(MessageLevel.WARNING, "Interface Naming Violation", classInfo.getFullName()));
+        }
+    }
+
+    private void abstractClassCheck(ClassData classInfo, Set<Message> messages, NamingConventions abstractNames) {
         if (classInfo.isAbstract() && ClassType.INTERFACE != classInfo.getClassType()) { // abstract class
-            maxLengthCheck(!checkConvention(classInfo.getSimpleName(), abstractNames), messages, new Message(MessageLevel.WARNING, "Abstract Class Naming Violation", classInfo.getFullName()));
-        } else if (ClassType.INTERFACE == classInfo.getClassType()) { // interface
-            maxLengthCheck(!checkConvention(classInfo.getSimpleName(), interfaceNames), messages, new Message(MessageLevel.WARNING, "Interface Naming Violation", classInfo.getFullName()));
-        } else if (ClassType.ENUM == classInfo.getClassType()) { //enum
-            maxLengthCheck(!checkConvention(classInfo.getSimpleName(), enumNames), messages, new Message(MessageLevel.WARNING, "Enum Naming Violation", classInfo.getFullName()));
-        } else { // concrete class
-            maxLengthCheck(!checkConvention(classInfo.getSimpleName(), classNames), messages, new Message(MessageLevel.WARNING, "Class Naming Violation", classInfo.getFullName()));
+            concreteClassCheck(!checkConvention(classInfo.getSimpleName(), abstractNames), messages, new Message(MessageLevel.WARNING, "Abstract Class Naming Violation", classInfo.getFullName()));
         }
     }
 
