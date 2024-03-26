@@ -11,7 +11,14 @@ import java.util.Set;
 import datasource.Configuration;
 
 public class LowCouplingCheck extends GraphCheck {
+    private int maxInDegree;
+    private int maxOutDegree;
+    private String packageName;
+    private boolean checkCycles;
+    private boolean ignoreSelf;
     private static final String NAME = "lowCoupling";
+    private final Set<Message> messages = new HashSet<Message>();
+    private final PriorityQueue<IntegerAndDegree> lowestInDegrees = new PriorityQueue<IntegerAndDegree>();
 
     public LowCouplingCheck() {
         super(NAME);
@@ -29,34 +36,9 @@ public class LowCouplingCheck extends GraphCheck {
         if (graph.getNumClasses() <= 0) {
             return new HashSet<Message>();
         }
-        int maxInDegree = config.getInt("coupMaxInDegree", -1);
-        int maxOutDegree = config.getInt("coupMaxOutDegree", -1);
-        String packageName = config.getString("coupIgnorePackage", null);
-        boolean checkCycles = config.getBoolean("coupCycles", true);
-        boolean ignoreSelf = config.getBoolean("coupIgnoreSelfCycles", true);
-        if (maxInDegree == -1) {
-            maxInDegree = Integer.MAX_VALUE;
-        }
-        if (maxOutDegree == -1) {
-            maxOutDegree = Integer.MAX_VALUE;
-        }
-        Set<Message> messages = new HashSet<Message>();
-
-        PriorityQueue<IntegerAndDegree> lowestInDegrees = new PriorityQueue<IntegerAndDegree>(); // pq for checking sources (and close-sources)
-
-        // degree checks
-        for (int i = 0; i < graph.getNumClasses(); i++) {
-            if (packageName != null && graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName)) { // ignores things from this package
-                continue;
-            }
-            lowestInDegrees.add(new IntegerAndDegree(i, graph.inDegree(i)));
-            if (graph.inDegree(i) > maxInDegree) {
-                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("In Degree exceeds {0}, is {1}", maxInDegree, graph.inDegree(i)), graph.indexToClass(i)));
-            }
-            if (graph.outDegree(i) > maxOutDegree) {
-                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Out Degree exceeds {0}, is {1}", maxOutDegree, graph.outDegree(i)), graph.indexToClass(i)));
-            }
-        }
+        parseConfig(config);
+        handleNegativeGraphDegrees();
+        checkGraphDegrees();
 
         if (!checkCycles) {
             return messages;
@@ -71,6 +53,42 @@ public class LowCouplingCheck extends GraphCheck {
 
 
         return messages;
+    }
+
+    private void checkGraphDegrees() {
+        for (int i = 0; i < graph.getNumClasses(); i++) {
+            if (packageName != null && graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName)) { // ignores things from this package
+                continue;
+            }
+//            boolean isNotInPackage = packageName == null || !graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName);
+//            if (isNotInPackage) {
+//                return;
+//            }
+            lowestInDegrees.add(new IntegerAndDegree(i, graph.inDegree(i)));
+            if (graph.inDegree(i) > maxInDegree) {
+                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("In Degree exceeds {0}, is {1}", maxInDegree, graph.inDegree(i)), graph.indexToClass(i)));
+            }
+            if (graph.outDegree(i) > maxOutDegree) {
+                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Out Degree exceeds {0}, is {1}", maxOutDegree, graph.outDegree(i)), graph.indexToClass(i)));
+            }
+        }
+    }
+
+    private void handleNegativeGraphDegrees() {
+        if (maxInDegree == -1) {
+            maxInDegree = Integer.MAX_VALUE;
+        }
+        if (maxOutDegree == -1) {
+            maxOutDegree = Integer.MAX_VALUE;
+        }
+    }
+
+    private void parseConfig(Configuration config) {
+        maxInDegree = config.getInt("coupMaxInDegree", -1);
+        maxOutDegree = config.getInt("coupMaxOutDegree", -1);
+        packageName = config.getString("coupIgnorePackage", null);
+        checkCycles = config.getBoolean("coupCycles", true);
+        ignoreSelf = config.getBoolean("coupIgnoreSelfCycles", true);
     }
 
     @SuppressWarnings("unlikely-arg-type") // its perfectly fine removing an int from a pq that does not contain ints
