@@ -1,12 +1,7 @@
 package domain;
 
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 import datasource.Configuration;
 
@@ -25,13 +20,6 @@ public class LowCouplingCheck extends GraphCheck {
     }
 
     @Override
-    /**
-     * @param coupMaxInDegree - int - Maximum In-Degree for a class. -1 for no max. Defaults to -1
-     * @param coupMaxOutDegree - int - Maximum Out-Degree for a class. -1 for no max. Defaults to -1
-     * @param coupIgnorePackage - String - Full Package Name to not check (such as presentation). Defaults to null
-     * @param coupCycles - boolean - Whether to check for cycles. Defaults to true
-     * @param coupIgnoreSelfCycles - boolean - Whether to ignore cycles produced by classes that depend on themselves, such as when they contain themselves as a field. Defaults to true
-     */
     public Set<Message> gRun(Configuration config) {
         if (graph.getNumClasses() <= 0) {
             return new HashSet<Message>();
@@ -50,7 +38,7 @@ public class LowCouplingCheck extends GraphCheck {
     }
 
     private void recurseThroughClasses() {
-        ClassGraphIterator it = graph.graphIterator(lowestInDegrees.poll().index);
+        ClassGraphIterator it = graph.graphIterator(Objects.requireNonNull(lowestInDegrees.poll()).index);
         recursion(it, messages, lowestInDegrees, ignoreSelf);
         while (!lowestInDegrees.isEmpty()) {
             recursion(graph.graphIterator(lowestInDegrees.poll().index), messages, lowestInDegrees, ignoreSelf);
@@ -145,4 +133,16 @@ public class LowCouplingCheck extends GraphCheck {
         return str.toString();
     }
 
+    private static class IntegerAndDegree implements Comparable<IntegerAndDegree>{
+        final int index;
+        final int inDegree;
+        IntegerAndDegree(int index, int inDegree) {
+            this.index = index;
+            this.inDegree = inDegree;
+        }
+        @Override
+        public int compareTo(IntegerAndDegree o) {
+            return Integer.compare(this.inDegree, o.inDegree);
+        }
+    }
 }
