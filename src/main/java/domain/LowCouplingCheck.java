@@ -57,7 +57,7 @@ public class LowCouplingCheck extends GraphCheck {
 
     private void checkGraphDegrees() {
         for (int i = 0; i < graph.getNumClasses(); i++) {
-            if (notInPackage(i)) return;
+            if (isInPackage(i)) continue;
             lowestInDegrees.add(new IntegerAndDegree(i, graph.inDegree(i)));
             if (graph.inDegree(i) > maxInDegree) {
                 messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("In Degree exceeds {0}, is {1}", maxInDegree, graph.inDegree(i)), graph.indexToClass(i)));
@@ -68,8 +68,8 @@ public class LowCouplingCheck extends GraphCheck {
         }
     }
 
-    private boolean notInPackage(int i) {
-        return packageName == null || !graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName);
+    private boolean isInPackage(int i) {
+        return packageName != null && graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName)
     }
 
     private void handleNegativeGraphDegrees() {
