@@ -204,42 +204,30 @@ public class PlantUMLGenerator extends GraphCheck {
                 puml.append("(");
                 int vi = 0;
                 for (VariableData v : m.getParams()) {
-                    handleNullVariable(puml, v);
-                    appendVariableType(puml, m, v, vi);
+                    if (v.name == null) {
+                        printType(v.typeParam(), puml);
+                    } else {
+                        puml.append(v.name);
+                        puml.append(": ");
+                    }
+                    printType(v.typeParam(), puml);
+                    if (vi + 1 != m.getParams().size()) {
+                        puml.append(", ");
+                    }
                     vi++;
                 }
                 puml.append(")");
-                if (!methodIsConstructor) {
-                    handleNonConstructorMethod(puml, m);
+                if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
+
+                } else {
+                    puml.append(": ");
+                    printType(m.getReturnTypeStructure(), puml);
+                    if (puml.substring(puml.length()-2).equals(": ")) {
+                        puml.append(m.getReturnTypeFullName());
+                    }
                 }
                 puml.append("\n");
             }
-        }
-    }
-
-    private void handleNonConstructorMethod(StringBuilder puml, MethodData m) {
-        puml.append(": ");
-        printType(m.getReturnTypeStructure(), puml);
-        boolean endOfStringIsColon = puml.substring(puml.length()-2).equals(": ");
-        if (endOfStringIsColon) {
-            puml.append(m.getReturnTypeFullName());
-        }
-    }
-
-    private void appendVariableType(StringBuilder puml, MethodData m, VariableData v, int vi) {
-        printType(v.typeParam(), puml);
-        boolean reachedEndOfLine = vi + 1 != m.getParams().size();
-        if (reachedEndOfLine) {
-            puml.append(", ");
-        }
-    }
-
-    private void handleNullVariable(StringBuilder puml, VariableData v) {
-        if (v.name == null) {
-            printType(v.typeParam(), puml);
-        } else {
-            puml.append(v.name);
-            puml.append(": ");
         }
     }
 
