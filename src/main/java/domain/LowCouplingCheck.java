@@ -37,41 +37,50 @@ public class LowCouplingCheck extends GraphCheck {
             return new HashSet<Message>();
         }
         parseConfig(config);
-        handleNegativeGraphDegrees();
         checkGraphDegrees();
+        return checkCycles();
+    }
 
+    private Set<Message> checkCycles() {
         if (!checkCycles) {
             return messages;
         }
+        recurseThroughClasses();
+        return messages;
+    }
 
-        // cycle checking
+    private void recurseThroughClasses() {
         ClassGraphIterator it = graph.graphIterator(lowestInDegrees.poll().index);
         recursion(it, messages, lowestInDegrees, ignoreSelf);
         while (!lowestInDegrees.isEmpty()) {
             recursion(graph.graphIterator(lowestInDegrees.poll().index), messages, lowestInDegrees, ignoreSelf);
         }
-
-
-        return messages;
     }
 
     private void checkGraphDegrees() {
+        handleNegativeGraphDegrees();
         for (int i = 0; i < graph.getNumClasses(); i++) {
-            if (packageName != null && graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName)) { // ignores things from this package
-                continue;
-            }
-//            boolean isNotInPackage = packageName == null || !graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName);
-//            if (isNotInPackage) {
-//                return;
-//            }
+            if (isNotInPackage(i)) return;
             lowestInDegrees.add(new IntegerAndDegree(i, graph.inDegree(i)));
-            if (graph.inDegree(i) > maxInDegree) {
-                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("In Degree exceeds {0}, is {1}", maxInDegree, graph.inDegree(i)), graph.indexToClass(i)));
-            }
-            if (graph.outDegree(i) > maxOutDegree) {
-                messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Out Degree exceeds {0}, is {1}", maxOutDegree, graph.outDegree(i)), graph.indexToClass(i)));
-            }
+            handleExceededMaxInDegree(i);
+            handleExceededMaxOutDegree(i);
         }
+    }
+
+    private void handleExceededMaxOutDegree(int i) {
+        if (graph.outDegree(i) > maxOutDegree) {
+            messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("Out Degree exceeds {0}, is {1}", maxOutDegree, graph.outDegree(i)), graph.indexToClass(i)));
+        }
+    }
+
+    private void handleExceededMaxInDegree(int i) {
+        if (graph.inDegree(i) > maxInDegree) {
+            messages.add(new Message(MessageLevel.WARNING, MessageFormat.format("In Degree exceeds {0}, is {1}", maxInDegree, graph.inDegree(i)), graph.indexToClass(i)));
+        }
+    }
+
+    private boolean isNotInPackage(int i) {
+      return packageName == null || !graph.getClasses().get(graph.indexToClass(i)).getPackageName().equals(packageName);
     }
 
     private void handleNegativeGraphDegrees() {
