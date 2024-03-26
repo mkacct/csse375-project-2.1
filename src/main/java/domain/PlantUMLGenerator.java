@@ -204,19 +204,9 @@ public class PlantUMLGenerator extends GraphCheck {
                 puml.append("(");
                 int vi = 0;
                 for (VariableData v : m.getParams()) {
-                    if (v.name == null) {
-                        printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
-                    } else {
-                        puml.append(v.name);
-                        puml.append(": ");
-                        printType(v.typeParam(), puml);
-                        if (vi + 1 != m.getParams().size()) {
-                            puml.append(", ");
-                        }
-                    }
+                    handleNonNullVariable(puml, v);
+                    printType(v.typeParam(), puml);
+                    handleAdditionalParameters(puml, m, vi);
                     vi++;
                 }
                 puml.append(")");
@@ -231,6 +221,19 @@ public class PlantUMLGenerator extends GraphCheck {
                 }
                 puml.append("\n");
             }
+        }
+    }
+
+    private static void handleAdditionalParameters(StringBuilder puml, MethodData m, int vi) {
+        if (vi + 1 != m.getParams().size()) {
+                puml.append(", ");
+        }
+    }
+
+    private static void handleNonNullVariable(StringBuilder puml, VariableData v) {
+        if (v.name != null) {
+            puml.append(v.name);
+            puml.append(": ");
         }
     }
 
