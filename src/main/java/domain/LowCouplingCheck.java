@@ -97,9 +97,20 @@ public class LowCouplingCheck extends GraphCheck {
         ignoreSelf = config.getBoolean("coupIgnoreSelfCycles", true);
     }
 
-    @SuppressWarnings("unlikely-arg-type") // its perfectly fine removing an int from a pq that does not contain ints
+    @SuppressWarnings("unlikely-arg-type")
     private void recursion(ClassGraphIterator it, Set<Message> messages, PriorityQueue<IntegerAndDegree> pq, boolean ignoreSelf) { // graph traversing
         pq.remove(it.getCurrent());
+        if (handleCycle(it, messages, ignoreSelf)) return;
+        recurseThroughEdges(it, messages, pq, ignoreSelf);
+    }
+
+    private void recurseThroughEdges(ClassGraphIterator it, Set<Message> messages, PriorityQueue<IntegerAndDegree> pq, boolean ignoreSelf) {
+        for (ClassGraphIterator o : it.followEdge()) {
+            recursion(o, messages, pq, ignoreSelf);
+        }
+    }
+
+    private boolean handleCycle(ClassGraphIterator it, Set<Message> messages, boolean ignoreSelf) {
         if (it.hasCycle()) {
             List<Integer> pathImm = it.getPath();
             List<Integer> path = new LinkedList<Integer>(pathImm);
@@ -108,18 +119,16 @@ public class LowCouplingCheck extends GraphCheck {
                 path.remove(0);
             }
             if (ignoreSelf && path.size() <= 2) { // like node --> node cycles
-                return;
+                return true;
             }
             List<String> classes = new LinkedList<String>();
             for (int i : path) {
                 classes.add(graph.indexToClass(i));
             }
             messages.add(new Message(MessageLevel.WARNING, "Cycle detected: " + cyclePrint(classes))); // probably won't duplicate cycles
-            return; // base case i guess
+            return true;
         }
-        for (ClassGraphIterator o : it.followEdge()) {
-            recursion(o, messages, pq, ignoreSelf);
-        }
+        return false;
     }
 
     private String cyclePrint(List<String> classes) {
