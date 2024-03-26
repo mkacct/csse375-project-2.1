@@ -23,74 +23,71 @@ public class InformationHidingCheck extends Check {
      */
     @Override
     public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
-        //creates map of classes to a list of its fields that violate information hiding.
         Map<String, ArrayList<String>> publicFieldsToClass = new HashMap<String, ArrayList<String>>();
-        //iterate through every class
-        for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
-            ClassData currentClass = entry.getValue();
-            //get the set of fields from the class
-            Set<FieldData> fields = entry.getValue().getFields();
-            //iterates through the fields of the class
-            for (FieldData field : fields) {
-                //checks if a field is public
-                if (field.getAccessModifier() == AccessModifier.PUBLIC) {
-                    //checks if the class the field is in is already in the map.
-                    //adds the field to the map.
-                    if (publicFieldsToClass.containsKey(currentClass.getFullName())) {
-                        ArrayList<String> newList = publicFieldsToClass.get(currentClass.getFullName());
-                        newList.add(field.getName());
-                        publicFieldsToClass.replace(currentClass.getFullName(), newList);
-                    } else {
-                        ArrayList<String> newList = new ArrayList<String>();
-                        newList.add(field.getName());
-                        publicFieldsToClass.put(currentClass.getFullName(), newList);
-                    }
-
-
-                }
-                //checks if the field contains any gettter or setter functions in the class
-                else {
-
-                    Set<MethodData> methods = entry.getValue().getMethods();
-
-                    for (MethodData method : methods) {
-                        String methodName = method.getName().toLowerCase();
-                        if (methodName.length() > 3) {
-
-
-                        String string1 = methodName.substring(0, 3);
-                        String string2 = methodName.substring(3, methodName.length());
-                        //checks if the method name matches the field.
-                        if ((string1.equals("get") || string1.equals("set")) & string2.equals(field.getName().toLowerCase())) {
-                            //checks if the class the field is in is already in the map.
-                            //adds the field to the map.
-                            if (publicFieldsToClass.containsKey(currentClass.getFullName())) {
-                                ArrayList<String> newList = publicFieldsToClass.get(currentClass.getFullName());
-                                newList.add(field.getName());
-                                publicFieldsToClass.replace(currentClass.getFullName(), newList);
-                            } else {
-                                ArrayList<String> newList = new ArrayList<String>();
-                                newList.add(field.getName());
-                                publicFieldsToClass.put(currentClass.getFullName(), newList);
-                            }
-                        }
-
-                    }
-                    }
-                }
-
-            }
-        }
-        //creates the set of messages.
+        informationHidingClassCheck(classes, publicFieldsToClass);
         Set<Message> messages = new HashSet<Message>();
-        //for each class, a message is generated with the fields that violate information hiding.
+        return indicateFieldsWithInformationHiding(publicFieldsToClass);
+    }
+
+    private static Set<Message> indicateFieldsWithInformationHiding(Map<String, ArrayList<String>> publicFieldsToClass) {
+        Set<Message> messages = new HashSet<Message>();
         for (Map.Entry<String, ArrayList<String>> entry : publicFieldsToClass.entrySet()) {
             Set<String> fields1 = new HashSet<String>(entry.getValue());
             Message result = new Message(MessageLevel.WARNING, "The class " + entry.getKey()
                     + " contains the following fields that violate information hiding: " + fields1);
             messages.add(result);
         }
-        //returns all messages generated.
         return messages;
+    }
+
+    private void informationHidingClassCheck(Map<String, ClassData> classes, Map<String, ArrayList<String>> publicFieldsToClass) {
+        for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
+            ClassData currentClass = entry.getValue();
+            Set<FieldData> fields = entry.getValue().getFields();
+            checkFieldModifiers(entry, fields, publicFieldsToClass, currentClass);
+        }
+    }
+
+    private void checkFieldModifiers(Map.Entry<String, ClassData> entry, Set<FieldData> fields, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
+        for (FieldData field : fields) {
+            boolean publicField = field.getAccessModifier() == AccessModifier.PUBLIC;
+            if (publicField) {
+                handlePublicFields(publicFieldsToClass, currentClass, field);
+            } else {
+                checkForGettersAndSetters(entry, field, publicFieldsToClass, currentClass);
+            }
+        }
+    }
+
+    private void checkForGettersAndSetters(Map.Entry<String, ClassData> entry, FieldData field, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
+        Set<MethodData> methods = entry.getValue().getMethods();
+        for (MethodData method : methods) {
+            String methodName = method.getName().toLowerCase();
+            int GETTER_SETTER_LENGTH = 3;
+            boolean isNotGetterSetter = methodName.length() > GETTER_SETTER_LENGTH;
+            if (isNotGetterSetter) {
+                String string1 = methodName.substring(0, GETTER_SETTER_LENGTH);
+                String string2 = methodName.substring(GETTER_SETTER_LENGTH, methodName.length());
+                matchingMethodAndFieldName(field, string1, string2, publicFieldsToClass, currentClass);
+            }
+        }
+    }
+
+    private void matchingMethodAndFieldName(FieldData field, String string1, String string2, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
+        if ((string1.equals("get") || string1.equals("set")) & string2.equals(field.getName().toLowerCase())) {
+            handlePublicFields(publicFieldsToClass, currentClass, field);
+        }
+    }
+
+    private void handlePublicFields(Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass, FieldData field) {
+        if (publicFieldsToClass.containsKey(currentClass.getFullName())) {
+            ArrayList<String> newList = publicFieldsToClass.get(currentClass.getFullName());
+            newList.add(field.getName());
+            publicFieldsToClass.replace(currentClass.getFullName(), newList);
+        } else {
+            ArrayList<String> newList = new ArrayList<String>();
+            newList.add(field.getName());
+            publicFieldsToClass.put(currentClass.getFullName(), newList);
+        }
     }
 }
