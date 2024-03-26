@@ -210,16 +210,18 @@ public class PlantUMLGenerator extends GraphCheck {
                     vi++;
                 }
                 puml.append(")");
-                if (m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
-
-                } else {
-                    puml.append(": ");
-                    printType(m.getReturnTypeStructure(), puml);
-                    if (puml.substring(puml.length()-2).equals(": ")) {
-                        puml.append(m.getReturnTypeFullName());
-                    }
-                }
+                handleNonConstructorMethod(puml, m);
                 puml.append("\n");
+            }
+        }
+    }
+
+    private void handleNonConstructorMethod(StringBuilder puml, MethodData m) {
+        if (!m.getName().equals(MethodData.CONSTRUCTOR_NAME)) {
+            puml.append(": ");
+            printType(m.getReturnTypeStructure(), puml);
+            if (puml.substring(puml.length()-2).equals(": ")) {
+                puml.append(m.getReturnTypeFullName());
             }
         }
     }
