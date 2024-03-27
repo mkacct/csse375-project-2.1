@@ -25,7 +25,6 @@ public class InformationHidingCheck extends Check {
     public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
         Map<String, ArrayList<String>> publicFieldsToClass = new HashMap<String, ArrayList<String>>();
         informationHidingClassCheck(classes, publicFieldsToClass);
-        Set<Message> messages = new HashSet<Message>();
         return indicateFieldsWithInformationHiding(publicFieldsToClass);
     }
 
