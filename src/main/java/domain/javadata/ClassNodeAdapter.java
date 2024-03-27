@@ -81,6 +81,7 @@ class ClassNodeAdapter implements ClassData {
 	public Set<FieldData> getFields() {
 		Set<FieldData> fields = new HashSet<FieldData>();
 		for (FieldNode fieldNode : this.classNode.fields) {
+			if (isCompilerGeneratedMember(fieldNode.name)) {continue;}
 			fields.add(new FieldNodeAdapter(fieldNode));
 		}
 		return fields;
@@ -90,6 +91,7 @@ class ClassNodeAdapter implements ClassData {
 	public Set<MethodData> getMethods() {
 		Set<MethodData> methods = new HashSet<MethodData>();
 		for (MethodNode methodNode : this.classNode.methods) {
+			if (isCompilerGeneratedMember(methodNode.name)) {continue;}
 			methods.add(new MethodNodeAdapter(methodNode));
 		}
 		return methods;
@@ -105,8 +107,14 @@ class ClassNodeAdapter implements ClassData {
 	public Set<String> getInnerClassFullNames() {
 		Set<String> innerClassNames = new HashSet<String>();
 		for (InnerClassNode innerClassNode : this.classNode.innerClasses) {
-			innerClassNames.add(Type.getObjectType(innerClassNode.name).getClassName());
+			String innerClassName = Type.getObjectType(innerClassNode.name).getClassName();
+			if (isCompilerGeneratedMember(innerClassName)) {continue;}
+			innerClassNames.add(innerClassName);
 		}
 		return innerClassNames;
+	}
+
+	private static boolean isCompilerGeneratedMember(String fullName) {
+		return fullName.startsWith("$");
 	}
 }
