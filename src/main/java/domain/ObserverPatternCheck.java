@@ -105,8 +105,7 @@ public class ObserverPatternCheck extends GraphCheck {
         }
         obsClasses = new HashSet<String>();
         obsClasses.add(graph.indexToClass(it.getCurrent()));
-        patternFound = containsAbstractNonInterfaces(it, obsClasses);
-        if (patternFound) {
+        if (containsAbstractNonInterfaces(it, obsClasses)) {
             messages.add(new Message(MessageLevel.INFO, "(Abstract) Observer pattern found", obsClasses));
         }
     }
@@ -139,26 +138,43 @@ public class ObserverPatternCheck extends GraphCheck {
     private void checkConcreteClasses(boolean checkConcrete, ClassData dat, ClassGraphIterator it, Set<Message> messages) {
         Set<String> obsClasses;
         ClassData dat2;
+        boolean checkingConcreteClasses = checkConcrete && dat.getClassType() == ClassType.CLASS && !dat.isAbstract();
+        if (!checkingConcreteClasses) {
+            return;
+        }
+        obsClasses = new HashSet<String>();
+        obsClasses.add(graph.indexToClass(it.getCurrent()));
+        if (containsObserverInterface(it, obsClasses)) {
+            messages.add(new Message(MessageLevel.INFO, "(Concrete) Observer pattern found", obsClasses));
+        }
+    }
+
+    private boolean containsObserverInterface(ClassGraphIterator it, Set<String> obsClasses) {
         boolean patternFound = false;
-        if (checkConcrete && dat.getClassType() == ClassType.CLASS && !dat.isAbstract()) {
-            obsClasses = new HashSet<String>();
-            obsClasses.add(graph.indexToClass(it.getCurrent()));
-            for (ClassGraphIterator it2 : it.followEdge(2, 2, 1, 2)) { // observer interface/abstract
-                dat2 = graph.getClasses().get(graph.indexToClass(it2.getCurrent()));
-                if (dat2.isAbstract() || dat2.getClassType() == ClassType.INTERFACE) {
-                    for (int j = 0; j < graph.column(it2.getCurrent()).length; j++) {
-                        if (j != it2.getCurrent() && ClassGraph.checkHasA(graph.getWeight(j, it.getCurrent()))&& (ClassGraph.checkImplement(graph.getWeight(j, it2.getCurrent())) || ClassGraph.checkExtend(graph.getWeight(j, it2.getCurrent())))) { // concrete observer, has a cs
-                            obsClasses.add(graph.indexToClass(it2.getCurrent()));
-                            obsClasses.add(graph.indexToClass(j));
-                            patternFound = true;
-                        }
-                    }
-                }
-            }
-            if (patternFound) {
-                messages.add(new Message(MessageLevel.INFO, "(Concrete) Observer pattern found", obsClasses));
+        ClassData dat2;
+        for (ClassGraphIterator it2 : it.followEdge(2, 2, 1, 2)) {
+            dat2 = graph.getClasses().get(graph.indexToClass(it2.getCurrent()));
+            boolean isAbstractOrInterface = dat2.isAbstract() || dat2.getClassType() == ClassType.INTERFACE;
+            if (isAbstractOrInterface) {
+                patternFound = containsConcreteImplementers(it, obsClasses, it2, patternFound);
             }
         }
+        return patternFound;
+    }
+
+    private boolean containsConcreteImplementers(ClassGraphIterator it, Set<String> obsClasses, ClassGraphIterator it2, boolean patternFound) {
+        for (int j = 0; j < graph.column(it2.getCurrent()).length; j++) {
+            if (isConcreteClass(it, it2, j)) {
+                obsClasses.add(graph.indexToClass(it2.getCurrent()));
+                obsClasses.add(graph.indexToClass(j));
+                patternFound = true;
+            }
+        }
+        return patternFound;
+    }
+
+    private boolean isConcreteClass(ClassGraphIterator it, ClassGraphIterator it2, int j) {
+        return j != it2.getCurrent() && ClassGraph.checkHasA(graph.getWeight(j, it.getCurrent())) && (ClassGraph.checkImplement(graph.getWeight(j, it2.getCurrent())) || ClassGraph.checkExtend(graph.getWeight(j, it2.getCurrent())));
     }
 
 }
