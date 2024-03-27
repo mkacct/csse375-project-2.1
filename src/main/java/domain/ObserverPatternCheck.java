@@ -48,6 +48,14 @@ public class ObserverPatternCheck extends GraphCheck {
         obsClasses = new HashSet<String>();
         obsClasses.add(graph.indexToClass(it.getCurrent()));
         Set<ClassGraphIterator> edges = it.followEdge(2, 2, 2, 1);
+        patternFound = containsObserverInterfaceOrAbstracts(it, edges, patternFound, obsClasses);
+        if (patternFound) {
+            messages.add(new Message(MessageLevel.INFO, "(Interface) Observer pattern found", obsClasses));
+        }
+    }
+
+    private boolean containsObserverInterfaceOrAbstracts(ClassGraphIterator it, Set<ClassGraphIterator> edges, boolean patternFound, Set<String> obsClasses) {
+        ClassData dat2;
         for (ClassGraphIterator it2 : edges) { // observer interface/abstract
             dat2 = graph.getClasses().get(graph.indexToClass(it2.getCurrent()));
             boolean abstractOrInterface = dat2.isAbstract() || dat2.getClassType() == ClassType.INTERFACE;
@@ -56,9 +64,7 @@ public class ObserverPatternCheck extends GraphCheck {
             }
             patternFound = checkConcreteObservers(it, it2, obsClasses, patternFound);
         }
-        if (patternFound) {
-            messages.add(new Message(MessageLevel.INFO, "(Interface) Observer pattern found", obsClasses));
-        }
+        return patternFound;
     }
 
     private boolean checkConcreteObservers(ClassGraphIterator it, ClassGraphIterator it2, Set<String> obsClasses, boolean patternFound) {
