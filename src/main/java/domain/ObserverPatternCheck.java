@@ -24,7 +24,6 @@ public class ObserverPatternCheck extends GraphCheck {
         ClassData dat2;
         ClassData dat3;
         Set<String> obsClasses;
-        boolean patternFound = false;
         for (int i = 0; i < graph.getNumClasses(); i++) {
             ClassGraphIterator it = graph.graphIterator(i);
             dat = graph.getClasses().get(graph.indexToClass(it.getCurrent()));
@@ -96,7 +95,7 @@ public class ObserverPatternCheck extends GraphCheck {
     }
 
     private void checkAbstractClassesNonInterfaces(boolean checkAbstract, ClassData dat, ClassGraphIterator it, Set<Message> messages) {
-        boolean patternFound;
+        boolean patternFound = false;
         ClassData dat2;
         ClassData dat3;
         Set<String> obsClasses;
@@ -104,16 +103,16 @@ public class ObserverPatternCheck extends GraphCheck {
         if (!checkingForAbstractNonInterfaces) {
             return;
         }
-        patternFound = false;
         obsClasses = new HashSet<String>();
         obsClasses.add(graph.indexToClass(it.getCurrent()));
-        patternFound = containsAbstractNonInterfaces(it, obsClasses, patternFound);
+        patternFound = containsAbstractNonInterfaces(it, obsClasses);
         if (patternFound) {
             messages.add(new Message(MessageLevel.INFO, "(Abstract) Observer pattern found", obsClasses));
         }
     }
 
-    private boolean containsAbstractNonInterfaces(ClassGraphIterator it, Set<String> obsClasses, boolean patternFound) {
+    private boolean containsAbstractNonInterfaces(ClassGraphIterator it, Set<String> obsClasses) {
+        boolean patternFound = false;
         ClassData dat3;
         ClassData dat2;
         for (ClassGraphIterator it2 : it.followEdge(2, 2, 1, 2)) { // observer interface/abstract
@@ -140,9 +139,8 @@ public class ObserverPatternCheck extends GraphCheck {
     private void checkConcreteClasses(boolean checkConcrete, ClassData dat, ClassGraphIterator it, Set<Message> messages) {
         Set<String> obsClasses;
         ClassData dat2;
-        boolean patternFound;
+        boolean patternFound = false;
         if (checkConcrete && dat.getClassType() == ClassType.CLASS && !dat.isAbstract()) {
-            patternFound = false;
             obsClasses = new HashSet<String>();
             obsClasses.add(graph.indexToClass(it.getCurrent()));
             for (ClassGraphIterator it2 : it.followEdge(2, 2, 1, 2)) { // observer interface/abstract
