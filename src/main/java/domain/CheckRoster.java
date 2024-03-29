@@ -11,6 +11,7 @@ public class CheckRoster {
 		new NoGlobalVariablesCheck(),
 		new RequiredOverridesCheck(),
 		new UnusedAbstractionsCheck(),
+		new ImmutableExceptionsCheck(),
 		new InformationHidingCheck(),
 		new ProgramToInterfaceNotImplementationCheck(),
 		new LowCouplingCheck(),
