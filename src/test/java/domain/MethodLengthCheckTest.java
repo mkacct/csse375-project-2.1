@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassReaderUtil;
 
 public class MethodLengthCheckTest {
@@ -39,9 +40,7 @@ public class MethodLengthCheckTest {
 	@Test
 	public void testAllPass() {
 		Check check = new MethodLengthCheck();
-		Set<Message> msgs = check.run(Map.of(
-			this.classData.getFullName(), this.classData
-		), CONFIG_300);
+		Set<Message> msgs = check.run(new ClassDataCollection(this.classData), CONFIG_300);
 
 		assertEquals(Set.of(), msgs);
 	}
@@ -49,9 +48,7 @@ public class MethodLengthCheckTest {
 	@Test
 	public void testWarnings() {
 		Check check = new MethodLengthCheck();
-		Set<Message> msgs = check.run(Map.of(
-			this.classData.getFullName(), this.classData
-		), CONFIG_150);
+		Set<Message> msgs = check.run(new ClassDataCollection(this.classData), CONFIG_150);
 
 		Set<String> classFullNames = Set.of(this.classData.getFullName());
 		assertEquals(Set.of(
@@ -64,9 +61,7 @@ public class MethodLengthCheckTest {
 	@Test
 	public void testNoMaxMethodLength() {
 		Check check = new MethodLengthCheck();
-		Set<Message> msgs = check.run(Map.of(
-			this.classData.getFullName(), this.classData
-		), CONFIG_EMPTY);
+		Set<Message> msgs = check.run(new ClassDataCollection(this.classData), CONFIG_EMPTY);
 
 		assertEquals(Set.of(
 			new Message(MessageLevel.INFO, "Config property \"maxMethodLengthInstrs\" not found; skipping check")

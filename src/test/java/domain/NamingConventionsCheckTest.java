@@ -9,35 +9,34 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 /**
- * Test Class Graph on 
+ * Test Class Graph on
  */
 public class NamingConventionsCheckTest {
 	private static final String STRING_RESOURCE_PATH = "src/test/resources/NamingConventionTest";
     Check ncc = new NamingConventionsCheck();
-    Map<String, ClassData> map;
+    ClassDataCollection classes;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
 
-        map = TestUtility.getMap(fl.loadFiles("class"));
+        classes = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 	}
 
 
 
 	@Test
 	public void testDefaultConfig() {
-		Set<Message> out = ncc.run(map, new Configuration(Map.of()));
+		Set<Message> out = ncc.run(classes, new Configuration(Map.of()));
         Set<Message> exp = Set.of(
             new Message(MessageLevel.WARNING, "Abstract Class Naming Violation", "weirdStuff.weirdabstractclass"),
             new Message(MessageLevel.WARNING, "Interface Naming Violation", "weirdStuff.weird_interface"),
@@ -92,8 +91,8 @@ public class NamingConventionsCheckTest {
             "convLocalVar", "3"));
         config.put("convMethodParam", "e");
         config.put("convAllowEmptyPackage", true);
-        config.put("convMaxLength", 13); 
-        Set<Message> out = ncc.run(map, new Configuration(config));
+        config.put("convMaxLength", 13);
+        Set<Message> out = ncc.run(classes, new Configuration(config));
         assertEquals(Set.of(
             new Message(MessageLevel.WARNING, MessageFormat.format("Package ({0}) Name exceeds {1} characters", "normalconventions", 13)),
             new Message(MessageLevel.WARNING, MessageFormat.format("Class Name exceeds {0} characters", 13), "weirdStuff.weirdabstractclass"),
@@ -103,13 +102,13 @@ public class NamingConventionsCheckTest {
             new Message(MessageLevel.WARNING, MessageFormat.format("Class Name exceeds {0} characters", 13), "weirdStuff.weird_interface"),
             new Message(MessageLevel.WARNING, MessageFormat.format("Local Variable or Method Param ({0} in {1}) name exceeds {2} characters", "C_A_K_E_flavor", "Cake", 13), "weirdStuff.WEIRD_CLASS")
         ), out);
-        
+
     }
 
 
     @Test
     public void testOtherConventions() {
-        Map<String, Object> config = new HashMap<String, Object>(Map.of( 
+        Map<String, Object> config = new HashMap<String, Object>(Map.of(
             "convPackage", "ANY",
             "convClass", "UPPERCASE",
             "convInterface", "lower_case",
@@ -122,8 +121,8 @@ public class NamingConventionsCheckTest {
             "convLocalVar", "ANY"));
         config.put("convMethodParam", "ANY");
         config.put("convAllowEmptyPackage", true);
-        config.put("convMaxLength", -1); 
-        Set<Message> out = ncc.run(map, new Configuration(config));
+        config.put("convMaxLength", -1);
+        Set<Message> out = ncc.run(classes, new Configuration(config));
         Set<Message> exp = Set.of(
             new Message(MessageLevel.WARNING, "Class Naming Violation", "weirdStuff.WEIRD_CLASS"),
             new Message(MessageLevel.WARNING, "Class Naming Violation", "normalconventions.NormalClassName"),
@@ -143,7 +142,7 @@ public class NamingConventionsCheckTest {
 
     }
 
-	
+
 
 
 }

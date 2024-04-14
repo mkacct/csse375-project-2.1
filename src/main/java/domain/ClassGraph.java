@@ -1,8 +1,16 @@
 package domain;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
 import domain.javadata.FieldData;
 import domain.javadata.FieldInstrData;
@@ -14,8 +22,8 @@ import domain.javadata.MethodInstrData;
 import domain.javadata.VariableData;
 
 public class ClassGraph {
-    private final Map<String, ClassData> stringToClass;
-    private final Map<String, Integer> classes; 
+    private final ClassDataCollection classDataCollection;
+    private final Map<String, Integer> classes;
     private final Map<Integer, String> inverse; // inverse of the other map
     private final int[][] weightedEdges;
     private final int numClasses;
@@ -31,11 +39,11 @@ public class ClassGraph {
             return removeArray(s.substring(0, index));
         }
     }
-    public ClassGraph(Map<String, ClassData> strToClass) {
-        this.stringToClass = strToClass;
+    public ClassGraph(ClassDataCollection classDataCollection) {
+        this.classDataCollection = classDataCollection;
         classes = new HashMap<String, Integer>();
         inverse = new HashMap<Integer, String>();
-        numClasses = stringToClass.keySet().size();
+        numClasses = classDataCollection.size();
         weightedEdges = new int[numClasses][numClasses];
         retrieveClassInformation();
         initializeEdges();
@@ -43,10 +51,10 @@ public class ClassGraph {
     }
 
     private void retrieveClassInformation() {
-        Iterator<String> it = stringToClass.keySet().iterator();
+        Iterator<ClassData> it = classDataCollection.iterator();
         int i = 0;
         while (it.hasNext()) {
-            String temp = it.next();
+            String temp = it.next().getFullName();
             classes.put(temp, i);
             inverse.put(i, temp);
             i++;
@@ -62,7 +70,7 @@ public class ClassGraph {
     private void populateEdges() {
         for (int i = 0; i < numClasses; i++) {
             String inverseClassInfo = inverse.get(i);
-            ClassData classInfo = stringToClass.get(inverseClassInfo);
+            ClassData classInfo = classDataCollection.get(inverseClassInfo);
             checkForInheritance(classInfo, i);
             checkForImplements(classInfo, i);
             checkForComposition(classInfo, i);
@@ -150,7 +158,7 @@ public class ClassGraph {
             if (classes.containsKey(s)) {
                 int otherClass = classes.get(s);
                 if (!checkHasA(weightedEdges[i][otherClass])) {
-                    if(!(i == otherClass && stringToClass.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
+                    if(!(i == otherClass && classDataCollection.get(inverse.get(i)).getClassType() == ClassType.ENUM)) // Enum's trivially have themselves
                         weightedEdges[i][otherClass] += 2;
                 }
             }
@@ -191,7 +199,7 @@ public class ClassGraph {
     public static boolean checkHasA(int weight) {
         return weight % 4 >= 2;
     }
-    
+
     public static boolean checkDepends(int weight) {
         return weight % 2 >= 1;
     }
@@ -224,8 +232,8 @@ public class ClassGraph {
         return numClasses;
     }
 
-    public Map<String,ClassData> getClasses() {
-        return Map.copyOf(stringToClass);
+    public ClassDataCollection getClasses() {
+        return new ClassDataCollection(classDataCollection);
     }
 
     public int getIndex(String c) {
@@ -243,8 +251,8 @@ public class ClassGraph {
     }
 
     /**
-     * 
-     * @param j 
+     *
+     * @param j
      * @return An array of weights (i,j) for all i
      */
     public int[] column(int j) {
@@ -257,7 +265,7 @@ public class ClassGraph {
         return ret;
     }
 
-    
+
 
 
 

@@ -7,35 +7,34 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 /**
- * Test Class Graph on 
+ * Test Class Graph on
  */
 public class LowCouplingCheckTest {
 	private static final String STRING_RESOURCE_PATH = "src/test/resources/LowCouplingTest";
     Check lcc = new LowCouplingCheck();
-    Map<String, ClassData> map;
+    ClassDataCollection classes;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
 
-        map = TestUtility.getMap(fl.loadFiles("class"));
+        classes = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 	}
 
 
 
 	@Test
 	public void testDefaultConfig() {
-		Set<Message> out = lcc.run(map, new Configuration(Map.of()));
+		Set<Message> out = lcc.run(classes, new Configuration(Map.of()));
         Set<Message> exp = Set.of(
             new Message(MessageLevel.WARNING, "Cycle detected: complicatedyes.B --> complicatedyes.V --> complicatedyes.W --> complicatedyes.A --> complicatedyes.B"),
             new Message(MessageLevel.WARNING, "Cycle detected: simplecycle.C --> simplecycle.A --> simplecycle.B --> simplecycle.C"),
@@ -62,7 +61,7 @@ public class LowCouplingCheckTest {
 
     @Test
 	public void testDegree() {
-		Set<Message> out = lcc.run(map, new Configuration(Map.of(
+		Set<Message> out = lcc.run(classes, new Configuration(Map.of(
             "coupMaxInDegree", 2,
             "coupMaxOutDegree", 5,
             "coupCycles", false
@@ -85,13 +84,13 @@ public class LowCouplingCheckTest {
 
     @Test
 	public void testIgnorepackage() {
-		Set<Message> out = lcc.run(map, new Configuration(Map.of(
+		Set<Message> out = lcc.run(classes, new Configuration(Map.of(
             "coupMaxOutDegree", 5,
             "coupCycles", false,
             "coupIgnorePackage", "highdegrees"
         )));
         Set<Message> exp = Set.of(
-            
+
         );
 
         assertEquals(exp, out);
@@ -107,7 +106,7 @@ public class LowCouplingCheckTest {
 
     @Test
 	public void testSelfCycle() {
-		Set<Message> out = lcc.run(map, new Configuration(Map.of(
+		Set<Message> out = lcc.run(classes, new Configuration(Map.of(
             "coupIgnoreSelfCycles", false
         )));
         assertTrue(out.contains(new Message(MessageLevel.WARNING, "Cycle detected: highdegrees.Bad --> highdegrees.Bad")));

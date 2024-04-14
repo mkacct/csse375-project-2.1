@@ -15,6 +15,7 @@ import domain.Check;
 import domain.Message;
 import domain.MessageLevel;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassReaderUtil;
 
 class App {
@@ -56,22 +57,22 @@ class App {
 			}
 		}
 
-		Map<String, ClassData> classes = readInClasses(classFiles);
+		ClassDataCollection classes = readInClasses(classFiles);
 		Map<MessageLevel, Integer> msgTotals = runAllChecksAndPrintResults(checks, classes, config);
 		return msgTotals.get(MessageLevel.ERROR) == 0;
 	}
 
-	private static Map<String, ClassData> readInClasses(Set<byte[]> classFiles) {
-		Map<String, ClassData> classes = new HashMap<>();
+	private static ClassDataCollection readInClasses(Set<byte[]> classFiles) {
+		ClassDataCollection classes = new ClassDataCollection();
 		for (byte[] classFile : classFiles) {
 			ClassData classData = ClassReaderUtil.read(classFile);
-			classes.put(classData.getFullName(), classData);
+			classes.add(classData);
 		}
 		return classes;
 	}
 
 	private static Map<MessageLevel, Integer> runAllChecksAndPrintResults(
-		Check[] checks, Map<String, ClassData> classes, Configuration config
+		Check[] checks, ClassDataCollection classes, Configuration config
 	) {
 		boolean skipUnmarked = Boolean.TRUE.equals(configBoolOrNull(config, SKIP_UNMARKED_CHECKS_KEY));
 		Map<MessageLevel, Integer> msgTotals = initMsgTotals();
@@ -103,7 +104,7 @@ class App {
 	}
 
 	private static void runCheckAndPrintResults(
-		Check check, Map<String, ClassData> classes, Configuration config, Map<MessageLevel, Integer> msgTotals
+		Check check, ClassDataCollection classes, Configuration config, Map<MessageLevel, Integer> msgTotals
 	) {
 		Set<Message> generatedMsgs = check.run(classes, config);
 			System.out.println(MessageFormat.format("Check {0}:", check.name));

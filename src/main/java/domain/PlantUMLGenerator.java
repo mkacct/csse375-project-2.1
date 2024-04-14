@@ -50,7 +50,7 @@ public class PlantUMLGenerator extends GraphCheck {
 
     private boolean isValidFormat(String str) {
         boolean omitPeriods = !str.contains(".");
-        boolean classIsRecognized = graph.getClasses().containsKey(str);
+        boolean classIsRecognized = graph.getClasses().containsFullName(str);
         boolean isJavaBased = str.split("\\.")[0].equals("java");
         return omitPeriods || classIsRecognized || isJavaBased;
     }
@@ -64,7 +64,7 @@ public class PlantUMLGenerator extends GraphCheck {
         try {
             String pumlOut = config.getString(".pumlOutputPath", "pumlGen.puml");
             String svgOut = config.getString(".svgOutputPath", "svgGen.svg");
-            PackageStructure ps = new PackageStructure(graph.getClasses().keySet());
+            PackageStructure ps = new PackageStructure(graph.getClasses().getFullNames());
             StringBuilder puml = new StringBuilder();
             writeHeader(puml);
             generatePackage(ps, puml, 0);
