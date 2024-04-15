@@ -121,10 +121,17 @@ public class ClassDataCollection implements Collection<ClassData> {
 		this.classesByFullName.clear();
 	}
 
+	/**
+	 * @param fullName a fully qualified class name
+	 * @return whether the collection contains a class with the given full name
+	 */
 	public boolean containsFullName(String fullName) {
 		return this.classesByFullName.containsKey(fullName);
 	}
 
+	/**
+	 * @return a set of all full names in the collection (excluding compiler-generated classes)
+	 */
 	public Set<String> getFullNames() {
 		Set<String> fullNames = new HashSet<String>();
 		for (ClassData classData : this.getNonCompilerGeneratedClasses()) {
