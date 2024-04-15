@@ -1,0 +1,253 @@
+{
+	"sections": [
+		{
+			"title": "Execution settings",
+			"settings": [
+				{
+					"name": "skipUnmarkedChecks",
+					"type": "boolean",
+					"desc": "If true, all checks only run if they are explicitly enabled. Otherwise, most checks (those that are not disabled by default) run unless they are explicitly disabled."
+				}
+			]
+		},
+		{
+			"title": "Settings applied to multiple checks",
+			"settings": [
+				{
+					"name": "adapterClassNameRegex",
+					"type": "String",
+					"desc": "Regular expression for adapter class names, to exempt from Program to Interface, Not Implementation and Adapter Pattern checks (default is \"Adapter$\")."
+				}
+			]
+		},
+		{
+			"title": "Naming Conventions",
+			"checkName": "namingConventions",
+			"settings": [
+				{
+					"name": "convPackage",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convClass",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convInterface",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convAbstract",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convEnum",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convField",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convMethod",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convConstant",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convEnumConstant",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convLocalVar",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convMethodParam",
+					"type": "String",
+					"enum": "namingConvention"
+				},
+				{
+					"name": "convAllowEmptyPackage",
+					"type": "boolean",
+					"desc": "Whether to allow empty package names, i.e. \"\". Defaults to false."
+				},
+				{
+					"name": "convMaxLength",
+					"type": "int",
+					"desc": "Maximum length. Default is no max."
+				}
+			]
+		},
+		{
+			"title": "Method Length",
+			"checkName": "methodLength",
+			"settings": [
+				{
+					"name": "maxMethodLengthInstrs",
+					"type": "int",
+					"desc": "Maximum method length, in bytecode instructions."
+				}
+			]
+		},
+		{
+			"title": "Parameter Count",
+			"checkName": "parameterCount",
+			"settings": [
+				{
+					"name": "maxNumParameters",
+					"type": "int",
+					"desc": "Maximum number of parameters per method."
+				}
+			]
+		},
+		{
+			"title": "No Global Variables",
+			"checkName": "noGlobalVariables"
+		},
+		{
+			"title": "Required Overrides",
+			"checkName": "requiredOverrides"
+		},
+		{
+			"title": "Unused Abstractions",
+			"checkName": "unusedAbstractions"
+		},
+		{
+			"title": "Immutable Exceptions",
+			"checkName": "immutableExceptions"
+		},
+		{
+			"title": "Information Hiding",
+			"checkName": "informationHiding"
+		},
+		{
+			"title": "Program to Interface, Not Implementation",
+			"checkName": "programToInterface",
+			"settings": [
+				{
+					"name": "domainPackageName",
+					"type": "String",
+					"desc": "Name of the domain package (default is \"domain\")."
+				},
+				{
+					"name": "allowedDependencies",
+					"type": "String[]",
+					"desc": "List of user-specified allowed dependencies (add known interfaces and/or data classes here)."
+				}
+			]
+		},
+		{
+			"title": "Low Coupling",
+			"checkName": "lowCoupling",
+			"settings": [
+				{
+					"name": "coupMaxInDegree",
+					"type": "int",
+					"desc": "Specifies the maximum In-Degree for a class. Default is no max."
+				},
+				{
+					"name": "coupMaxOutDegree",
+					"type": "int",
+					"desc": "Specifies the maximum Out-Degree for a class. Default is no max."
+				},
+				{
+					"name": "coupIgnorePackage",
+					"type": "String",
+					"desc": "Specifies a package to ignore in a check (for example, ignore the presentation layer)."
+				},
+				{
+					"name": "coupCycles",
+					"type": "boolean",
+					"desc": "Specifies whether to check for cycles. Defaults to true."
+				},
+				{
+					"name": "coupIgnoreSelfCycles",
+					"type": "boolean",
+					"desc": "Specifies whether Classes that reference themselves will be reported (cycles like A → A). Defaults to true."
+				}
+			]
+		},
+		{
+			"title": "Strategy Pattern",
+			"checkName": "strategyPattern"
+		},
+		{
+			"title": "Observer Pattern",
+			"checkName": "observerPattern",
+			"settings": [
+				{
+					"name": "obsInterface",
+					"type": "boolean",
+					"desc": "Specifies whether to check for interface subjects. Defaults to true."
+				},
+				{
+					"name": "obsAbstract",
+					"type": "boolean",
+					"desc": "Specifies whether to check for abstract class subjects. Defaults to true."
+				},
+				{
+					"name": "obsConcrete",
+					"type": "boolean",
+					"desc": "Specifies whether to check for patterns with only a concrete subject, and no abstract subject."
+				}
+			]
+		},
+		{
+			"title": "Adapter Pattern",
+			"checkName": "adapterPattern"
+		},
+		{
+			"title": "Constant Interface",
+			"checkName": "constantInterface",
+			"settings": [
+				{
+					"name": "allowMarkerInterfaces",
+					"type": "boolean",
+					"desc": "If true, interfaces with no fields nor methods (\"marker interfaces\") will be ignored. (Defaults to false.)"
+				}
+			]
+		},
+		{
+			"title": "PlantUML Generator",
+			"checkName": "plantUMLGenerator",
+			"entityTypeOverride": "feature",
+			"settings": [
+				{
+					"name": ".pumlOutputPath",
+					"type": "String",
+					"desc": "Specifies the path for the output .puml file. Defaults to pumlGen.puml (in the root of the directory)."
+				},
+				{
+					"name": ".svgOutputPath",
+					"type": "String",
+					"desc": "Specifies the path for the output .svg file. Defaults to svgGen.puml (in the root of the directory)."
+				}
+			]
+		}
+	],
+
+	"enums": {
+		"namingConvention": [
+			"lowercase",
+			"UPPERCASE",
+			"UPPER_CASE",
+			"lower_case",
+			"camelCase",
+			"PascalCase",
+			"ANY"
+		]
+	}
+}
