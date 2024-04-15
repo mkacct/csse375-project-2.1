@@ -1,12 +1,12 @@
 package domain;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 public class AdapterPatternCheck extends Check {
 	private static final String NAME = "adapterPattern";
@@ -19,7 +19,7 @@ public class AdapterPatternCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		Pattern adapterNamePattern = Pattern.compile(config.getString(ADAPTER_CLASS_NAME_REGEX_KEY, DEFAULT_ADAPTER_CLASS_NAME_REGEX));
 
 		Set<Message> messages = new HashSet<Message>();
@@ -28,9 +28,9 @@ public class AdapterPatternCheck extends Check {
 		return messages;
 	}
 
-	private static Set<String> findAdapters(Map<String, ClassData> classes, Pattern adapterNamePattern, Set<Message> messages) {
+	private static Set<String> findAdapters(ClassDataCollection classes, Pattern adapterNamePattern, Set<Message> messages) {
 		Set<String> adapterFullNames = new HashSet<String>();
-		for (ClassData classData : classes.values()) {
+		for (ClassData classData : classes) {
 			if (adapterNamePattern.matcher(classData.getSimpleName()).find()) {
 				adapterFullNames.add(classData.getFullName());
 				if (classData.getInterfaceFullNames().size() == 0) {
@@ -45,7 +45,7 @@ public class AdapterPatternCheck extends Check {
 		return adapterFullNames;
 	}
 
-	private static void validateUsageOfAdapters(Map<String, ClassData> classes, Set<String> adapterFullNames, Set<Message> messages) {
+	private static void validateUsageOfAdapters(ClassDataCollection classes, Set<String> adapterFullNames, Set<Message> messages) {
 		TypeValidator typeValidator = new TypeValidator(
 			(typeFullName) -> {return !adapterFullNames.contains(typeFullName);},
 			MessageLevel.WARNING
@@ -55,6 +55,6 @@ public class AdapterPatternCheck extends Check {
 			"Method \"{0}\" has adapter return type \"{1}\"",
 			"Method \"{0}\" has parameter \"{1}\" of adapter type \"{2}\""
 		);
-		typeValidator.validateTypes(classes.values(), messages);
+		typeValidator.validateTypes(classes, messages);
 	}
 }

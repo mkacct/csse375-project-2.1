@@ -1,11 +1,11 @@
 package domain;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
 
 public class ConstantInterfaceCheck extends Check {
@@ -18,10 +18,10 @@ public class ConstantInterfaceCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		boolean allowMarkerInterfaces = config.getBoolean(ALLOW_MARKER_INTERFACES_KEY, false);
 		Set<Message> messages = new HashSet<>();
-		for (ClassData classData : classes.values()) {
+		for (ClassData classData : classes) {
 			if (classData.getClassType() != ClassType.INTERFACE) {continue;}
 			if (classData.getMethods().size() == 0) {
 				boolean isMarker = classData.getFields().size() == 0;

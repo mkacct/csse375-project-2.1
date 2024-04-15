@@ -2,12 +2,12 @@ package domain;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.FieldData;
 
 public class ImmutableExceptionsCheck extends Check {
@@ -20,11 +20,11 @@ public class ImmutableExceptionsCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		Pattern exceptionNamePattern = Pattern.compile(EXCEPTION_CLASS_NAME_REGEX);
 
 		Set<Message> messages = new HashSet<Message>();
-		for (ClassData classData : classes.values()) {
+		for (ClassData classData : classes) {
 			if (exceptionNamePattern.matcher(classData.getSimpleName()).find()) {
 				checkExceptionClass(classData, messages);
 			}

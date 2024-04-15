@@ -2,12 +2,12 @@ package domain;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
 
 public class ProgramToInterfaceNotImplementationCheck extends Check {
@@ -48,7 +48,7 @@ public class ProgramToInterfaceNotImplementationCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		String domainPkgName = config.getString(DOMAIN_PKG_NAME_KEY, DEFAULT_DOMAIN_PKG_NAME);
 		Pattern adapterNamePattern = Pattern.compile(config.getString(ADAPTER_CLASS_NAME_REGEX_KEY, DEFAULT_ADAPTER_CLASS_NAME_REGEX));
 		Set<String> allowedDeps = Set.copyOf(config.getListOfString(ALLOWED_DEPENDENCIES_KEY, List.of()));
@@ -64,12 +64,12 @@ public class ProgramToInterfaceNotImplementationCheck extends Check {
 			if (adapterNamePattern.matcher(classData.getSimpleName()).find()) {return true;} // ignore adapter classes
 			return false;
 		});
-		typeValidator.validateTypes(classes.values(), messages);
+		typeValidator.validateTypes(classes, messages);
 
 		return messages;
 	}
 
-	private static boolean isTypeOkay(String typeFullName, Map<String, ClassData> classes, String domainPkgName, Set<String> allowedDeps) {
+	private static boolean isTypeOkay(String typeFullName, ClassDataCollection classes, String domainPkgName, Set<String> allowedDeps) {
 		typeFullName = stripArrayIndicators(typeFullName); // we don't care whether it's an array
 		if (typeFullName.startsWith(domainPkgName + ".")) {return true;} // type is itself in domain
 		if (typeFullName.equals(OBJECT_TYPE)) {return true;} // can't program to implementation if there is none
@@ -77,7 +77,7 @@ public class ProgramToInterfaceNotImplementationCheck extends Check {
 		if (PRIMITIVE_CLASSES.contains(typeFullName)) {return true;} // type is equivalent to primitive
 		if (COMMON_INTERFACES.contains(typeFullName)) {return true;} // type is one of the popular interfaces
 		if (allowedDeps.contains(typeFullName)) {return true;} // type is in user's allowed dependencies
-		if (classes.containsKey(typeFullName)) {
+		if (classes.containsFullName(typeFullName)) {
 			ClassData typeClass = classes.get(typeFullName);
 			if (typeClass.getClassType() != ClassType.CLASS) {return true;} // type is an interface/enum from the project
 		}

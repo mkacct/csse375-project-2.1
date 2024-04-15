@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import datasource.DirLoader;
 import datasource.FilesLoader;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.FieldData;
 import domain.javadata.MethodData;
 import domain.javadata.TypeStructure;
@@ -23,13 +22,13 @@ import domain.javadata.VariableData;
 public class TypeParamatersTest {
     private static final String STRING_RESOURCE_PATH = "src/test/resources/TypeParamaterTest";
     private static final String CLASS_NAME = "App";
-    Map<String, ClassData> map;
+    ClassDataCollection map;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
 
-        map = TestUtility.getMap(fl.loadFiles("class"));
+        map = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 	}
 
     @Test

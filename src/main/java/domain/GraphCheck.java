@@ -1,11 +1,9 @@
 package domain;
 
-import java.util.Map;
 import java.util.Set;
 
-
 import datasource.Configuration;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 public abstract class GraphCheck extends Check {
     protected ClassGraph graph;
@@ -26,7 +24,7 @@ public abstract class GraphCheck extends Check {
     }
 
     @Override
-    public final Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+    public final Set<Message> run(ClassDataCollection classes, Configuration config) {
         graph = new ClassGraph(classes);
         return gRun(config);
     }

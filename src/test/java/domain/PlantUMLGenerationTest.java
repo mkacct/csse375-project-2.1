@@ -11,11 +11,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 public class PlantUMLGenerationTest {
     private static final String STRING_RESOURCE_PATH1 = "src/test/resources/graphtest";
@@ -37,29 +36,29 @@ public class PlantUMLGenerationTest {
     private static final String PUMLOUT_PATH3e = "src/test/resources/PlantUMLGenerationTest/pout3e.puml";
     //private static final String SVGOUT_PATH3e = "src/test/resources/PlantUMLGenerationTest/svgout3e.puml";
     Check pumlg = new PlantUMLGenerator();
-    Map<String, ClassData> map1;
-    Map<String, ClassData> map2;
-    Map<String, ClassData> map3;
+    ClassDataCollection classes1;
+    ClassDataCollection classes2;
+    ClassDataCollection classes3;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl;
 
         fl = new DirLoader(STRING_RESOURCE_PATH1);
-        map1 = TestUtility.getMap(fl.loadFiles("class"));
+        classes1 = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 
         fl = new DirLoader(STRING_RESOURCE_PATH2);
-        map2 = TestUtility.getMap(fl.loadFiles("class"));
+        classes2 = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 
         fl = new DirLoader(STRING_RESOURCE_PATH3);
-        map3 = TestUtility.getMap(fl.loadFiles("class"));
+        classes3 = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 	}
 
 
 
     @Test
 	public void testSystem1() throws FileNotFoundException {
-		Set<Message> out = pumlg.run(map1, new Configuration(Map.of(
+		Set<Message> out = pumlg.run(classes1, new Configuration(Map.of(
             ".pumlOutputPath", PUMLOUT_PATH1,
             ".svgOutputPath", SVGOUT_PATH1
         )));
@@ -70,7 +69,7 @@ public class PlantUMLGenerationTest {
 
     @Test
 	public void testSystem2() throws FileNotFoundException {
-		Set<Message> out = pumlg.run(map2, new Configuration(Map.of(
+		Set<Message> out = pumlg.run(classes2, new Configuration(Map.of(
             ".pumlOutputPath", PUMLOUT_PATH2,
             ".svgOutputPath", SVGOUT_PATH2
         )));
@@ -81,7 +80,7 @@ public class PlantUMLGenerationTest {
 
     @Test
 	public void testSystem3() throws FileNotFoundException {
-		Set<Message> out = pumlg.run(map3, new Configuration(Map.of(
+		Set<Message> out = pumlg.run(classes3, new Configuration(Map.of(
             ".pumlOutputPath", PUMLOUT_PATH3,
             ".svgOutputPath", SVGOUT_PATH3
         )));
@@ -92,7 +91,7 @@ public class PlantUMLGenerationTest {
 
     @Test
     public void testError() {
-		Set<Message> out = pumlg.run(map3, new Configuration(Map.of(
+		Set<Message> out = pumlg.run(classes3, new Configuration(Map.of(
             ".pumlOutputPath", "",
             ".svgOutputPath", ""
         )));

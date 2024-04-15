@@ -3,11 +3,11 @@ package domain;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.InstrData;
 import domain.javadata.MethodData;
 
@@ -21,7 +21,7 @@ public class MethodLengthCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		CountCheckPropertyValidator validator = new CountCheckPropertyValidator();
 		Integer maxMethodLengthInstrs = validator.validateGetInt(config, MAX_METHOD_LENGTH_KEY);
 		if (maxMethodLengthInstrs == null) {
@@ -30,7 +30,7 @@ public class MethodLengthCheck extends Check {
 		// maxMethodLengthInstrs != null
 
 		Set<Message> messages = new HashSet<>();
-		for (ClassData classData : classes.values()) {
+		for (ClassData classData : classes) {
 			this.checkClass(classData, maxMethodLengthInstrs, messages);
 		}
 		return messages;

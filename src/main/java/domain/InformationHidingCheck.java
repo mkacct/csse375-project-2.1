@@ -1,12 +1,17 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import datasource.Configuration;
 import domain.javadata.AccessModifier;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.FieldData;
 import domain.javadata.MethodData;
-
-import java.util.*;
 
 public class InformationHidingCheck extends Check {
     private static final String NAME = "informationHiding";
@@ -22,7 +27,7 @@ public class InformationHidingCheck extends Check {
      * @return set of messages containing which fields violate information hiding.
      */
     @Override
-    public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+    public Set<Message> run(ClassDataCollection classes, Configuration config) {
         Map<String, ArrayList<String>> publicFieldsToClass = new HashMap<String, ArrayList<String>>();
         informationHidingClassCheck(classes, publicFieldsToClass);
         return indicateFieldsWithInformationHiding(publicFieldsToClass);
@@ -39,27 +44,26 @@ public class InformationHidingCheck extends Check {
         return messages;
     }
 
-    private void informationHidingClassCheck(Map<String, ClassData> classes, Map<String, ArrayList<String>> publicFieldsToClass) {
-        for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
-            ClassData currentClass = entry.getValue();
-            Set<FieldData> fields = entry.getValue().getFields();
-            checkFieldModifiers(entry, fields, publicFieldsToClass, currentClass);
+    private void informationHidingClassCheck(ClassDataCollection classes, Map<String, ArrayList<String>> publicFieldsToClass) {
+        for (ClassData currentClass : classes) {
+            Set<FieldData> fields = currentClass.getFields();
+            checkFieldModifiers(fields, publicFieldsToClass, currentClass);
         }
     }
 
-    private void checkFieldModifiers(Map.Entry<String, ClassData> entry, Set<FieldData> fields, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
+    private void checkFieldModifiers(Set<FieldData> fields, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
         for (FieldData field : fields) {
             boolean publicField = field.getAccessModifier() == AccessModifier.PUBLIC;
             if (publicField) {
                 handlePublicFields(publicFieldsToClass, currentClass, field);
             } else {
-                checkForGettersAndSetters(entry, field, publicFieldsToClass, currentClass);
+                checkForGettersAndSetters(field, publicFieldsToClass, currentClass);
             }
         }
     }
 
-    private void checkForGettersAndSetters(Map.Entry<String, ClassData> entry, FieldData field, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
-        Set<MethodData> methods = entry.getValue().getMethods();
+    private void checkForGettersAndSetters(FieldData field, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
+        Set<MethodData> methods = currentClass.getMethods();
         for (MethodData method : methods) {
             String methodName = method.getName().toLowerCase();
             int GETTER_SETTER_LENGTH = 3;

@@ -6,35 +6,34 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 /**
- * Test Class Graph on 
+ * Test Class Graph on
  */
 public class ObserverPatternCheckTest {
 	private static final String STRING_RESOURCE_PATH = "src/test/resources/observertest";
     Check obc = new ObserverPatternCheck();
-    Map<String, ClassData> map;
+    ClassDataCollection classes;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
 
-        map = TestUtility.getMap(fl.loadFiles("class"));
+        classes = TestUtility.toClassDataCollection(fl.loadFiles("class"));
 	}
 
 
 
 	@Test
 	public void testDefaultConfig() {
-		Set<Message> out = obc.run(map, new Configuration(Map.of()));
+		Set<Message> out = obc.run(classes, new Configuration(Map.of()));
         Set<Message> exp = Set.of(
             new Message(MessageLevel.INFO, "(Interface) Observer pattern found", Set.of("complicatedyes.Subject", "complicatedyes.ConcreteObserver", "complicatedyes.ConcreteObserver2", "complicatedyes.ConcreteSubject", "complicatedyes.Observer")),
             new Message(MessageLevel.INFO, "(Interface) Observer pattern found", Set.of("normaliobserver.ConcreteObserver", "normaliobserver.Observer", "normaliobserver.ConcreteSubject", "normaliobserver.Subject")),
@@ -56,7 +55,7 @@ public class ObserverPatternCheckTest {
 
     @Test
 	public void testAllOffConfig() {
-		Set<Message> out = obc.run(map, new Configuration(Map.of(
+		Set<Message> out = obc.run(classes, new Configuration(Map.of(
             "obsInterface", false,
             "obsAbstract", false,
             "obsConcrete", false

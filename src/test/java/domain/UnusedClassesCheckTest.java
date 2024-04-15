@@ -2,7 +2,10 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,7 @@ import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassReaderUtil;
 
 public class UnusedClassesCheckTest {
@@ -21,7 +25,7 @@ public class UnusedClassesCheckTest {
 
     private static final Configuration CONFIG_EMPTY = new Configuration(Map.of());
 
-    private ArrayList< Map<String, ClassData>> classes = new ArrayList<Map<String, ClassData>>();
+    private List<ClassDataCollection> classes = new ArrayList<ClassDataCollection>();
 
     @BeforeEach
     public void setup() throws IOException {
@@ -31,10 +35,10 @@ public class UnusedClassesCheckTest {
 
         FilesLoader loader = new DirLoader(CLASS_DIR_PATH);
         Set<byte[]> bytecodes = loader.loadFiles("class");
-        HashMap<String,ClassData> item = new HashMap<String, ClassData>();
+        ClassDataCollection item = new ClassDataCollection();
         for (byte[] bytecode : bytecodes) {
             ClassData classData = ClassReaderUtil.read(bytecode);
-            item.put(classData.getFullName(), classData);
+            item.add(classData);
         }
         this.classes.add(item);
 

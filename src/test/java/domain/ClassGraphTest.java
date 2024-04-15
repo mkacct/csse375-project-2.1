@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,29 +16,30 @@ import org.junit.jupiter.api.Test;
 import datasource.DirLoader;
 import datasource.FilesLoader;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 /**
- * Test Class Graph on 
+ * Test Class Graph on
  */
 public class ClassGraphTest {
 	private static final String STRING_RESOURCE_PATH = "src/test/resources/graphtest";
     private static final String STRING_RESOURCE_PATH2 = "src/test/resources/graphtest2";
 
 	ClassGraph graph;
-    Map<String,ClassData> stringToClass;
+    ClassDataCollection classes;
 
     ClassGraph graph2;
-    Map<String,ClassData> stringToClass2;
+    ClassDataCollection classes2;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader fl = new DirLoader(STRING_RESOURCE_PATH);
-        graph = new ClassGraph(TestUtility.getMap(fl.loadFiles("class")));
-        stringToClass = graph.getClasses();
+        graph = new ClassGraph(TestUtility.toClassDataCollection(fl.loadFiles("class")));
+        classes = graph.getClasses();
 
         fl = new DirLoader(STRING_RESOURCE_PATH2);
-        graph2 = new ClassGraph(TestUtility.getMap(fl.loadFiles("class")));
-        stringToClass2 = graph2.getClasses();
+        graph2 = new ClassGraph(TestUtility.toClassDataCollection(fl.loadFiles("class")));
+        classes2 = graph2.getClasses();
 	}
 
 	@Test
@@ -53,51 +52,51 @@ public class ClassGraphTest {
         expectedClasses.add("engine.Simpson38Integration");
         expectedClasses.add("engine.SimpsonIntegration");
         expectedClasses.add("engine.TrapezoidIntegration");
-        assertEquals(expectedClasses.size(), stringToClass.keySet().size());
-        Iterator<String> it = stringToClass.keySet().iterator();
+        assertEquals(expectedClasses.size(), classes.size());
+        Iterator<ClassData> it = classes.iterator();
         while (it.hasNext()) {
-            expectedClasses.remove(it.next());
+            expectedClasses.remove(it.next().getFullName());
         }
         assertEquals(0, expectedClasses.size());
 	}
 
 	@Test
 	public void testEdges() {
-        Iterator<String> it1 = graph.getClasses().keySet().iterator();
+        Iterator<ClassData> it1 = graph.getClasses().iterator();
         String temp1;
-        Iterator<String> it2;
+        Iterator<ClassData> it2;
         String temp2;
         while (it1.hasNext()) {
-            it2 = graph.getClasses().keySet().iterator();
-            temp1 = it1.next();
+            it2 = graph.getClasses().iterator();
+            temp1 = it1.next().getFullName();
             while (it2.hasNext()) {
-                temp2 = it2.next();
+                temp2 = it2.next().getFullName();
                 if (temp2.equals("engine.IntegrationMethod")) {
                     if (temp1.equals("engine.Simpson38Integration")) {
                         assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.AbsIntegration")) {
-                        assertEquals(6, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(6, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.BooleIntegration")) {
-                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.Integrator")) {
-                        assertEquals(1, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(1, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.SimpsonIntegration")) {
-                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.TrapezoidIntegration")) {
-                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(4, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     } else if (temp1.equals("engine.IntegrationMethod")) {
-                        assertEquals(0, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2))); 
+                        assertEquals(0, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                     }
                 } else {
-                    assertEquals(0, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));                    
+                    assertEquals(0, graph.getWeight(graph.getIndex(temp1),graph.getIndex(temp2)));
                 }
             }
             if (temp1.equals("engine.Simpson38Integration")) {
-                assertEquals(0, graph.inDegree(graph.getIndex(temp1))); 
+                assertEquals(0, graph.inDegree(graph.getIndex(temp1)));
                 assertEquals(1, graph.outDegree(graph.getIndex(temp1)));
             } else if (temp1.equals("engine.AbsIntegration")) {
                 assertEquals(0, graph.inDegree(graph.getIndex(temp1)));
-                assertEquals(1, graph.outDegree(graph.getIndex(temp1))); 
+                assertEquals(1, graph.outDegree(graph.getIndex(temp1)));
             } else if (temp1.equals("engine.BooleIntegration")) {
                 assertEquals(0, graph.inDegree(graph.getIndex(temp1)));
                 assertEquals(1, graph.outDegree(graph.getIndex(temp1)));
@@ -114,7 +113,7 @@ public class ClassGraphTest {
                 assertEquals(6, graph.inDegree(graph.getIndex(temp1)));
                 assertEquals(0, graph.outDegree(graph.getIndex(temp1)));
             }
-        }   
+        }
 	}
 
     @Test
@@ -139,24 +138,24 @@ public class ClassGraphTest {
         assertTrue(ClassGraph.checkHasA(11));
         assertTrue(ClassGraph.checkDepends(11));
 
-        
+
         int j = graph.getIndex("engine.IntegrationMethod");
         int[] col = graph.column(j);
         for (int i : col) {
             if (graph.indexToClass(i).equals("engine.Simpson38Integration")) {
                 assertEquals(4, col[i]);
             } else if (graph.indexToClass(i).equals("engine.AbsIntegration")) {
-                assertEquals(6, col[i]); 
+                assertEquals(6, col[i]);
             } else if (graph.indexToClass(i).equals("engine.BooleIntegration")) {
-                assertEquals(4, col[i]); 
+                assertEquals(4, col[i]);
             } else if (graph.indexToClass(i).equals("engine.Integrator")) {
-                assertEquals(1, col[i]); 
+                assertEquals(1, col[i]);
             } else if (graph.indexToClass(i).equals("engine.SimpsonIntegration")) {
-                assertEquals(4, col[i]); 
+                assertEquals(4, col[i]);
             } else if (graph.indexToClass(i).equals("engine.TrapezoidIntegration")) {
-                assertEquals(4, col[i]); 
+                assertEquals(4, col[i]);
             } else if (graph.indexToClass(i).equals("engine.IntegrationMethod")) {
-                assertEquals(0, col[i]); 
+                assertEquals(0, col[i]);
             }
         }
 

@@ -1,10 +1,13 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
-
-import java.util.*;
 
 public class UnusedAbstractionsCheck extends Check {
     private static final String NAME = "unusedAbstractions";
@@ -20,48 +23,48 @@ public class UnusedAbstractionsCheck extends Check {
      * @return set of messages containing abstractions that are not used by other classes.
      */
     @Override
-    public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+    public Set<Message> run(ClassDataCollection classes, Configuration config) {
         //creates list to keep track of unused classes.
         ArrayList<String> unsusedClasses = new ArrayList<String>();
         //iterates through every class
-        for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
+        for (ClassData classData : classes) {
             //checks if class is an interface. If so, we check if it has any implementors.
-            if (entry.getValue().getClassType() == ClassType.INTERFACE) {
+            if (classData.getClassType() == ClassType.INTERFACE) {
                 //creates list to keep track of implementors.
                 ArrayList<String> implementors = new ArrayList<String>();
-                Map<String, ClassData> newMap = new HashMap<String, ClassData>(classes);
-                newMap.remove(entry.getKey());
+                ClassDataCollection newClasses = new ClassDataCollection(classes);
+                newClasses.remove(classData);
                 //iterates through every class except itself.
-                for (Map.Entry<String, ClassData> newEntry : newMap.entrySet()) {
+                for (ClassData newClassData : newClasses) {
                     //check if class implements the interface. If so, add it to the implementor list
-                    if (newEntry.getValue().getInterfaceFullNames().contains(entry.getKey())) {
-                        implementors.add(newEntry.getKey());
+                    if (newClassData.getInterfaceFullNames().contains(classData.getFullName())) {
+                        implementors.add(newClassData.getFullName());
                     }
 
                 }
                 //If no implementors are found, add the interface to the unused classes list
                 if (implementors.isEmpty()) {
-                    unsusedClasses.add(entry.getKey());
+                    unsusedClasses.add(classData.getFullName());
                     continue;
                 }
 
             }
             //checks if class is an abstract class. If so, we check if it has any extendors.
-            else if (entry.getValue().isAbstract()) {
+            else if (classData.isAbstract()) {
                 //creates a list to keep track of extendors.
                 ArrayList<String> extenders = new ArrayList<String>();
-                Map<String, ClassData> newMap = new HashMap<String, ClassData>(classes);
-                newMap.remove(entry.getKey());
+                ClassDataCollection newClasses = new ClassDataCollection(classes);
+                newClasses.remove(classData);
                 //iterates through every class except itself
-                for (Map.Entry<String, ClassData> newEntry : newMap.entrySet()) {
+                for (ClassData newClassData : newClasses) {
                     //check if class extends abstract class. If so, add it to the extender list
-                    if (newEntry.getValue().getSuperFullName().equals(entry.getKey())) {
-                        extenders.add(newEntry.getKey());
+                    if (newClassData.getSuperFullName().equals(classData.getFullName())) {
+                        extenders.add(newClassData.getFullName());
                     }
                 }
                 //if so classes extend the abstract class, add the class t the unused classes list.
                 if (extenders.isEmpty()) {
-                    unsusedClasses.add(entry.getKey());
+                    unsusedClasses.add(classData.getFullName());
                 }
             }
         }

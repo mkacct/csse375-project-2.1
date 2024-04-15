@@ -2,11 +2,11 @@ package domain;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
 import domain.javadata.FieldData;
 import domain.javadata.MethodData;
@@ -31,7 +31,7 @@ public class NamingConventionsCheck extends Check {
     }
 
     @Override
-    public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+    public Set<Message> run(ClassDataCollection classes, Configuration config) {
 
         Set<Message> messages = new HashSet<Message>();
         NamingConventions packageNames = NamingConventions.getConvention(config.getString("convPackage", "lowercase"));
@@ -54,14 +54,13 @@ public class NamingConventionsCheck extends Check {
 
         // So we don't produce multiple messages from same package name. This technically means that if you have something like domain.javadata and datasource.javadata, only one javadata would be reported
         Set<String> packages = new HashSet<String>();
-        for (String s : classes.keySet()) {
-            runClassChecks(classes, s, maxLength, messages, abstractNames, interfaceNames, enumNames, classNames, packages, packageNames, allowEmptyPackage, enumConstantNames, constantNames, fieldNames, methodNames, methodParamNames, localVarNames);
+        for (ClassData classData : classes) {
+            runClassChecks(classData, maxLength, messages, abstractNames, interfaceNames, enumNames, classNames, packages, packageNames, allowEmptyPackage, enumConstantNames, constantNames, fieldNames, methodNames, methodParamNames, localVarNames);
         }
         return messages;
     }
 
-    private void runClassChecks(Map<String, ClassData> classes, String s, int maxLength, Set<Message> messages, NamingConventions abstractNames, NamingConventions interfaceNames, NamingConventions enumNames, NamingConventions classNames, Set<String> packages, NamingConventions packageNames, boolean allowEmptyPackage, NamingConventions enumConstantNames, NamingConventions constantNames, NamingConventions fieldNames, NamingConventions methodNames, NamingConventions methodParamNames, NamingConventions localVarNames) {
-        ClassData classInfo = classes.get(s);
+    private void runClassChecks(ClassData classInfo, int maxLength, Set<Message> messages, NamingConventions abstractNames, NamingConventions interfaceNames, NamingConventions enumNames, NamingConventions classNames, Set<String> packages, NamingConventions packageNames, boolean allowEmptyPackage, NamingConventions enumConstantNames, NamingConventions constantNames, NamingConventions fieldNames, NamingConventions methodNames, NamingConventions methodParamNames, NamingConventions localVarNames) {
         runClassNameChecks(classInfo, maxLength, messages, abstractNames, interfaceNames, enumNames, classNames);
         runPackageChecks(classInfo, packages, maxLength, messages, packageNames, allowEmptyPackage);
         runFieldChecks(classInfo, maxLength, messages, enumConstantNames, constantNames, fieldNames);

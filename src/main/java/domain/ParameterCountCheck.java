@@ -3,11 +3,11 @@ package domain;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.MethodData;
 import domain.javadata.VariableData;
 
@@ -21,7 +21,7 @@ public class ParameterCountCheck extends Check {
 	}
 
 	@Override
-	public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+	public Set<Message> run(ClassDataCollection classes, Configuration config) {
 		CountCheckPropertyValidator validator = new CountCheckPropertyValidator();
 		Integer maxNumParams = validator.validateGetInt(config, MAX_NUM_PARAMS_KEY);
 		if (maxNumParams == null) {
@@ -30,7 +30,7 @@ public class ParameterCountCheck extends Check {
 		// maxNumParams != null
 
 		Set<Message> messages = new HashSet<>();
-		for (ClassData classData : classes.values()) {
+		for (ClassData classData : classes) {
 			this.checkClass(classData, maxNumParams, messages);
 		}
 		return messages;

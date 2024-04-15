@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 public class ConstantInterfaceCheckTest {
 	private static final String CLASS_DIR_PATH = "src/test/resources/constant-interface-check-test-classes";
@@ -22,13 +22,13 @@ public class ConstantInterfaceCheckTest {
 		"allowMarkerInterfaces", true
 	));
 
-	private Map<String, ClassData> classes;
+	private ClassDataCollection classes;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader loader = new DirLoader(CLASS_DIR_PATH);
 		Set<byte[]> javaBytecodes = loader.loadFiles("class");
-		this.classes = TestUtility.getMap(javaBytecodes);
+		this.classes = TestUtility.toClassDataCollection(javaBytecodes);
 	}
 
 	@Test

@@ -1,14 +1,13 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import datasource.Configuration;
 import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassType;
 import domain.javadata.FieldData;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class StrategyPatternCheck extends Check {
     private static final String NAME = "strategyPattern";
@@ -24,12 +23,12 @@ public class StrategyPatternCheck extends Check {
      * @return set of a message indicating if the design utilizes Strategy Pattern.
      */
     @Override
-    public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
+    public Set<Message> run(ClassDataCollection classes, Configuration config) {
         //iterates through every class
-        for(Map.Entry<String,ClassData> entry : classes.entrySet()) {
+        for(ClassData classData : classes) {
             //checks if the class is an abstract class.
-            if(entry.getValue().isAbstract() && entry.getValue().getClassType() == ClassType.CLASS) {
-                Set<FieldData> fields = entry.getValue().getFields();
+            if(classData.isAbstract() && classData.getClassType() == ClassType.CLASS) {
+                Set<FieldData> fields = classData.getFields();
                 //iterates through every field.
                 for(FieldData field : fields) {
 
@@ -39,23 +38,23 @@ public class StrategyPatternCheck extends Check {
                         if(strategy.isAbstract() || strategy.getClassType() == ClassType.INTERFACE) {
                             //gets a list of all classes that implement the strategy.
                             ArrayList<String> implementors = new ArrayList<String>();
-                            Map<String, ClassData> newMap = new HashMap<String, ClassData>(classes);
-                            newMap.remove(strategy.getFullName());
-                            for (Map.Entry<String, ClassData> newEntry : newMap.entrySet()) {
+                            ClassDataCollection newClasses = new ClassDataCollection(classes);
+                            newClasses.remove(strategy);
+                            for (ClassData newClassData : newClasses) {
                                 //check if class implements the interface
-                                if (newEntry.getValue().getInterfaceFullNames().contains(strategy.getFullName())) {
-                                    implementors.add(newEntry.getKey());
+                                if (newClassData.getInterfaceFullNames().contains(strategy.getFullName())) {
+                                    implementors.add(newClassData.getFullName());
                                 }
 
                             }
                             //gets a list of all classes that extend the abstract class.
                             ArrayList<String> extenders = new ArrayList<String>();
-                            newMap = new HashMap<String, ClassData>(classes);
-                            newMap.remove(entry.getKey());
-                            for (Map.Entry<String, ClassData> newEntry : newMap.entrySet()) {
+                            newClasses = new ClassDataCollection(classes);
+                            newClasses.remove(classData);
+                            for (ClassData newClassData : newClasses) {
                                 //check if class extends the abstract class.
-                                if (newEntry.getValue().getSuperFullName().equals(entry.getKey())) {
-                                    extenders.add(newEntry.getKey());
+                                if (newClassData.getSuperFullName().equals(classData.getFullName())) {
+                                    extenders.add(newClassData.getFullName());
                                 }
                             }
                             //if both the abstract class and interface have at least one concrete class,
@@ -76,10 +75,10 @@ public class StrategyPatternCheck extends Check {
         return Set.of();
     }
 
-    private static ClassData getClassFromName(String className, Map<String, ClassData> classes) {
-        for(Map.Entry<String,ClassData> entry : classes.entrySet()) {
-            if(entry.getKey().toLowerCase().equals(className)) {
-                return entry.getValue();
+    private static ClassData getClassFromName(String className, ClassDataCollection classes) {
+        for(ClassData classData : classes) {
+            if(classData.getFullName().toLowerCase().equals(className)) {
+                return classData;
             }
         }
         return null;

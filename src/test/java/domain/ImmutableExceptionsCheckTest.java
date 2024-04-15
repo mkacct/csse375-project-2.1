@@ -12,20 +12,20 @@ import org.junit.jupiter.api.Test;
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
-import domain.javadata.ClassData;
+import domain.javadata.ClassDataCollection;
 
 public class ImmutableExceptionsCheckTest {
 private static final String CLASS_DIR_PATH = "src/test/resources/immutable-exceptions-check-test-classes";
 
 	private static final Configuration CONFIG_EMPTY = new Configuration(Map.of());
 
-	private Map<String, ClassData> classes;
+	private ClassDataCollection classes;
 
 	@BeforeEach
 	public void setup() throws IOException {
 		FilesLoader loader = new DirLoader(CLASS_DIR_PATH);
 		Set<byte[]> javaBytecodes = loader.loadFiles("class");
-		this.classes = TestUtility.getMap(javaBytecodes);
+		this.classes = TestUtility.toClassDataCollection(javaBytecodes);
 	}
 
 	@Test
