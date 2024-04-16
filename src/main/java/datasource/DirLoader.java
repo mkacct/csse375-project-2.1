@@ -39,8 +39,15 @@ public class DirLoader implements FilesLoader {
 		this.checkForEmptyPath();
 		File dir = new File(this.path);
 		handlePathAsNonDirectory(dir);
+		handleEmptyDirectory(dir);
 		handleDirectoryWithoutClassFiles(dir);
 		return dir;
+	}
+
+	private void handleEmptyDirectory(File dir) {
+		if (dir.listFiles() == null || Objects.requireNonNull(dir.listFiles()).length == 0) {
+			throw new IllegalStateException(MessageFormat.format("Provided path is empty: {0}", this.path));
+		}
 	}
 
 	private void handleDirectoryWithoutClassFiles(File dir) {

@@ -48,4 +48,14 @@ public class DirLoaderTest {
     });
     assertEquals("src/test/resources/DirLoaderNonClassFileDirectory/hello.txt is not a class file", exception.getMessage());
   }
+
+  @Test
+  public void loadFiles_EmptyDirectory_ExpectedException() {
+    String path = "src/test/resources/DirLoaderEmptyDirectory";
+    DirLoader dirLoader = new DirLoader(path);
+    Exception exception = assertThrows(IllegalStateException.class, () -> {
+      dirLoader.loadFiles(CLASS_FILE_EXT);
+    });
+    assertEquals("Provided path is empty: " + path, exception.getMessage());
+  }
 }
