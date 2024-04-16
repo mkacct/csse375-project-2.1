@@ -15,7 +15,6 @@ import java.util.Set;
  */
 public class DirLoader implements FilesLoader {
 	private final String path;
-	private static final String CLASS_FILE_EXT = "class";
 
 	public DirLoader(String path) {
 		this.path = path;
@@ -24,7 +23,7 @@ public class DirLoader implements FilesLoader {
 	@Override
 	public Set<byte[]> loadFiles(String ext) throws IOException, IllegalStateException {
 		Set<byte[]> files = new HashSet<byte[]>();
-		File dir = validatePath();
+		File dir = validatePath(ext);
 		addFilesFromDir(files, dir, ext);
 		return files;
 	}
@@ -35,12 +34,12 @@ public class DirLoader implements FilesLoader {
 		}
 	}
 
-	private File validatePath() {
+	private File validatePath(String ext) {
 		this.checkForEmptyPath();
 		File dir = new File(this.path);
 		handlePathAsNonDirectory(dir);
 		handleEmptyDirectory(dir);
-		handleDirectoryWithoutClassFiles(dir);
+		handleDirectoryWithoutClassFiles(dir, ext);
 		return dir;
 	}
 
@@ -50,14 +49,14 @@ public class DirLoader implements FilesLoader {
 		}
 	}
 
-	private void handleDirectoryWithoutClassFiles(File dir) {
+	private void handleDirectoryWithoutClassFiles(File dir, String ext) {
 		for (File file : Objects.requireNonNull(dir.listFiles())) {
-			handleNonClassFile(file);
+			handleNonClassFile(file, ext);
 		}
 	}
 
-	private void handleNonClassFile(File file) {
-		boolean isNotClassFile = !getExtensionByStringHandling(file.getName()).equals(CLASS_FILE_EXT);
+	private void handleNonClassFile(File file, String ext) {
+		boolean isNotClassFile = !getExtensionByStringHandling(file.getName()).equals(ext);
 		if (isNotClassFile) {
 			throw new IllegalStateException(MessageFormat.format("{0} is not a class file", path + "/" + file.getName()));
 		}
