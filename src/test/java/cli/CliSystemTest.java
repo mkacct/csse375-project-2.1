@@ -44,8 +44,10 @@ public class CliSystemTest {
 	public void testDefault() throws IOException {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+
 		App app = new App(new DirLoader(CLASS_DIR_PATH), null, new PrintStream(outStream), new PrintStream(errStream));
 		boolean noErrors = app.run(CHECKS);
+
 		assertFalse(noErrors);
 		assertEquals(readExpectedOutput("expected-out-default.txt"), outStream.toString());
 		assertEquals("", errStream.toString());
@@ -65,8 +67,10 @@ public class CliSystemTest {
 				));
 			}
 		};
+
 		App app = new App(new DirLoader(CLASS_DIR_PATH), fakeConfigLoader, new PrintStream(outStream), new PrintStream(errStream));
 		boolean noErrors = app.run(CHECKS);
+
 		assertFalse(noErrors);
 		assertEquals(readExpectedOutput("expected-out-with-config.txt"), outStream.toString());
 		assertEquals("", errStream.toString());
