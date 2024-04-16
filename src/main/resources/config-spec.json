@@ -27,57 +27,57 @@
 				{
 					"name": "convPackage",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convClass",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convInterface",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convAbstract",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convEnum",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convField",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convMethod",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convConstant",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convEnumConstant",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convLocalVar",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convMethodParam",
 					"type": "String",
-					"enum": "namingConvention"
+					"select": "namingConvention"
 				},
 				{
 					"name": "convAllowEmptyPackage",
@@ -239,7 +239,7 @@
 		}
 	],
 
-	"enums": {
+	"selects": {
 		"namingConvention": [
 			"lowercase",
 			"UPPERCASE",
