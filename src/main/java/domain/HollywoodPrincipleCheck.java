@@ -12,34 +12,19 @@ import java.util.Set;
 public class HollywoodPrincipleCheck extends Check {
   private static final String NAME = "hollywoodPrinciple";
 
-  public HollywoodPrincipleCheck() { super(NAME); }
+  public HollywoodPrincipleCheck() {
+    super(NAME);
+  }
 
+  /**
+   * General process:
+   * 1. Iterate through all classes
+   * 2. If a class is abstract, then get all of its implementers
+   * 3. Iterate through the implemeneters
+   * 4. If the implemeneters implements the abstract class, then send a warning message
+   */
   @Override
   public Set<Message> run(Map<String, ClassData> classes, Configuration config) {
-    boolean checkHollywood = config.getBoolean("hollywood", true);
-    if (!config.getBoolean("hollywood", true)) {
-      return Set.of();
-    }
-    return checkAbstractClasses(classes);
+    return Set.of();
   }
-
-  private Set<Message> checkAbstractClasses(Map<String, ClassData> classes) {
-    Set<Message> messages = new HashSet<>();
-    for (Map.Entry<String,ClassData> entry : classes.entrySet()) {
-      if (isNotAbstractClass(entry)) continue;
-      messages.add(checkForAbstractMethods(entry.getValue().getMethods()));
-    }
-    return messages;
-  }
-
-  private static boolean isNotAbstractClass(Map.Entry<String, ClassData> entry) {
-    return !(entry.getValue().isAbstract() && entry.getValue().getClassType() == ClassType.CLASS);
-  }
-
-  private Message checkForAbstractMethods(Set<MethodData> methods) {
-    for (MethodData m : methods) {
-      if (!m.isAbstract()) continue;
-    }
-  }
-
 }
