@@ -18,4 +18,13 @@ public class DirLoaderTest {
     });
     assertEquals("Empty path is not allowed", exception.getMessage());
   }
+
+  @Test
+  public void loadFiles_NonDirectoryPath_ExpectedException() {
+    DirLoader dirLoader = new DirLoader("test.txt");
+    Exception exception = assertThrows(IllegalStateException.class, () -> {
+      dirLoader.loadFiles(CLASS_FILE_EXT);
+    });
+    assertEquals("No such directory: test.txt", exception.getMessage());
+  }
 }
