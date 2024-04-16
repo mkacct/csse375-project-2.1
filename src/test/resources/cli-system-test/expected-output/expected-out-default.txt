@@ -1,0 +1,14 @@
+Check namingConventions:
+	[33m[WARN][0m Constant (badName) Naming Violation (otherpkg.Baz)
+
+Check methodLength:
+	[34m[INFO][0m Config property "maxMethodLengthInstrs" not found; skipping check
+
+Check parameterCount:
+	[34m[INFO][0m Config property "maxNumParameters" not found; skipping check
+
+Check noGlobalVariables:
+	[31m[ERR][0m Field "notGreat" is a global variable (otherpkg.Baz)
+
+Checks run: 4
+Totals: [31m1 err[0m, [33m1 warn[0m, [34m2 info[0m
