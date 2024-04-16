@@ -81,17 +81,22 @@ public class DirLoader implements FilesLoader {
 	}
 
 	private void addFilesFromDir(Set<byte[]> files, File dir, String ext) throws IOException {
-		if (dir.listFiles() == null) {
-			return;
+		for (File file : Objects.requireNonNull(dir.listFiles())) {
+			parseFileObject(files, ext, file);
 		}
-		for (File file : dir.listFiles()) {
-			if (file.isDirectory()) {
-				addFilesFromDir(files, file, ext);
-			} else {
-				if (ext == null || file.getName().endsWith("." + ext)) {
-					files.add(readFile(file));
-				}
-			}
+	}
+
+	private void parseFileObject(Set<byte[]> files, String ext, File file) throws IOException {
+		if (file.isDirectory()) {
+			addFilesFromDir(files, file, ext);
+		} else {
+			addClassFile(files, ext, file);
+		}
+	}
+
+	private void addClassFile(Set<byte[]> files, String ext, File file) throws IOException {
+		if (ext == null || file.getName().endsWith("." + ext)) {
+			files.add(readFile(file));
 		}
 	}
 
