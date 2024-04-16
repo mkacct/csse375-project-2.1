@@ -42,6 +42,9 @@ class App {
 		Configuration config;
 		try {
 			classFiles = this.filesLoader.loadFiles(CLASS_FILE_EXT);
+		} catch (IllegalStateException ex) { // dir not found
+			System.err.println(ex.getMessage());
+			return false;
 		} catch (IOException ex) {
 			System.err.println("Error loading classes: " + ex.getMessage());
 			return false;
