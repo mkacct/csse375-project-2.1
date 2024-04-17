@@ -33,13 +33,6 @@ public class CliSystemTest {
 		new NoGlobalVariablesCheck()
 	};
 
-	private static String readExpectedOutput(String filename) throws IOException {
-		File file = new File(EXPECTED_OUTPUT_DIR_PATH + "/" + filename);
-		try (FileInputStream in = new FileInputStream(file)) {
-			return new String(in.readAllBytes());
-		}
-	}
-
 	@Test
 	public void testDefault() throws IOException {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -74,5 +67,12 @@ public class CliSystemTest {
 		assertFalse(noErrors);
 		assertEquals(readExpectedOutput("expected-out-with-config.txt"), outStream.toString());
 		assertEquals("", errStream.toString());
+	}
+
+	private static String readExpectedOutput(String filename) throws IOException {
+		File file = new File(EXPECTED_OUTPUT_DIR_PATH + "/" + filename);
+		try (FileInputStream in = new FileInputStream(file)) {
+			return new String(in.readAllBytes());
+		}
 	}
 }
