@@ -3,6 +3,7 @@ package datasource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,9 +18,13 @@ public class DirLoader implements FilesLoader {
 	}
 
 	@Override
-	public Set<byte[]> loadFiles(String ext) throws IOException {
+	public Set<byte[]> loadFiles(String ext) throws IOException, IllegalStateException {
 		Set<byte[]> files = new HashSet<byte[]>();
-		addFilesFromDir(files, new File(this.path), ext);
+		File dir = new File(this.path);
+		if (!dir.isDirectory()) {
+			throw new IllegalStateException(MessageFormat.format("No such directory: {0}", this.path));
+		}
+		addFilesFromDir(files, dir, ext);
 		return files;
 	}
 

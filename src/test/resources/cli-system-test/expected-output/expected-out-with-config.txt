@@ -1,0 +1,14 @@
+Check namingConventions:
+	[33m[WARN][0m Constant (DETECT_ME) Naming Violation (domain.Foo)
+
+Check methodLength:
+	[33m[WARN][0m Method "badlyPrint16Lines" is too long (84 instrs, should be <= 20) (otherpkg.Bar)
+
+Check parameterCount:
+	[33m[WARN][0m Method "takeTooManyArgs" has too many params (5 params, should be <= 3) (domain.Foo)
+
+Check noGlobalVariables:
+	[31m[ERR][0m Field "notGreat" is a global variable (otherpkg.Baz)
+
+Checks run: 4
+Totals: [31m1 err[0m, [33m3 warn[0m
