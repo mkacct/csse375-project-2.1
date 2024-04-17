@@ -30,11 +30,11 @@ class App {
 		MessageLevel.INFO, TerminalTextColor.BLUE
 	);
 
-	private FilesLoader filesLoader;
-	private ConfigLoader configLoader;
+	private final FilesLoader filesLoader;
+	private final ConfigLoader configLoader;
 
-	private PrintStream outStream;
-	private PrintStream errStream;
+	private final PrintStream outStream;
+	private final PrintStream errStream;
 
 	App(FilesLoader filesLoader, ConfigLoader configLoader, PrintStream outStream, PrintStream errStream) {
 		this.filesLoader = filesLoader;
