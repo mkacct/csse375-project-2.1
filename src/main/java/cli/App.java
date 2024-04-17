@@ -1,6 +1,7 @@
 package cli;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,12 +30,17 @@ class App {
 		MessageLevel.INFO, TerminalTextColor.BLUE
 	);
 
-	private FilesLoader filesLoader;
-	private ConfigLoader configLoader;
+	private final FilesLoader filesLoader;
+	private final ConfigLoader configLoader;
 
-	App(FilesLoader filesLoader, ConfigLoader configLoader) {
+	private final PrintStream outStream;
+	private final PrintStream errStream;
+
+	App(FilesLoader filesLoader, ConfigLoader configLoader, PrintStream outStream, PrintStream errStream) {
 		this.filesLoader = filesLoader;
 		this.configLoader = configLoader;
+		this.outStream = outStream;
+		this.errStream = errStream;
 	}
 
 	boolean run(Check[] checks) {
@@ -42,8 +48,11 @@ class App {
 		Configuration config;
 		try {
 			classFiles = this.filesLoader.loadFiles(CLASS_FILE_EXT);
+		} catch (IllegalStateException ex) { // dir not found
+			this.errStream.println(ex.getMessage());
+			return false;
 		} catch (IOException ex) {
-			System.err.println("Error loading classes: " + ex.getMessage());
+			this.errStream.println("Error loading classes: " + ex.getMessage());
 			return false;
 		}
 		if (configLoader == null) {
@@ -52,13 +61,13 @@ class App {
 			try {
 				config = this.configLoader.loadConfig();
 			} catch (IOException ex) {
-				System.err.println("Error loading config: " + ex.getMessage());
+				this.errStream.println("Error loading config: " + ex.getMessage());
 				return false;
 			}
 		}
 
 		ClassDataCollection classes = readInClasses(classFiles);
-		Map<MessageLevel, Integer> msgTotals = runAllChecksAndPrintResults(checks, classes, config);
+		Map<MessageLevel, Integer> msgTotals = this.runAllChecksAndPrintResults(checks, classes, config);
 		return msgTotals.get(MessageLevel.ERROR) == 0;
 	}
 
@@ -71,31 +80,31 @@ class App {
 		return classes;
 	}
 
-	private static Map<MessageLevel, Integer> runAllChecksAndPrintResults(
+	private Map<MessageLevel, Integer> runAllChecksAndPrintResults(
 		Check[] checks, ClassDataCollection classes, Configuration config
 	) {
-		boolean skipUnmarked = Boolean.TRUE.equals(configBoolOrNull(config, SKIP_UNMARKED_CHECKS_KEY));
+		boolean skipUnmarked = Boolean.TRUE.equals(this.configBoolOrNull(config, SKIP_UNMARKED_CHECKS_KEY));
 		Map<MessageLevel, Integer> msgTotals = initMsgTotals();
 		int numChecksRun = 0;
 		for (Check check : checks) {
-			Boolean configVal = configBoolOrNull(config, ENABLE_KEY_PREFIX + check.name);
+			Boolean configVal = this.configBoolOrNull(config, ENABLE_KEY_PREFIX + check.name);
 			if (skipUnmarked ? Boolean.TRUE.equals(configVal) : check.isEnabled(configVal)) {
-				runCheckAndPrintResults(check, classes, config, msgTotals);
+				this.runCheckAndPrintResults(check, classes, config, msgTotals);
 				numChecksRun++;
 			}
 		}
-		System.out.println(MessageFormat.format("Checks run: {0}", numChecksRun));
-		printTotals(msgTotals);
+		this.outStream.println(MessageFormat.format("Checks run: {0}", numChecksRun));
+		this.printTotals(msgTotals);
 		return msgTotals;
 	}
 
-	private static Boolean configBoolOrNull(Configuration config, String key) {
+	private Boolean configBoolOrNull(Configuration config, String key) {
 		try {
 			return config.getBoolean(key);
 		} catch (IllegalArgumentException ex) {
 			return null;
 		} catch (ClassCastException ex) {
-			System.err.println(MessageFormat.format(
+			this.errStream.println(MessageFormat.format(
 				"Error in config: property \"{0}\", if present, should be boolean",
 				key
 			));
@@ -103,19 +112,19 @@ class App {
 		}
 	}
 
-	private static void runCheckAndPrintResults(
+	private void runCheckAndPrintResults(
 		Check check, ClassDataCollection classes, Configuration config, Map<MessageLevel, Integer> msgTotals
 	) {
 		Set<Message> generatedMsgs = check.run(classes, config);
-			System.out.println(MessageFormat.format("Check {0}:", check.name));
+			this.outStream.println(MessageFormat.format("Check {0}:", check.name));
 			for (Message msg : generatedMsgs) {
 				msgTotals.put(msg.level, msgTotals.get(msg.level) + 1);
-				System.out.println(MessageFormat.format("\t{0}", colorMessageTag(msg)));
+				this.outStream.println(MessageFormat.format("\t{0}", colorMessageTag(msg)));
 			}
 			if (generatedMsgs.isEmpty()) {
-				System.out.println(MessageFormat.format("\t{0}",TerminalTextColor.BLACK.applyTo("(no messages)")));
+				this.outStream.println(MessageFormat.format("\t{0}",TerminalTextColor.BLACK.applyTo("(no messages)")));
 			}
-			System.out.println();
+			this.outStream.println();
 	}
 
 	private static String colorMessageTag(Message msg) {
@@ -125,20 +134,20 @@ class App {
 		return MessageFormat.format("{0} {1}", MESSAGE_LEVEL_COLORS.get(msg.level).applyTo(tag), rest);
 	}
 
-	private static void printTotals(Map<MessageLevel, Integer> msgTotals) {
+	private void printTotals(Map<MessageLevel, Integer> msgTotals) {
 		int totalMsgs = 0;
 		for (int subtotal : msgTotals.values()) {
 			totalMsgs += subtotal;
 		}
 		if (totalMsgs == 0) {
-			System.out.println(TerminalTextColor.GREEN.applyTo("No messages generated."));
+			this.outStream.println(TerminalTextColor.GREEN.applyTo("No messages generated."));
 			return;
 		} else {
 			List<String> totalsTerms = new ArrayList<>();
 			generateTotalsTerm(totalsTerms, MessageLevel.ERROR, msgTotals.get(MessageLevel.ERROR));
 			generateTotalsTerm(totalsTerms, MessageLevel.WARNING, msgTotals.get(MessageLevel.WARNING));
 			generateTotalsTerm(totalsTerms, MessageLevel.INFO, msgTotals.get(MessageLevel.INFO));
-			System.out.println(MessageFormat.format("Totals: {0}", String.join(", ", totalsTerms)));
+			this.outStream.println(MessageFormat.format("Totals: {0}", String.join(", ", totalsTerms)));
 		}
 	}
 

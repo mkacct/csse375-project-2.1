@@ -16,7 +16,8 @@ public class Main {
 			String configPath = (args.length > 1) ? args[1] : null;
 			App app = new App(
 				new DirLoader(targetDirPath),
-				(configPath != null) ? new JsonFileConfigLoader(configPath) : null
+				(configPath != null) ? new JsonFileConfigLoader(configPath) : null,
+				System.out, System.err
 			);
 			boolean noErrors = app.run(CheckRoster.CHECKS);
 			System.exit(noErrors ? 0 : 1);
