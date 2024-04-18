@@ -1,0 +1,79 @@
+{
+	"sections": [
+		{
+			"title": "Execution settings",
+			"settings": [
+				{
+					"name": "skipUnmarkedChecks",
+					"type": "boolean",
+					"desc": "If true, all checks only run if they are explicitly enabled. Otherwise, most checks (those that are not disabled by default) run unless they are explicitly disabled."
+				}
+			]
+		},
+		{
+			"title": "Naming Conventions",
+			"checkName": "namingConventions",
+			"settings": [
+				{
+					"name": "convPackage",
+					"type": "String",
+					"select": "namingConvention"
+				},
+				{
+					"name": "convClass",
+					"type": "String",
+					"select": "namingConvention"
+				},
+				{
+					"name": "convInterface",
+					"type": "String",
+					"select": "namingConvention"
+				}
+			]
+		},
+		{
+			"title": "Method Length",
+			"checkName": "methodLength",
+			"settings": [
+				{
+					"name": "maxMethodLengthInstrs",
+					"type": "int",
+					"desc": "Maximum method length, in bytecode instructions."
+				}
+			]
+		},
+		{
+			"title": "No Global Variables",
+			"checkName": "noGlobalVariables"
+		},
+		{
+			"title": "Program to Interface, Not Implementation",
+			"checkName": "programToInterface",
+			"entityTypeOverride": "something else",
+			"settings": [
+				{
+					"name": "domainPackageName",
+					"type": "String",
+					"desc": "Name of the domain package (default is \"domain\")."
+				},
+				{
+					"name": "allowedDependencies",
+					"type": "String[]",
+					"desc": "List of user-specified allowed dependencies (add known interfaces and/or data classes here)."
+				}
+			]
+		}
+	],
+
+	"selects": {
+		"namingConvention": [
+			"lowercase",
+			"UPPERCASE",
+			"UPPER_CASE",
+			"lower_case",
+			"camelCase",
+			"PascalCase",
+			"ANY"
+		]
+	}
+}
