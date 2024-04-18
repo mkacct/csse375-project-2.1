@@ -171,9 +171,9 @@ public class NamingConventionsCheck extends Check {
         }
     }
 
-    private static void maxLengthCheck(boolean classInfo, Set<Message> messages, Message WARNING) {
+    private static void maxLengthCheck(boolean classInfo, Set<Message> messages, Message warning) {
         if (classInfo) {
-            messages.add(WARNING);
+            messages.add(warning);
         }
     }
 

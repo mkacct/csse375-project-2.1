@@ -62,11 +62,12 @@ public class InformationHidingCheck extends Check {
         }
     }
 
+    private static final int GETTER_SETTER_LENGTH = 3;
+
     private void checkForGettersAndSetters(FieldData field, Map<String, ArrayList<String>> publicFieldsToClass, ClassData currentClass) {
         Set<MethodData> methods = currentClass.getMethods();
         for (MethodData method : methods) {
             String methodName = method.getName().toLowerCase();
-            int GETTER_SETTER_LENGTH = 3;
             boolean isNotGetterSetter = methodName.length() > GETTER_SETTER_LENGTH;
             if (isNotGetterSetter) {
                 String string1 = methodName.substring(0, GETTER_SETTER_LENGTH);
