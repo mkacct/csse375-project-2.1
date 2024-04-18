@@ -19,7 +19,7 @@ public abstract class Check {
 	/**
 	 * @param name The check's name, in camelCase, for identification in the configuration file
 	 */
-	Check(String name) {
+	protected Check(String name) {
 		this(name, true);
 	}
 
@@ -27,7 +27,7 @@ public abstract class Check {
 	 * @param name The check's name, in camelCase, for identification in the configuration file
 	 * @param isEnabledByDefault Whether the check is enabled by default (true for general checks, false for specialized tools and such)
 	 */
-	Check(String name, boolean isEnabledByDefault) {
+	protected Check(String name, boolean isEnabledByDefault) {
 		if (name == null) {throw new IllegalArgumentException("Check name cannot be null");}
 		this.name = name;
 		this.isEnabledByDefault = isEnabledByDefault;
