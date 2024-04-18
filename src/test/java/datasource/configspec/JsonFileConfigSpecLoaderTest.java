@@ -1,4 +1,4 @@
-package datasource;
+package datasource.configspec;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,9 +11,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import datasource.configspec.ConfigSpec;
-import datasource.configspec.JsonFileConfigSpecLoader;
 
 public class JsonFileConfigSpecLoaderTest {
 	private static final String TEST_CONFIG_SPEC_PATH = "src/test/resources/test-config-spec.json";
