@@ -16,10 +16,10 @@ import datasource.ConfigLoader;
 import datasource.Configuration;
 import datasource.DirLoader;
 import domain.Check;
-import domain.MethodLengthCheck;
-import domain.NamingConventionsCheck;
-import domain.NoGlobalVariablesCheck;
-import domain.ParameterCountCheck;
+import domain.checks.MethodLengthCheck;
+import domain.checks.NamingConventionsCheck;
+import domain.checks.NoGlobalVariablesCheck;
+import domain.checks.ParameterCountCheck;
 
 public class CliSystemTest {
 	private static final String TEST_RESOURCES_DIR_PATH = "src/test/resources/cli-system-test";
