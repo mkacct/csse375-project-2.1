@@ -1,7 +1,6 @@
-name: Run Maven on PRs
+name: Run Maven on push
 on:
-  pull_request:
-    branches: ["main"]
+  push
 jobs:
   build:
     runs-on: ubuntu-latest
