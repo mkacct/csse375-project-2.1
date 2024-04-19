@@ -6,7 +6,7 @@ import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.CheckRoster;
 
-public class Main {
+public final class Main {
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
 			printUsage();

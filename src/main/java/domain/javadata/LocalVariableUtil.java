@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.objectweb.asm.tree.LocalVariableNode;
 
-class LocalVariableUtil {
+final class LocalVariableUtil {
 	static LocalVariableNode findLocalVariableNode(int var, List<LocalVariableNode> localVars) {
 		if (localVars == null) {return null;}
 		try {

@@ -11,7 +11,7 @@ import domain.javadata.ClassData;
 import domain.javadata.ClassDataCollection;
 import domain.javadata.ClassReaderUtil;
 
-public class TestUtility {
+public final class TestUtility {
     public static ClassDataCollection toClassDataCollection(Set<byte[]> files) {
         ClassDataCollection classes = new ClassDataCollection();
         Iterator<byte[]> it = files.iterator();
