@@ -3,7 +3,7 @@ package domain.javadata;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
-public class ClassReaderUtil {
+public final class ClassReaderUtil {
 	public static ClassData read(byte[] javaBytecode) {
 		ClassNode classNode = new ClassNode();
 		ClassReader reader = new ClassReader(javaBytecode);
