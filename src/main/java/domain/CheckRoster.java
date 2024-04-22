@@ -16,7 +16,7 @@ import domain.checks.RequiredOverridesCheck;
 import domain.checks.StrategyPatternCheck;
 import domain.checks.UnusedAbstractionsCheck;
 
-public class CheckRoster {
+public final class CheckRoster {
 	/**
 	 * Array of all linter checks, in the order they should be displayed.
 	 */
