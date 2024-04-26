@@ -1,6 +1,6 @@
 package general;
 
-public final class Product {
+public final class ProductInfo {
 	public static final String NAME = "Linter";
 	public static final String VERSION = "UNRELEASED";
 }

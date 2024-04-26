@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.CheckRoster;
-import general.Product;
+import general.ProductInfo;
 
 public final class Main {
 	public static void main(String[] args) throws IOException {
@@ -27,7 +27,7 @@ public final class Main {
 	}
 
 	private static void printInfo() {
-		System.out.println(MessageFormat.format("{0} version {1}", Product.NAME, Product.VERSION));
+		System.out.println(MessageFormat.format("{0} version {1}", ProductInfo.NAME, ProductInfo.VERSION));
 		System.out.println("usage: <command to run LinterProject> <classdir> [<config>]");
 	}
 }
