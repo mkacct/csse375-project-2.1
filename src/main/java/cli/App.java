@@ -94,7 +94,6 @@ class App {
 		}
 		if (totalMsgs == 0) {
 			this.outStream.println(TerminalTextColor.GREEN.applyTo("No messages generated."));
-			return;
 		} else {
 			List<String> totalsTerms = new ArrayList<>();
 			generateTotalsTerm(totalsTerms, MessageLevel.ERROR, msgTotals.get(MessageLevel.ERROR));
