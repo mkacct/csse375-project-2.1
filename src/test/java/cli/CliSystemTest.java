@@ -22,9 +22,9 @@ import domain.checks.NoGlobalVariablesCheck;
 import domain.checks.ParameterCountCheck;
 
 public class CliSystemTest {
-	private static final String TEST_RESOURCES_DIR_PATH = "src/test/resources/cli-system-test";
+	private static final String TEST_RESOURCES_DIR_PATH = "src/test/resources/system-test";
 	private static final String CLASS_DIR_PATH = TEST_RESOURCES_DIR_PATH + "/classes";
-	private static final String EXPECTED_OUTPUT_DIR_PATH = TEST_RESOURCES_DIR_PATH + "/expected-output";
+	private static final String EXPECTED_OUTPUT_DIR_PATH = TEST_RESOURCES_DIR_PATH + "/cli-expected-output";
 
 	private static final Check[] CHECKS = new Check[] {
 		new NamingConventionsCheck(),
