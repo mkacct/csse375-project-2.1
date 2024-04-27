@@ -1,15 +1,17 @@
 package cli;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import datasource.DirLoader;
 import datasource.JsonFileConfigLoader;
 import domain.CheckRoster;
+import general.ProductInfo;
 
 public final class Main {
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
-			printUsage();
+			printInfo();
 			System.exit(1);
 		} else {
 			String targetDirPath = args[0];
@@ -24,7 +26,8 @@ public final class Main {
 		}
 	}
 
-	private static void printUsage() {
+	private static void printInfo() {
+		System.out.println(MessageFormat.format("{0} version {1}", ProductInfo.NAME, ProductInfo.VERSION));
 		System.out.println("usage: <command to run LinterProject> <classdir> [<config>]");
 	}
 }
