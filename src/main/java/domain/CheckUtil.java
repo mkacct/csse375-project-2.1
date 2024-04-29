@@ -1,5 +1,6 @@
 package domain;
 
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -71,7 +72,14 @@ public final class CheckUtil {
 		Map<MessageLevel, Integer> msgTotals,
 		BiConsumer<String, Set<Message>> resultsHandler
 	) {
-		Set<Message> generatedMsgs = check.run(classes, config);
+		Set<Message> generatedMsgs;
+		try {
+			generatedMsgs = check.run(classes, config);
+		} catch (Exception ex) {
+			generatedMsgs = Set.of(
+				new Message(MessageLevel.ERROR, MessageFormat.format("Check threw exception: {0}", ex.getMessage()))
+			);
+		}
 		for (Message msg : generatedMsgs) {
 			msgTotals.put(msg.level, msgTotals.get(msg.level) + 1);
 		}
