@@ -201,7 +201,7 @@ public class GuiSystemTest {
 		return unordered;
 	}
 
-	private class ReloadCounter implements Reloadable {
+	private static class ReloadCounter implements Reloadable {
 		private int reloadCount = 0;
 
 		@Override
