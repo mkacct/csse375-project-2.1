@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -29,12 +30,13 @@ class MainWindow extends JFrame {
 	MainWindow(App app) {
 		super(GuiUtil.formatTitle(null));
 		this.app = app;
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 		this.initContents();
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		this.checkForConfigLoadException();
 	}
 
 	private void initContents() {
@@ -51,6 +53,40 @@ class MainWindow extends JFrame {
 		this.add(this.footer, BorderLayout.PAGE_END);
 
 		this.getRootPane().setDefaultButton(this.mainPanel.runButton);
+	}
+
+	private void exit(int status) {
+		this.dispose();
+		System.exit(status);
+	}
+
+	private void checkForConfigLoadException() {
+		Exception ex = this.app.getConfigLoadEx();
+		if (ex != null) {
+			boolean stay = this.askIfProceedWithBadConfig(ex);
+			if (!stay) {
+				this.exit(1);
+				return;
+			}
+		}
+	}
+
+	private boolean askIfProceedWithBadConfig(Exception ex) {
+		int choice = JOptionPane.showOptionDialog(
+			this,
+			MessageFormat.format(
+				"Could not load configuration file {0}. The file may not be valid JSON.\n"
+				+ "Select \"Quit\" if you want to fix the issue manually. "
+				+ "If you select \"Continue anyway\", any changes will overwrite the file.\n\n"
+				+ "Error message:\n"
+				+ "{1}",
+				App.CONFIG_PATH, ex.getMessage()
+			),
+			GuiUtil.formatTitle(null),
+			JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null,
+			new String[] {"Quit", "Continue anyway"}, "Quit"
+		);
+		return choice == 1;
 	}
 
 	private void openSettings() {

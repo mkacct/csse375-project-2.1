@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import datasource.ConfigLoader;
+import datasource.ConfigRW;
 import datasource.Configuration;
 import domain.Check;
 import domain.Message;
@@ -35,8 +35,11 @@ public class GuiSystemTest {
 		new NoGlobalVariablesCheck()
 	};
 
-	private static ConfigLoader createFakeConfigLoader() {
-		return new ConfigLoader() {
+	private static ConfigRW createFakeConfigLoader() {
+		return new ConfigRW() {
+			@Override
+			public boolean sourceExists() {return true;}
+
 			@Override
 			public Configuration loadConfig() throws IOException {
 				return new Configuration(Map.of(
@@ -49,8 +52,11 @@ public class GuiSystemTest {
 		};
 	}
 
-	private static ConfigLoader createBadConfigLoader() {
-		return new ConfigLoader() {
+	private static ConfigRW createBadConfigLoader() {
+		return new ConfigRW() {
+			@Override
+			public boolean sourceExists() {return true;}
+
 			@Override
 			public Configuration loadConfig() throws IOException {
 				throw new IOException("lol nope");

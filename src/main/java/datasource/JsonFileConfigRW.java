@@ -11,11 +11,16 @@ import org.json.JSONObject;
 /**
  * Loads user configuration from a JSON file.
  */
-public class JsonFileConfigLoader implements ConfigLoader {
+public class JsonFileConfigRW implements ConfigRW {
 	private final String path;
 
-	public JsonFileConfigLoader(String path) {
+	public JsonFileConfigRW(String path) {
 		this.path = path;
+	}
+
+	@Override
+	public boolean sourceExists() {
+		return Files.isRegularFile(Path.of(this.path));
 	}
 
 	@Override

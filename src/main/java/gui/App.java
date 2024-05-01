@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import datasource.ConfigLoader;
+import datasource.ConfigRW;
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
@@ -24,15 +24,16 @@ import domain.javadata.ClassDataCollection;
  * Independent of the framework used to implement the GUI (ie. this file knows nothing about Swing).
  */
 class App {
-	public static final String CONFIG_PATH = ".lpguiconfig.json";
+	static final String CONFIG_PATH = ".lpguiconfig.json";
 
 	private static final String TARGET_PATH_KEY = "guiAppTargetPath";
 
 	private final Check[] checks;
-	private final ConfigLoader configLoader;
+	private final ConfigRW configLoader;
 
 	private Configuration config;
 	private String targetPath;
+	private Exception configLoadEx = null;
 
 	// Fields for check results:
 	private Map<MessageLevel, Integer> msgTotals;
@@ -42,7 +43,7 @@ class App {
 
 	// To initialize app:
 
-	App(Check[] checks, ConfigLoader configLoader) {
+	App(Check[] checks, ConfigRW configLoader) {
 		this.checks = checks;
 		this.configLoader = configLoader;
 		this.loadConfig();
@@ -50,10 +51,11 @@ class App {
 	}
 
 	private void loadConfig() {
-		if (this.configLoader != null) {
+		if ((this.configLoader != null) && this.configLoader.sourceExists()) {
 			try {
 				this.config = configLoader.loadConfig();
 			} catch (IOException ex) {
+				this.configLoadEx = ex;
 				this.config = new Configuration(Map.of());
 			}
 		} else {
@@ -61,6 +63,10 @@ class App {
 		}
 
 		this.targetPath = this.config.getString(TARGET_PATH_KEY, "");
+	}
+
+	Exception getConfigLoadEx() {
+		return this.configLoadEx;
 	}
 
 	private void clearCheckResults() {
