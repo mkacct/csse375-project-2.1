@@ -2,6 +2,7 @@ package gui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,11 +36,8 @@ public class GuiSystemTest {
 		new NoGlobalVariablesCheck()
 	};
 
-	private static ConfigRW createFakeConfigLoader() {
-		return new ConfigRW() {
-			@Override
-			public boolean sourceExists() {return true;}
-
+	private static FakeConfigRW createFakeConfigLoader() {
+		return new FakeConfigRW() {
 			@Override
 			public Configuration loadConfig() throws IOException {
 				return new Configuration(Map.of(
@@ -52,11 +50,26 @@ public class GuiSystemTest {
 		};
 	}
 
-	private static ConfigRW createBadConfigLoader() {
-		return new ConfigRW() {
-			@Override
-			public boolean sourceExists() {return true;}
+	private static FakeConfigRW createNonexistentConfigLoader() {
+		return new FakeConfigRW() {
+			private boolean triedToLoad = false;
 
+			@Override
+			public boolean sourceExists() {return false;}
+
+			@Override
+			public Configuration loadConfig() throws IOException {
+				triedToLoad = true;
+				throw new IOException("don't even try");
+			}
+
+			@Override
+			public boolean didTryToLoad() {return triedToLoad;}
+		};
+	}
+
+	private static FakeConfigRW createBadConfigLoader() {
+		return new FakeConfigRW() {
 			@Override
 			public Configuration loadConfig() throws IOException {
 				throw new IOException("lol nope");
@@ -68,6 +81,7 @@ public class GuiSystemTest {
 	public void testDefaultInitialState() {
 		App app = new App(CHECKS, null);
 
+		assertNull(app.getConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
 		assertNoResults(app);
@@ -75,17 +89,33 @@ public class GuiSystemTest {
 
 	@Test
 	public void testWithConfigInitialState() {
-		App app = new App(CHECKS, createFakeConfigLoader());
+		FakeConfigRW configLoader = createFakeConfigLoader();
+		App app = new App(CHECKS, configLoader);
 
+		assertNull(app.getConfigLoadEx());
 		assertTrue(app.canRunNow());
 		assertEquals(CLASS_DIR_PATH, app.getTargetPath());
 		assertNoResults(app);
 	}
 
 	@Test
-	public void testWithBadConfigInitialState() {
-		App app = new App(CHECKS, createBadConfigLoader());
+	public void testWithNonexistentConfigInitialState() {
+		FakeConfigRW configLoader = createNonexistentConfigLoader();
+		App app = new App(CHECKS, configLoader);
 
+		assertNull(app.getConfigLoadEx());
+		assertFalse(configLoader.didTryToLoad());
+		assertFalse(app.canRunNow());
+		assertEquals("", app.getTargetPath());
+		assertNoResults(app);
+	}
+
+	@Test
+	public void testWithBadConfigInitialState() {
+		FakeConfigRW configLoader = createBadConfigLoader();
+		App app = new App(CHECKS, configLoader);
+
+		assertInstanceOf(IOException.class, app.getConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
 		assertNoResults(app);
@@ -205,6 +235,13 @@ public class GuiSystemTest {
 			unordered.put(checkResult.checkName, Set.copyOf(checkResult.getMessages()));
 		}
 		return unordered;
+	}
+
+	private static interface FakeConfigRW extends ConfigRW {
+		@Override
+		default boolean sourceExists() {return true;}
+
+		default boolean didTryToLoad() {throw new UnsupportedOperationException();}
 	}
 
 	private static class ReloadCounter implements Reloadable {
