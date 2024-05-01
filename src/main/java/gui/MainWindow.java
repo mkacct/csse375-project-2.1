@@ -63,7 +63,7 @@ class MainWindow extends JFrame {
 	private void checkForConfigLoadException() {
 		Exception ex = this.app.getConfigLoadEx();
 		if (ex != null) {
-			boolean stay = this.askIfProceedWithBadConfig(ex);
+			boolean stay = this.askWhetherToProceedWithBadConfig(ex);
 			if (!stay) {
 				this.exit(1);
 				return;
@@ -71,7 +71,7 @@ class MainWindow extends JFrame {
 		}
 	}
 
-	private boolean askIfProceedWithBadConfig(Exception ex) {
+	private boolean askWhetherToProceedWithBadConfig(Exception ex) {
 		int choice = JOptionPane.showOptionDialog(
 			this,
 			MessageFormat.format(
