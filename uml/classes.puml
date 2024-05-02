@@ -62,7 +62,7 @@ package "cli" {
   App ->"*" TerminalTextColor
 }
 
-package configspec {
+package datasource.configspec {
   class ConfigSpec {
     -sections: List<Section>
   }
@@ -119,6 +119,14 @@ package configspec {
   JsonFileConfigSpecLoader .|> ConfigSpecLoader
 }
 
+package datasource {
+  interface ConfigRW {
+    ~sourceExists(): boolean
+    ~loadConfig(): Configuration
+    ~saveConfig(config: Configuration): void
+  }
+}
+
 exception IOException {
 }
 
@@ -126,5 +134,6 @@ exception Exception {
 }
 ConfigSpecLoader ..> IOException: <<throws>>
 JsonFileConfigSpecLoader ..> IOException: <<throws>>
+ConfigRW ..> IOException: <<throws>>
 IOException --|> Exception
 @enduml
