@@ -18,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 import domain.MessageLevel;
 import general.ProductInfo;
 
-class MainWindow extends JFrame {
+class MainWindow extends JFrame implements Reloadable {
 	private static final int MIN_WIDTH = 640, MIN_HEIGHT = 360;
 
 	private App app;
@@ -36,6 +36,7 @@ class MainWindow extends JFrame {
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		this.app.addReloader(this);
 		this.checkForConfigLoadException();
 	}
 
@@ -61,9 +62,9 @@ class MainWindow extends JFrame {
 	}
 
 	private void checkForConfigLoadException() {
-		Exception ex = this.app.getConfigLoadEx();
-		if (ex != null) {
-			boolean stay = this.askWhetherToProceedWithBadConfig(ex);
+		Exception configLoadEx = this.app.retrieveConfigLoadEx();
+		if (configLoadEx != null) {
+			boolean stay = this.askWhetherToProceedWithBadConfig(configLoadEx);
 			if (!stay) {
 				this.exit(1);
 				return;
@@ -71,7 +72,7 @@ class MainWindow extends JFrame {
 		}
 	}
 
-	private boolean askWhetherToProceedWithBadConfig(Exception ex) {
+	private boolean askWhetherToProceedWithBadConfig(Exception configLoadEx) {
 		int choice = JOptionPane.showOptionDialog(
 			this,
 			MessageFormat.format(
@@ -80,7 +81,7 @@ class MainWindow extends JFrame {
 				+ "If you select \"Continue anyway\", any changes will overwrite the file.\n\n"
 				+ "Error message:\n"
 				+ "{1}",
-				App.CONFIG_PATH, ex.getMessage()
+				App.CONFIG_PATH, configLoadEx.getMessage()
 			),
 			GuiUtil.formatTitle(null),
 			JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null,
@@ -93,6 +94,21 @@ class MainWindow extends JFrame {
 		// TODO: make settings dialog
 		// new SettingsDialog(this);
 		GuiUtil.showError(this, "NYI");
+	}
+
+	@Override
+	public void reload() {
+		this.checkForConfigSaveException();
+	}
+
+	private void checkForConfigSaveException() {
+		Exception configSaveEx = this.app.retrieveConfigSaveEx();
+		if (configSaveEx != null) {
+			GuiUtil.showError(this, MessageFormat.format(
+				"Failed to save changes to configuration file {0}:\n{1}",
+				App.CONFIG_PATH, configSaveEx.getMessage()
+			));
+		}
 	}
 
 	private class Header extends JPanel {

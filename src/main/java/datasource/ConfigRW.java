@@ -19,4 +19,14 @@ public interface ConfigRW {
 	 * @throws IOException if the source does not exist, is not valid, etc.
 	 */
 	Configuration loadConfig() throws IOException;
+
+	/**
+	 * Save configuration to the source.
+	 * @param config the configuration to save
+	 * @throws IOException if the source does not exist, etc.
+	 * @throws UnsupportedOperationException if the config source type is read-only
+	 */
+	default void saveConfig(Configuration config) throws IOException {
+		throw new UnsupportedOperationException("Config source is not writable");
+	}
 }

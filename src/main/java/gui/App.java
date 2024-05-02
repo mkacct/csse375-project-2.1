@@ -29,31 +29,31 @@ class App {
 	private static final String TARGET_PATH_KEY = "guiAppTargetPath";
 
 	private final Check[] checks;
-	private final ConfigRW configLoader;
+	private final ConfigRW configRW; // can be null in tests
 
 	private Configuration config;
-	private String targetPath;
 	private Exception configLoadEx = null;
+	private Exception configSaveEx = null;
 
 	// Fields for check results:
 	private Map<MessageLevel, Integer> msgTotals;
 	private List<CheckResults> checkResults;
 
-	private Set<Reloadable> reloaders = new HashSet<>();
+	private Set<Reloadable> reloaders = new HashSet<Reloadable>();
 
-	// To initialize app:
+	// To initialize app (including loading config):
 
-	App(Check[] checks, ConfigRW configLoader) {
+	App(Check[] checks, ConfigRW configRW) {
 		this.checks = checks;
-		this.configLoader = configLoader;
+		this.configRW = configRW;
 		this.loadConfig();
 		this.clearCheckResults();
 	}
 
 	private void loadConfig() {
-		if ((this.configLoader != null) && this.configLoader.sourceExists()) {
+		if ((this.configRW != null) && this.configRW.sourceExists()) {
 			try {
-				this.config = configLoader.loadConfig();
+				this.config = configRW.loadConfig();
 			} catch (IOException ex) {
 				this.configLoadEx = ex;
 				this.config = new Configuration(Map.of());
@@ -61,12 +61,12 @@ class App {
 		} else {
 			this.config = new Configuration(Map.of());
 		}
-
-		this.targetPath = this.config.getString(TARGET_PATH_KEY, "");
 	}
 
-	Exception getConfigLoadEx() {
-		return this.configLoadEx;
+	Exception retrieveConfigLoadEx() {
+		Exception ex = this.configLoadEx;
+		this.configLoadEx = null;
+		return ex;
 	}
 
 	private void clearCheckResults() {
@@ -74,20 +74,40 @@ class App {
 		this.checkResults = null;
 	}
 
-	// To work with target path:
+	// To save config:
 
-	boolean canRunNow() {
-		return !this.targetPath.isEmpty();
+	// you should call triggerReload() after saving config (to ensure error messages are displayed)
+	private void saveConfig() {
+		this.configSaveEx = null;
+		if (this.configRW != null) {
+			try {
+				this.configRW.saveConfig(this.config);
+			} catch (IOException ex) {
+				this.configSaveEx = ex;
+			}
+		}
 	}
 
+	Exception retrieveConfigSaveEx() {
+		Exception ex = this.configSaveEx;
+		this.configSaveEx = null;
+		return ex;
+	}
+
+	// To work with target path:
+
 	String getTargetPath() {
-		return this.targetPath;
+		return this.config.getString(TARGET_PATH_KEY, "");
+	}
+
+	boolean canRunNow() {
+		return !this.getTargetPath().isEmpty();
 	}
 
 	void setTargetPath(String targetPath) {
 		this.clearCheckResults();
-		this.targetPath = targetPath;
-		// TODO: save to config (valid or not)
+		this.config = this.config.applyChanges(Map.of(TARGET_PATH_KEY, targetPath));
+		this.saveConfig();
 		this.triggerReload();
 	}
 
@@ -97,7 +117,7 @@ class App {
 		if (!this.canRunNow()) {throw new IllegalStateException("App is not in a state to run checks");}
 		this.clearCheckResults();
 		try {
-			FilesLoader filesLoader = new DirLoader(this.targetPath);
+			FilesLoader filesLoader = new DirLoader(this.getTargetPath());
 			Set<byte[]> classFiles;
 			try {
 				classFiles = filesLoader.loadFiles(CheckUtil.CLASS_FILE_EXT);

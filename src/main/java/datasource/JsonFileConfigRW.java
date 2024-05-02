@@ -12,6 +12,8 @@ import org.json.JSONObject;
  * Loads user configuration from a JSON file.
  */
 public class JsonFileConfigRW implements ConfigRW {
+	private static final int JSON_INDENT = 4;
+
 	private final String path;
 
 	public JsonFileConfigRW(String path) {
@@ -34,5 +36,17 @@ public class JsonFileConfigRW implements ConfigRW {
 			throw new IOException(ex.getMessage());
 		}
 		return new Configuration(jsonObject.toMap());
+	}
+
+	@Override
+	public void saveConfig(Configuration config) throws IOException {
+		String output;
+		try {
+			JSONObject jsonObject = new JSONObject(config.getData());
+			output = jsonObject.toString(JSON_INDENT);
+		} catch (JSONException | NullPointerException ex) {
+			throw new IOException(ex.getMessage());
+		}
+		Files.writeString(Path.of(this.path), output);
 	}
 }

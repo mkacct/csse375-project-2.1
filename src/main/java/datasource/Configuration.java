@@ -1,5 +1,7 @@
 package datasource;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +11,11 @@ import java.util.Map;
 public final class Configuration {
 	private final Map<String, Object> data;
 
+	/**
+	 * Note: Do not mutate any of data's value objects after construction.
+	 */
 	public Configuration(Map<String, Object> data) {
-		this.data = data;
+		this.data = new HashMap<String, Object>(data);
 	}
 
 	public boolean getBoolean(String key) throws IllegalArgumentException, ClassCastException {
@@ -96,5 +101,15 @@ public final class Configuration {
 
 	private void checkKey(String key) throws IllegalArgumentException {
 		if (!this.data.containsKey(key)) {throw new IllegalArgumentException("Key not found in configuration: " + key);}
+	}
+
+	public Configuration applyChanges(Map<String, Object> changes) {
+		Map<String, Object> newData = new HashMap<String, Object>(this.data);
+		newData.putAll(changes);
+		return new Configuration(newData);
+	}
+
+	Map<String, Object> getData() {
+		return Collections.unmodifiableMap(this.data);
 	}
 }
