@@ -1,0 +1,47 @@
+@startuml
+class App {
+-{static} MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
+-filesLoader: FilesLoader
+-configLoader: ConfigRW
+-outStream: PrintStream
+-errStream: PrintStream
+~run(check: Check[]): boolean
+-printCheckResults(checkName: String, generatedMsgs: Set<Message>): void
+-{static} colorMessageTag(msg: Message): String
+-printTotals(msgTotals: Map<MessageLevel, Integer>): void
+-{static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
+}
+
+interface ConfigRW {
+}
+
+class Configuration {
+}
+
+interface FilesLoader {
+}
+
+interface Check {
+}
+
+class CheckUtil {
+}
+
+class Message {
+}
+
+class MessageLevel {
+}
+
+class ClassDataCollection {
+}
+
+App -> ConfigRW
+App -> Configuration
+App -> FilesLoader
+App ->"*" Check
+App -> CheckUtil
+App ->"*" Message
+App ->"*" MessageLevel
+App -> ClassDataCollection
+@enduml
