@@ -1,17 +1,4 @@
 @startuml
-class App {
--{static} MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
--filesLoader: FilesLoader
--configLoader: ConfigRW
--outStream: PrintStream
--errStream: PrintStream
-~run(check: Check[]): boolean
--printCheckResults(checkName: String, generatedMsgs: Set<Message>): void
--{static} colorMessageTag(msg: Message): String
--printTotals(msgTotals: Map<MessageLevel, Integer>): void
--{static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
-}
-
 interface ConfigRW {
 }
 
@@ -36,27 +23,43 @@ class MessageLevel {
 class ClassDataCollection {
 }
 
-enum TerminalTextColor {
-BLACK
-RED
-GREEN
-YELLOW
-BLUE
-PURPLE
-CYAN
-WHITE
--{static} RESET: String
--ansiCode: String
-+applyTo(text: String): String
+package "cli" {
+  class App {
+    -{static} MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
+    -filesLoader: FilesLoader
+    -configLoader: ConfigRW
+    -outStream: PrintStream
+    -errStream: PrintStream
+    ~run(check: Check[]): boolean
+    -printCheckResults(checkName: String, generatedMsgs: Set<Message>): void
+    -{static} colorMessageTag(msg: Message): String
+    -printTotals(msgTotals: Map<MessageLevel, Integer>): void
+    -{static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
+  }
+
+  enum TerminalTextColor {
+    BLACK
+    RED
+    GREEN
+    YELLOW
+    BLUE
+    PURPLE
+    CYAN
+    WHITE
+    -{static} RESET: String
+   -ansiCode: String
+    +applyTo(text: String): String
+  }
+
+  App -> ConfigRW
+  App -> Configuration
+  App -> FilesLoader
+  App ->"*" Check
+  App -> CheckUtil
+  App ->"*" Message
+  App ->"*" MessageLevel
+  App -> ClassDataCollection
+  App ->"*" TerminalTextColor
 }
 
-App -> ConfigRW
-App -> Configuration
-App -> FilesLoader
-App ->"*" Check
-App -> CheckUtil
-App ->"*" Message
-App ->"*" MessageLevel
-App -> ClassDataCollection
-App ->"*" TerminalTextColor
 @enduml
