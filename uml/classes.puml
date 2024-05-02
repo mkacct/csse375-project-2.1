@@ -36,6 +36,20 @@ class MessageLevel {
 class ClassDataCollection {
 }
 
+enum TerminalTextColor {
+BLACK
+RED
+GREEN
+YELLOW
+BLUE
+PURPLE
+CYAN
+WHITE
+-{static} RESET: String
+-ansiCode: String
++applyTo(text: String): String
+}
+
 App -> ConfigRW
 App -> Configuration
 App -> FilesLoader
@@ -44,4 +58,5 @@ App -> CheckUtil
 App ->"*" Message
 App ->"*" MessageLevel
 App -> ClassDataCollection
+App ->"*" TerminalTextColor
 @enduml
