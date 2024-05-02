@@ -62,4 +62,69 @@ package "cli" {
   App ->"*" TerminalTextColor
 }
 
+package configspec {
+  class ConfigSpec {
+    -sections: List<Section>
+  }
+  class Section {
+    -{static} DEFAULT_ENTITY_TYPE: String
+    -title: String
+    -checkName: String
+    -entityType: String
+    -settings: List<Setting>
+    +representsCheck(): boolean
+    -validateRepresentsCheck(): void
+
+  }
+  class Setting {
+    -name: String
+    -type: Type
+    -desc: String
+    -options: List<String>
+    +hasStringOptions(): boolean
+    -validateCanHaveOptions(): void
+  }
+  enum Type {
+    BOOLEAN
+    INT
+    STRING
+    LIST_OF_BOOLEAN
+    LIST_OF_INT
+    LIST_OF_STRING
+    ~{static} parse(typeName: String): Type
+  }
+
+  interface ConfigSpecLoader {
+    ~loadConfigSpec(): ConfigSpec
+  }
+
+  class JsonFileConfigSpecLoader {
+    +{static} CONFIG_SPEC_PATH: String
+    -configSpecPath: String
+    +loadConfigSpec(): ConfigSpec
+    -readSelects(selectsJson: JSONObject): Map<String, List<String>>
+    -readSections(sectionsJson: JSONArray, selects: Map<String, List<String>>): List<ConfigSpec.Section>
+    -readSettings(sectionJson: JSONObject, selects: Map<String, List<String>>): List<ConfigSpec.Setting>
+    -readSetting(settingJson: JSONObject, selects: Map<String, List<String>>): ConfigSpec.Setting
+    -{static} getStringOrNull(jsonObject: JSONObject, key: String): String
+  }
+
+  ConfigSpec +- Section
+  ConfigSpec ->"*" Section
+  Section +- Setting
+  Section ->"*" Setting
+  Setting +- Type
+  Setting -> Type
+
+  JsonFileConfigSpecLoader .|> ConfigSpecLoader
+}
+
+exception IOException {
+}
+
+exception Exception {
+}
+ConfigSpecLoader ..> IOException: <<throws>>
+JsonFileConfigSpecLoader ..> IOException: <<throws>>
+IOException --|> Exception
 @enduml
