@@ -11,13 +11,14 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import domain.MessageLevel;
 import general.ProductInfo;
 
-class MainWindow extends JFrame {
+class MainWindow extends JFrame implements Reloadable {
 	private static final int MIN_WIDTH = 640, MIN_HEIGHT = 360;
 
 	private App app;
@@ -29,12 +30,14 @@ class MainWindow extends JFrame {
 	MainWindow(App app) {
 		super(GuiUtil.formatTitle(null));
 		this.app = app;
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 		this.initContents();
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		this.app.addReloader(this);
+		this.checkForConfigLoadException();
 	}
 
 	private void initContents() {
@@ -53,10 +56,59 @@ class MainWindow extends JFrame {
 		this.getRootPane().setDefaultButton(this.mainPanel.runButton);
 	}
 
+	private void exit(int status) {
+		this.dispose();
+		System.exit(status);
+	}
+
+	private void checkForConfigLoadException() {
+		Exception configLoadEx = this.app.retrieveConfigLoadEx();
+		if (configLoadEx != null) {
+			boolean stay = this.askWhetherToProceedWithBadConfig(configLoadEx);
+			if (!stay) {
+				this.exit(1);
+				return;
+			}
+		}
+	}
+
+	private boolean askWhetherToProceedWithBadConfig(Exception configLoadEx) {
+		int choice = JOptionPane.showOptionDialog(
+			this,
+			MessageFormat.format(
+				"Could not load configuration file {0}. The file may not be valid JSON.\n"
+				+ "Select \"Quit\" if you want to fix the issue manually. "
+				+ "If you select \"Continue anyway\", any changes will overwrite the file.\n\n"
+				+ "Error message:\n"
+				+ "{1}",
+				App.CONFIG_PATH, configLoadEx.getMessage()
+			),
+			GuiUtil.formatTitle(null),
+			JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null,
+			new String[] {"Quit", "Continue anyway"}, "Quit"
+		);
+		return choice == 1;
+	}
+
 	private void openSettings() {
 		// TODO: make settings dialog
 		// new SettingsDialog(this);
 		GuiUtil.showError(this, "NYI");
+	}
+
+	@Override
+	public void reload() {
+		this.checkForConfigSaveException();
+	}
+
+	private void checkForConfigSaveException() {
+		Exception configSaveEx = this.app.retrieveConfigSaveEx();
+		if (configSaveEx != null) {
+			GuiUtil.showError(this, MessageFormat.format(
+				"Failed to save changes to configuration file {0}:\n{1}",
+				App.CONFIG_PATH, configSaveEx.getMessage()
+			));
+		}
 	}
 
 	private class Header extends JPanel {

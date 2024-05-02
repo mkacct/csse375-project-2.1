@@ -1,7 +1,9 @@
 package datasource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,13 +13,23 @@ import org.junit.jupiter.api.Test;
 /**
  * Test JsonFileConfigLoader, as well as the Configuration class itself.
  */
-public class JsonFileConfigLoaderTest {
+public class JsonFileConfigRWTest {
 	private static final String EXAMPLE_JSON_PATH = "src/test/resources/example.json";
 
 	@Test
-	public void testBasicUsage() throws IOException {
-		ConfigLoader loader = new JsonFileConfigLoader(EXAMPLE_JSON_PATH);
-		Configuration config = loader.loadConfig();
+	public void testWithBadPath() {
+		ConfigRW rw = new JsonFileConfigRW("src/test/this-does-not-exist/lol.json");
+		assertFalse(rw.sourceExists());
+		assertThrows(IOException.class, () -> {
+			rw.loadConfig();
+		});
+	}
+
+	@Test
+	public void testLoading() throws IOException {
+		ConfigRW rw = new JsonFileConfigRW(EXAMPLE_JSON_PATH);
+		assertTrue(rw.sourceExists());
+		Configuration config = rw.loadConfig();
 
 		assertEquals(true, config.getBoolean("isGood"));
 		assertEquals(10, config.getInt("numTentacles"));
@@ -37,9 +49,10 @@ public class JsonFileConfigLoaderTest {
 	}
 
 	@Test
-	public void testArrays() throws IOException {
-		ConfigLoader loader = new JsonFileConfigLoader(EXAMPLE_JSON_PATH);
-		Configuration config = loader.loadConfig();
+	public void testLoadingArrays() throws IOException {
+		ConfigRW rw = new JsonFileConfigRW(EXAMPLE_JSON_PATH);
+		assertTrue(rw.sourceExists());
+		Configuration config = rw.loadConfig();
 
 		assertEquals(
 			List.of(true, false, true, true, false),

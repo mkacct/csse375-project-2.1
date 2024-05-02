@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import datasource.ConfigLoader;
+import datasource.ConfigRW;
 import datasource.Configuration;
 import datasource.FilesLoader;
 import domain.Check;
@@ -26,12 +26,12 @@ class App {
 	);
 
 	private final FilesLoader filesLoader;
-	private final ConfigLoader configLoader;
+	private final ConfigRW configLoader;
 
 	private final PrintStream outStream;
 	private final PrintStream errStream;
 
-	App(FilesLoader filesLoader, ConfigLoader configLoader, PrintStream outStream, PrintStream errStream) {
+	App(FilesLoader filesLoader, ConfigRW configLoader, PrintStream outStream, PrintStream errStream) {
 		this.filesLoader = filesLoader;
 		this.configLoader = configLoader;
 		this.outStream = outStream;
@@ -47,16 +47,19 @@ class App {
 			this.errStream.println(ex.getMessage());
 			return false;
 		} catch (IOException ex) {
-			this.errStream.println("Error loading classes: " + ex.getMessage());
+			this.errStream.println(MessageFormat.format("Error loading classes: {0}", ex.getMessage()));
 			return false;
 		}
 		if (configLoader == null) {
 			config = new Configuration(Map.of());
+		} else if (!this.configLoader.sourceExists()) {
+			this.errStream.println("Error loading config: No such file");
+			return false;
 		} else {
 			try {
 				config = this.configLoader.loadConfig();
 			} catch (IOException ex) {
-				this.errStream.println("Error loading config: " + ex.getMessage());
+				this.errStream.println(MessageFormat.format("Error loading config: {0}", ex.getMessage()));
 				return false;
 			}
 		}

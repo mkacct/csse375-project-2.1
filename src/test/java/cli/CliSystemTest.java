@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import datasource.ConfigLoader;
+import datasource.ConfigRW;
 import datasource.Configuration;
 import datasource.DirLoader;
 import domain.Check;
@@ -50,7 +50,10 @@ public class CliSystemTest {
 	public void testWithConfig() throws IOException {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-		ConfigLoader fakeConfigLoader = new ConfigLoader() {
+		ConfigRW fakeConfigLoader = new ConfigRW() {
+			@Override
+			public boolean sourceExists() {return true;}
+
 			@Override
 			public Configuration loadConfig() throws IOException {
 				return new Configuration(Map.of(

@@ -284,3 +284,6 @@ target/
 # Specific test-generated files
 /src/test/resources/PlantUMLGenerationTest/*.puml
 !/src/test/resources/PlantUMLGenerationTest/*e.puml
+
+.lpguiconfig.json
+/config.json

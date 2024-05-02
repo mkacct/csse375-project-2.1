@@ -2,6 +2,8 @@ package gui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,7 +16,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import datasource.ConfigLoader;
+import datasource.ConfigRW;
 import datasource.Configuration;
 import domain.Check;
 import domain.Message;
@@ -35,22 +37,58 @@ public class GuiSystemTest {
 		new NoGlobalVariablesCheck()
 	};
 
-	private static ConfigLoader createFakeConfigLoader() {
-		return new ConfigLoader() {
+	private static final Configuration CONFIG = new Configuration(Map.of(
+		"guiAppTargetPath", CLASS_DIR_PATH,
+		"convConstant", "camelCase",
+		"maxMethodLengthInstrs", 20,
+		"maxNumParameters", 3
+	));
+
+	private static FakeConfigRW createFakeConfigRW(Configuration config) {
+		return new FakeConfigRW() {
+			private Configuration currentConfig = config;
+			private Configuration lastSavedConfig = null;
+
 			@Override
 			public Configuration loadConfig() throws IOException {
-				return new Configuration(Map.of(
-					"guiAppTargetPath", CLASS_DIR_PATH,
-					"convConstant", "camelCase",
-					"maxMethodLengthInstrs", 20,
-					"maxNumParameters", 3
-				));
+				return this.currentConfig;
+			}
+
+			@Override
+			public void saveConfig(Configuration config) {
+				this.currentConfig = config;
+				this.lastSavedConfig = config;
+			}
+
+			@Override
+			public Configuration retrieveLastSavedConfig() {
+				Configuration savedConfig = this.lastSavedConfig;
+				this.lastSavedConfig = null;
+				return savedConfig;
 			}
 		};
 	}
 
-	private static ConfigLoader createBadConfigLoader() {
-		return new ConfigLoader() {
+	private static FakeConfigRW createNonexistentConfigRW() {
+		return new FakeConfigRW() {
+			private boolean triedToLoad = false;
+
+			@Override
+			public boolean sourceExists() {return false;}
+
+			@Override
+			public Configuration loadConfig() throws IOException {
+				triedToLoad = true;
+				throw new IOException("don't even try");
+			}
+
+			@Override
+			public boolean didTryToLoad() {return triedToLoad;}
+		};
+	}
+
+	private static FakeConfigRW createBadConfigRW() {
+		return new FakeConfigRW() {
 			@Override
 			public Configuration loadConfig() throws IOException {
 				throw new IOException("lol nope");
@@ -62,6 +100,7 @@ public class GuiSystemTest {
 	public void testDefaultInitialState() {
 		App app = new App(CHECKS, null);
 
+		assertNull(app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
 		assertNoResults(app);
@@ -69,17 +108,34 @@ public class GuiSystemTest {
 
 	@Test
 	public void testWithConfigInitialState() {
-		App app = new App(CHECKS, createFakeConfigLoader());
+		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
+		App app = new App(CHECKS, configRW);
 
+		assertNull(app.retrieveConfigLoadEx());
 		assertTrue(app.canRunNow());
 		assertEquals(CLASS_DIR_PATH, app.getTargetPath());
+		assertNoResults(app);
+		assertNull(configRW.retrieveLastSavedConfig());
+	}
+
+	@Test
+	public void testWithNonexistentConfigInitialState() {
+		FakeConfigRW configRW = createNonexistentConfigRW();
+		App app = new App(CHECKS, configRW);
+
+		assertNull(app.retrieveConfigLoadEx());
+		assertFalse(configRW.didTryToLoad());
+		assertFalse(app.canRunNow());
+		assertEquals("", app.getTargetPath());
 		assertNoResults(app);
 	}
 
 	@Test
 	public void testWithBadConfigInitialState() {
-		App app = new App(CHECKS, createBadConfigLoader());
+		FakeConfigRW configRW = createBadConfigRW();
+		App app = new App(CHECKS, configRW);
 
+		assertInstanceOf(IOException.class, app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
 		assertNoResults(app);
@@ -154,7 +210,8 @@ public class GuiSystemTest {
 
 	@Test
 	public void testRunWithConfig() throws IOException {
-		App app = new App(CHECKS, createFakeConfigLoader());
+		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
+		App app = new App(CHECKS, configRW);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
@@ -184,6 +241,28 @@ public class GuiSystemTest {
 			)
 		), unorderCheckResults(app.getCheckResults()));
 		assertTrue(app.canRunNow());
+		assertNull(configRW.retrieveLastSavedConfig());
+	}
+
+	@Test
+	public void testSaveTargetPathToConfig() {
+		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
+		App app = new App(CHECKS, configRW);
+		ReloadCounter reloadCounter = new ReloadCounter();
+		app.addReloader(reloadCounter);
+
+		assertTrue(app.canRunNow());
+		assertEquals(CLASS_DIR_PATH, app.getTargetPath());
+		assertNull(configRW.retrieveLastSavedConfig());
+		app.setTargetPath("asdf");
+		Configuration savedConfig = configRW.retrieveLastSavedConfig();
+		assertNotNull(savedConfig);
+		assertEquals("asdf", savedConfig.getString("guiAppTargetPath"));
+		assertEquals("asdf", app.getTargetPath());
+
+		assertNoResults(app);
+		assertTrue(app.canRunNow());
+		assertNull(configRW.retrieveLastSavedConfig());
 	}
 
 	private static void assertNoResults(App app) {
@@ -201,7 +280,16 @@ public class GuiSystemTest {
 		return unordered;
 	}
 
-	private class ReloadCounter implements Reloadable {
+	private static interface FakeConfigRW extends ConfigRW {
+		@Override
+		default boolean sourceExists() {return true;}
+
+		default boolean didTryToLoad() {throw new UnsupportedOperationException();}
+
+		default Configuration retrieveLastSavedConfig() {throw new UnsupportedOperationException();}
+	}
+
+	private static class ReloadCounter implements Reloadable {
 		private int reloadCount = 0;
 
 		@Override

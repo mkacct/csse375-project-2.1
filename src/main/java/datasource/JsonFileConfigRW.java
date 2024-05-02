@@ -11,11 +11,18 @@ import org.json.JSONObject;
 /**
  * Loads user configuration from a JSON file.
  */
-public class JsonFileConfigLoader implements ConfigLoader {
+public class JsonFileConfigRW implements ConfigRW {
+	private static final int JSON_INDENT = 4;
+
 	private final String path;
 
-	public JsonFileConfigLoader(String path) {
+	public JsonFileConfigRW(String path) {
 		this.path = path;
+	}
+
+	@Override
+	public boolean sourceExists() {
+		return Files.isRegularFile(Path.of(this.path));
 	}
 
 	@Override
@@ -29,5 +36,17 @@ public class JsonFileConfigLoader implements ConfigLoader {
 			throw new IOException(ex.getMessage());
 		}
 		return new Configuration(jsonObject.toMap());
+	}
+
+	@Override
+	public void saveConfig(Configuration config) throws IOException {
+		String output;
+		try {
+			JSONObject jsonObject = new JSONObject(config.getData());
+			output = jsonObject.toString(JSON_INDENT);
+		} catch (JSONException | NullPointerException ex) {
+			throw new IOException(ex.getMessage());
+		}
+		Files.writeString(Path.of(this.path), output);
 	}
 }
