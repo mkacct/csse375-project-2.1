@@ -282,6 +282,7 @@ target/
 .vscode/
 
 # Specific test-generated files
+/src/test/resources/output.json
 /src/test/resources/PlantUMLGenerationTest/*.puml
 !/src/test/resources/PlantUMLGenerationTest/*e.puml
 
