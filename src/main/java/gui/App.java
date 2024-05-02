@@ -1,6 +1,7 @@
 package gui;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,7 +125,7 @@ class App {
 			} catch (IllegalStateException ex) { // dir not found
 				throw new IOException(ex.getMessage());
 			} catch (IOException ex) {
-				throw new IOException("Error loading classes: " + ex.getMessage());
+				throw new IOException(MessageFormat.format("Error loading classes: {0}", ex.getMessage()));
 			}
 
 			ClassDataCollection classes = CheckUtil.readInClasses(classFiles);

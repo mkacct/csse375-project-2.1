@@ -47,7 +47,7 @@ class App {
 			this.errStream.println(ex.getMessage());
 			return false;
 		} catch (IOException ex) {
-			this.errStream.println("Error loading classes: " + ex.getMessage());
+			this.errStream.println(MessageFormat.format("Error loading classes: {0}", ex.getMessage()));
 			return false;
 		}
 		if (configLoader == null) {
@@ -59,7 +59,7 @@ class App {
 			try {
 				config = this.configLoader.loadConfig();
 			} catch (IOException ex) {
-				this.errStream.println("Error loading config: " + ex.getMessage());
+				this.errStream.println(MessageFormat.format("Error loading config: {0}", ex.getMessage()));
 				return false;
 			}
 		}
