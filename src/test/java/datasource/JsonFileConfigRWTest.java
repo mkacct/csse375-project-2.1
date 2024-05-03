@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -15,6 +19,7 @@ import org.junit.jupiter.api.Test;
  */
 public class JsonFileConfigRWTest {
 	private static final String EXAMPLE_JSON_PATH = "src/test/resources/example.json";
+	private static final String OUTPUT_JSON_PATH = "src/test/resources/output.json";
 
 	@Test
 	public void testWithBadPath() {
@@ -96,5 +101,31 @@ public class JsonFileConfigRWTest {
 			List.of("A", "B"),
 			config.getListOfString("nonexistentField", List.of("A", "B"))
 		);
+	}
+
+	@Test
+	public void testSaving() throws IOException {
+		Files.deleteIfExists(Path.of(OUTPUT_JSON_PATH));
+		assertFalse(Files.exists(Path.of(OUTPUT_JSON_PATH)));
+
+		ConfigRW rw = new JsonFileConfigRW(OUTPUT_JSON_PATH);
+		assertFalse(rw.sourceExists());
+
+		Map<String, Object> expected = Map.of(
+			"one", "foo",
+			"two", 2,
+			"three", true,
+			"four", List.of(1, 2, 3, 6),
+			"five", List.of("A", "B", "C"),
+			"six", List.of(true, false, true)
+		);
+		Configuration config = new Configuration(expected);
+
+		rw.saveConfig(config);
+
+		assertTrue(rw.sourceExists());
+		String json = String.join("\n", Files.readAllLines(Path.of(OUTPUT_JSON_PATH)));
+		JSONObject jsonObject = new JSONObject(json);
+		assertEquals(expected, jsonObject.toMap());
 	}
 }
