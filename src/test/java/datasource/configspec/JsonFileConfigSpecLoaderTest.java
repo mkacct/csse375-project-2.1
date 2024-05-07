@@ -20,7 +20,7 @@ public class JsonFileConfigSpecLoaderTest {
 
 	@BeforeEach
 	public void setup() throws IOException {
-		JsonFileConfigSpecLoader loader = new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_RES_PATH);
+		ConfigSpecLoader loader = new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_RES_PATH);
 		this.configSpec = loader.loadConfigSpec();
 	}
 
