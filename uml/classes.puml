@@ -131,6 +131,12 @@ package domain.checks {
     -{static} findAdapters(classes: ClassDataCollection, adapterNamePattern: Pattern, messages: Set<Message>): Set<String>
     -{static} validateUsageOfAdapters(classes: ClassDataCollection, adapterFullNames: Set<String>, messages: Set<Messages>): void
   }
+
+  class ConstantInterfaceCheck {
+    -{static} NAME: String
+    -{static} ALLOW_MARKER_INTERFACES_KEY: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+  }
 }
 
 exception IOException {
@@ -153,19 +159,20 @@ exception IllegalStateException {
 
 exception ClassCastException {
 }
-
+' cli package
 App -> ConfigRW
 App -> FilesLoader
 
+' datasource.config package
 ConfigSpec +- Section
 ConfigSpec ->"*" Section
 Section +- Setting
 Section ->"*" Setting
 Setting +- Type
 Setting -> Type
-
 JsonFileConfigSpecLoader .|> ConfigSpecLoader
 
+' datasource package
 DirLoader ..|> FilesLoader
 FullFilePrinter ..|> DataPrinter
 JsonFileConfigRW ..|> ConfigRW
@@ -178,6 +185,13 @@ DataPrinter ..> FileNotFoundException: <<throws>>
 FilesLoader ..> IOException: <<throws>>
 FilesLoader ..> IllegalStateException: <<throws>>
 
+' domain.checks package
+AdapterPatternCheck --|> Check
+ConstantInterfaceCheck --|> Check
+
+
+
+' exceptions
 FileNotFoundException --|> IOException
 IOException --|> Exception
 ClassCastException --|> RuntimeException
