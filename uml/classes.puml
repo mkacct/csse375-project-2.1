@@ -125,6 +125,12 @@ package datasource {
     ~loadConfig(): Configuration
     ~saveConfig(config: Configuration): void
   }
+
+  class Configuration {
+    -data: Map<String, Object>
+    -checkKey(key: String): void
+    +applyChanges(changes: Map<String, Object>): Configuration
+  }
 }
 
 exception IOException {
@@ -132,8 +138,18 @@ exception IOException {
 
 exception Exception {
 }
+
+exception IllegalArgumentException {
+}
+
+exception RuntimeException {
+}
+
 ConfigSpecLoader ..> IOException: <<throws>>
 JsonFileConfigSpecLoader ..> IOException: <<throws>>
 ConfigRW ..> IOException: <<throws>>
+Configuration ..> IllegalArgumentException: <<throws>>
 IOException --|> Exception
+IllegalArgumentException --|> RuntimeException
+RuntimeException --|> Exception
 @enduml
