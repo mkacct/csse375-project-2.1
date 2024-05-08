@@ -1,7 +1,7 @@
 @startuml
-' left to right direction
-scale 1024 width
-scale 768 height
+left to right direction
+' scale 1024 width
+' scale 768 height
 
 package "cli" {
   class App {
@@ -61,11 +61,11 @@ package datasource.configspec {
     LIST_OF_BOOLEAN
     LIST_OF_INT
     LIST_OF_STRING
-    ~{static} parse(typeName: String): Type
+    {static} parse(typeName: String): Type
   }
 
   interface ConfigSpecLoader {
-    ~loadConfigSpec(): ConfigSpec
+    loadConfigSpec(): ConfigSpec
   }
 
   class JsonFileConfigSpecLoader {
@@ -82,9 +82,9 @@ package datasource.configspec {
 
 package datasource {
   interface ConfigRW {
-    ~sourceExists(): boolean
-    ~loadConfig(): Configuration
-    ~saveConfig(config: Configuration): void
+    sourceExists(): boolean
+    loadConfig(): Configuration
+    saveConfig(config: Configuration): void
   }
 
   class Configuration {
@@ -142,6 +142,19 @@ package domain.checks {
     -generatedMessage: Message
     +validateGetInt(config: Configuration, key: String): Integer
   }
+
+  abstract class GraphCheck {
+    #graph: ClassGraph
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    +{abstract} gRun(config: Configuration): Set<Message>
+  }
+
+  class ImmutableExceptionsCheck {
+    -{static} NAME: String
+    -{static} EXCEPTION_CLASS_NAME_REGEX: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -{static} checkExceptionsClass(classData: ClassData, messages: Set<Message>): void
+  }
 }
 
 exception IOException {
@@ -193,8 +206,8 @@ FilesLoader ..> IllegalStateException: <<throws>>
 ' domain.checks package
 AdapterPatternCheck --|> Check
 ConstantInterfaceCheck --|> Check
-
-
+GraphCheck  --|> Check
+ImmutableExceptionsCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
