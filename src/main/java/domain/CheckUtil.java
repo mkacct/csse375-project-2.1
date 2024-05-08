@@ -53,10 +53,10 @@ public final class CheckUtil {
 		BiConsumer<String, Set<Message>> resultsHandler
 	) {
 		initMsgTotals(msgTotals);
-		boolean skipUnmarked = Boolean.TRUE.equals(configBoolOrNull(config, SKIP_UNMARKED_CHECKS_KEY));
+		boolean skipUnmarked = config.getBoolean(SKIP_UNMARKED_CHECKS_KEY, false);
 		int numChecksRun = 0;
 		for (Check check : checks) {
-			Boolean configVal = configBoolOrNull(config, ENABLE_KEY_PREFIX + check.name);
+			Boolean configVal = config.getBoolean(ENABLE_KEY_PREFIX + check.name, null);
 			if (skipUnmarked ? Boolean.TRUE.equals(configVal) : check.isEnabled(configVal)) {
 				runCheck(check, classes, config, msgTotals, resultsHandler);
 				numChecksRun++;
@@ -84,14 +84,6 @@ public final class CheckUtil {
 			msgTotals.put(msg.level, msgTotals.get(msg.level) + 1);
 		}
 		resultsHandler.accept(check.name, generatedMsgs);
-	}
-
-	private static Boolean configBoolOrNull(Configuration config, String key) {
-		try {
-			return config.getBoolean(key);
-		} catch (IllegalArgumentException | ClassCastException ex) {
-			return null;
-		}
 	}
 
 	private static void initMsgTotals(Map<MessageLevel, Integer> msgTotals) {
