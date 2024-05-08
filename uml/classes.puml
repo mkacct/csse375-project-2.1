@@ -137,6 +137,11 @@ package domain.checks {
     -{static} ALLOW_MARKER_INTERFACES_KEY: String
     +run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
+
+  class CountCheckPropertyValidator {
+    -generatedMessage: Message
+    +validateGetInt(config: Configuration, key: String): Integer
+  }
 }
 
 exception IOException {
