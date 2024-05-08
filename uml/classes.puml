@@ -146,6 +146,11 @@ package datasource {
   interface FilesLoader {
     +loadFiles(ext: String): Set<byte[]>
   }
+
+  class FullFilePrinter {
+    -path: String
+    +print(s: String): void
+  }
 }
 
 exception IOException {
@@ -167,6 +172,7 @@ exception IllegalStateException {
 }
 
 DirLoader ..|> FilesLoader
+FullFilePrinter ..|> DataPrinter
 
 ConfigSpecLoader ..> IOException: <<throws>>
 JsonFileConfigSpecLoader ..> IOException: <<throws>>
