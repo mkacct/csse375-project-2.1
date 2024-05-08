@@ -1,27 +1,7 @@
 @startuml
-interface ConfigRW {
-}
-
-class Configuration {
-}
-
-interface FilesLoader {
-}
-
-interface Check {
-}
-
-class CheckUtil {
-}
-
-class Message {
-}
-
-class MessageLevel {
-}
-
-class ClassDataCollection {
-}
+' left to right direction
+scale 1024 width
+scale 768 height
 
 package "cli" {
   class App {
@@ -50,16 +30,6 @@ package "cli" {
    -ansiCode: String
     +applyTo(text: String): String
   }
-
-  App -> ConfigRW
-  App -> Configuration
-  App -> FilesLoader
-  App ->"*" Check
-  App -> CheckUtil
-  App ->"*" Message
-  App ->"*" MessageLevel
-  App -> ClassDataCollection
-  App ->"*" TerminalTextColor
 }
 
 package datasource.configspec {
@@ -108,15 +78,6 @@ package datasource.configspec {
     -readSetting(settingJson: JSONObject, selects: Map<String, List<String>>): ConfigSpec.Setting
     -{static} getStringOrNull(jsonObject: JSONObject, key: String): String
   }
-
-  ConfigSpec +- Section
-  ConfigSpec ->"*" Section
-  Section +- Setting
-  Section ->"*" Setting
-  Setting +- Type
-  Setting -> Type
-
-  JsonFileConfigSpecLoader .|> ConfigSpecLoader
 }
 
 package datasource {
@@ -159,18 +120,6 @@ package datasource {
     +loadConfig(): Configuration
     +saveConfig(config: Configuration): void
   }
-
-  DirLoader ..|> FilesLoader
-  FullFilePrinter ..|> DataPrinter
-  JsonFileConfigRW ..|> ConfigRW
-
-  ConfigSpecLoader ..> IOException: <<throws>>
-  JsonFileConfigSpecLoader ..> IOException: <<throws>>
-  ConfigRW ..> IOException: <<throws>>
-  Configuration ..> IllegalArgumentException: <<throws>>
-  DataPrinter ..> FileNotFoundException: <<throws>>
-  FilesLoader ..> IOException: <<throws>>
-  FilesLoader ..> IllegalStateException: <<throws>>
 }
 
 exception IOException {
@@ -191,8 +140,36 @@ exception FileNotFoundException {
 exception IllegalStateException {
 }
 
+exception ClassCastException {
+}
+
+App -> ConfigRW
+App -> FilesLoader
+
+ConfigSpec +- Section
+ConfigSpec ->"*" Section
+Section +- Setting
+Section ->"*" Setting
+Setting +- Type
+Setting -> Type
+
+JsonFileConfigSpecLoader .|> ConfigSpecLoader
+
+DirLoader ..|> FilesLoader
+FullFilePrinter ..|> DataPrinter
+JsonFileConfigRW ..|> ConfigRW
+ConfigSpecLoader ..> IOException: <<throws>>
+JsonFileConfigSpecLoader ..> IOException: <<throws>>
+ConfigRW ..> IOException: <<throws>>
+Configuration ..> IllegalArgumentException: <<throws>>
+Configuration ..> ClassCastException: <<throws>>
+DataPrinter ..> FileNotFoundException: <<throws>>
+FilesLoader ..> IOException: <<throws>>
+FilesLoader ..> IllegalStateException: <<throws>>
+
 FileNotFoundException --|> IOException
 IOException --|> Exception
+ClassCastException --|> RuntimeException
 IllegalStateException --|> RuntimeException
 IllegalArgumentException --|> RuntimeException
 RuntimeException --|> Exception
