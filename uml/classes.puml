@@ -122,6 +122,17 @@ package datasource {
   }
 }
 
+package domain.checks {
+  class AdapterPatternCheck {
+    -{static} NAME: String
+    -{static} ADAPTER_CLASS_NAME_REGEX_KEY: String
+    -{static} DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -{static} findAdapters(classes: ClassDataCollection, adapterNamePattern: Pattern, messages: Set<Message>): Set<String>
+    -{static} validateUsageOfAdapters(classes: ClassDataCollection, adapterFullNames: Set<String>, messages: Set<Messages>): void
+  }
+}
+
 exception IOException {
 }
 
