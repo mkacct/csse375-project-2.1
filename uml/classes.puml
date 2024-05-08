@@ -144,13 +144,33 @@ package datasource {
   }
 
   interface FilesLoader {
-    +loadFiles(ext: String): Set<byte[]>
+    loadFiles(ext: String): Set<byte[]>
   }
 
   class FullFilePrinter {
     -path: String
     +print(s: String): void
   }
+
+  class JsonFileConfigRW {
+    -{static} JSON_INDENT: int
+    -path: String
+    +sourceExists(): boolean
+    +loadConfig(): Configuration
+    +saveConfig(config: Configuration): void
+  }
+
+  DirLoader ..|> FilesLoader
+  FullFilePrinter ..|> DataPrinter
+  JsonFileConfigRW ..|> ConfigRW
+
+  ConfigSpecLoader ..> IOException: <<throws>>
+  JsonFileConfigSpecLoader ..> IOException: <<throws>>
+  ConfigRW ..> IOException: <<throws>>
+  Configuration ..> IllegalArgumentException: <<throws>>
+  DataPrinter ..> FileNotFoundException: <<throws>>
+  FilesLoader ..> IOException: <<throws>>
+  FilesLoader ..> IllegalStateException: <<throws>>
 }
 
 exception IOException {
@@ -170,17 +190,6 @@ exception FileNotFoundException {
 
 exception IllegalStateException {
 }
-
-DirLoader ..|> FilesLoader
-FullFilePrinter ..|> DataPrinter
-
-ConfigSpecLoader ..> IOException: <<throws>>
-JsonFileConfigSpecLoader ..> IOException: <<throws>>
-ConfigRW ..> IOException: <<throws>>
-Configuration ..> IllegalArgumentException: <<throws>>
-DataPrinter ..> FileNotFoundException: <<throws>>
-FilesLoader ..> IOException: <<throws>>
-FilesLoader ..> IllegalStateException: <<throws>>
 
 FileNotFoundException --|> IOException
 IOException --|> Exception
