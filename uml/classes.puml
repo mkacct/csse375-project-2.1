@@ -131,6 +131,10 @@ package datasource {
     -checkKey(key: String): void
     +applyChanges(changes: Map<String, Object>): Configuration
   }
+
+  interface DataPrinter {
+    print(s: String): void
+  }
 }
 
 exception IOException {
@@ -145,10 +149,15 @@ exception IllegalArgumentException {
 exception RuntimeException {
 }
 
+exception FileNotFoundException {
+}
+
 ConfigSpecLoader ..> IOException: <<throws>>
 JsonFileConfigSpecLoader ..> IOException: <<throws>>
 ConfigRW ..> IOException: <<throws>>
 Configuration ..> IllegalArgumentException: <<throws>>
+DataPrinter ..> FileNotFoundException: <<throws>>
+FileNotFoundException --|> IOException
 IOException --|> Exception
 IllegalArgumentException --|> RuntimeException
 RuntimeException --|> Exception
