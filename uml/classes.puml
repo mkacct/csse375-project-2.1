@@ -135,6 +135,16 @@ package datasource {
   interface DataPrinter {
     print(s: String): void
   }
+
+  class DirLoader {
+    -path: String
+    +loadFiles(ext: String): Set<byte[]>
+    -addFilesFromDir(files: Set<byte[]>, dir: File, ext: String)
+    -readFile(file: File): byte[]
+  }
+
+  class FilesLoader {
+  }
 }
 
 exception IOException {
@@ -152,13 +162,22 @@ exception RuntimeException {
 exception FileNotFoundException {
 }
 
+exception IllegalStateException {
+}
+
+DirLoader ..|> FilesLoader
+
 ConfigSpecLoader ..> IOException: <<throws>>
 JsonFileConfigSpecLoader ..> IOException: <<throws>>
 ConfigRW ..> IOException: <<throws>>
 Configuration ..> IllegalArgumentException: <<throws>>
 DataPrinter ..> FileNotFoundException: <<throws>>
+DirLoader ..> IOException: <<throws>>
+DirLoader ..> IllegalStateException: <<throws>>
+
 FileNotFoundException --|> IOException
 IOException --|> Exception
+IllegalStateException --|> RuntimeException
 IllegalArgumentException --|> RuntimeException
 RuntimeException --|> Exception
 @enduml
