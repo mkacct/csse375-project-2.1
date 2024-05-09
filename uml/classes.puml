@@ -634,6 +634,13 @@ package domain {
     +equals(obj: Object): boolean
     +hashCode(): int
   }
+
+  enum MessageLevel {
+    ERROR
+    WARNING
+    INFO
+    +abbreviation: String
+  }
 }
 
 exception IOException {
