@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.util.function.Consumer;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -23,13 +24,24 @@ public class FilePicker extends JPanel {
 		super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 		this.pathUpdateHandler = pathUpdateHandler;
 
-		this.pathField = new JTextField(targetPath, TEXT_FIELD_MIN_COLS);
-		this.pathField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, PATH_FIELD_PLACEHOLDER_TEXT);
-		GuiUtil.addTextFieldDocumentUpdateListener(this.pathField, (e) -> {
+		this.pathField = this.initPathField(targetPath);
+		this.initBrowseButton();
+	}
+
+	private JTextField initPathField(String targetPath) {
+		JTextField pathField = new JTextField(targetPath, TEXT_FIELD_MIN_COLS);
+		pathField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, PATH_FIELD_PLACEHOLDER_TEXT);
+		this.add(pathField, BorderLayout.CENTER);
+		GuiUtil.addTextFieldDocumentUpdateListener(pathField, (e) -> {
 			this.pathUpdateHandler.accept(this.getPath());
 		});
-		this.add(this.pathField, BorderLayout.CENTER);
-		this.add(GuiUtil.createButton(BROWSE_BUTTON_LABEL, (e) -> {this.browse();}), BorderLayout.LINE_END);
+		return pathField;
+	}
+
+	private JButton initBrowseButton() {
+		JButton browseButton = GuiUtil.createButton(BROWSE_BUTTON_LABEL, (e) -> {this.browse();});
+		this.add(browseButton, BorderLayout.LINE_END);
+		return browseButton;
 	}
 
 	private String getPath() {return this.pathField.getText();}

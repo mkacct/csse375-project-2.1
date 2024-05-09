@@ -18,37 +18,43 @@ import domain.MessageLevel;
 import general.ProductInfo;
 
 class MainWindow extends JFrame implements Reloadable {
-	private static final int MIN_WIDTH = 640, MIN_HEIGHT = 360;
+	private static final Dimension MIN_SIZE = new Dimension(640, 360);
+	private static final int INIT_HEIGHT = 480;
 
 	private final App app;
-
-	private final Header header;
-	private final MainPanel mainPanel;
-	private final Footer footer;
 
 	MainWindow(App app) {
 		super(GuiUtil.formatTitle(null));
 		this.app = app;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 
-		GuiUtil.setPaddedContentPane(this);
+		GuiUtil.initPaddedContentPane(this);
+		this.initHeader();
+		MainPanel mainPanel = this.initMainPanel();
+		this.initFooter();
+		this.getRootPane().setDefaultButton(mainPanel.runButton);
 
-		this.header = new Header();
-		this.add(this.header, BorderLayout.PAGE_START);
-		this.mainPanel = new MainPanel();
-		this.add(this.mainPanel, BorderLayout.CENTER);
-		this.footer = new Footer();
-		this.add(this.footer, BorderLayout.PAGE_END);
-
-		this.getRootPane().setDefaultButton(this.mainPanel.runButton);
-
-		this.pack();
-		this.setSize(new Dimension(this.getWidth(), this.getMinimumSize().height * 4 / 3));
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+		GuiUtil.initWindow(this, null, MIN_SIZE, INIT_HEIGHT);
 		this.app.addReloader(this);
 		this.checkForConfigLoadException();
+	}
+
+	private Header initHeader() {
+		Header header = new Header();
+		this.add(header, BorderLayout.PAGE_START);
+		return header;
+	}
+
+	private MainPanel initMainPanel() {
+		MainPanel mainPanel = new MainPanel();
+		this.add(mainPanel, BorderLayout.CENTER);
+		return mainPanel;
+	}
+
+	private Footer initFooter() {
+		Footer footer = new Footer();
+		this.add(footer, BorderLayout.PAGE_END);
+		return footer;
 	}
 
 	private void exit(int status) {
@@ -110,8 +116,20 @@ class MainWindow extends JFrame implements Reloadable {
 		private Header() {
 			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-			this.add(new FilePicker(MainWindow.this.app.getTargetPath(), MainWindow.this.app::setTargetPath), BorderLayout.CENTER);
-			this.add(GuiUtil.createButton(SETTINGS_BUTTON_LABEL, (e) -> {MainWindow.this.openSettings();}), BorderLayout.LINE_END);
+			this.initFilePicker();
+			this.initSettingsButton();
+		}
+
+		private FilePicker initFilePicker() {
+			FilePicker filePicker = new FilePicker(MainWindow.this.app.getTargetPath(), MainWindow.this.app::setTargetPath);
+			this.add(filePicker, BorderLayout.CENTER);
+			return filePicker;
+		}
+
+		private JButton initSettingsButton() {
+			JButton settingsButton = GuiUtil.createButton(SETTINGS_BUTTON_LABEL, (e) -> {MainWindow.this.openSettings();});
+			this.add(settingsButton, BorderLayout.LINE_END);
+			return settingsButton;
 		}
 	}
 
@@ -127,18 +145,33 @@ class MainWindow extends JFrame implements Reloadable {
 			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
 			JPanel header = new JPanel(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
-			this.messageSummary = new JLabel();
-			header.add(this.messageSummary, BorderLayout.LINE_START);
-			this.runButton = GuiUtil.createButton(RUN_BUTTON_LABEL, (e) -> {this.runChecks();});
-			header.add(this.runButton, BorderLayout.LINE_END);
+			this.messageSummary = this.initMessageSummary(header);
+			this.runButton = this.initRunButton(header);
 			this.add(header, BorderLayout.PAGE_START);
 
-			this.messageDisplay = new MessageDisplay();
-			this.add(this.messageDisplay, BorderLayout.CENTER);
+			this.messageDisplay = this.initMessageDisplay();
 
 			this.reload();
 
 			MainWindow.this.app.addReloader(this);
+		}
+
+		private JLabel initMessageSummary(JPanel header) {
+			JLabel messageSummary = new JLabel();
+			header.add(messageSummary, BorderLayout.LINE_START);
+			return messageSummary;
+		}
+
+		private JButton initRunButton(JPanel header) {
+			JButton runButton = GuiUtil.createButton(RUN_BUTTON_LABEL, (e) -> {this.runChecks();});
+			header.add(runButton, BorderLayout.LINE_END);
+			return runButton;
+		}
+
+		private MessageDisplay initMessageDisplay() {
+			MessageDisplay messageDisplay = new MessageDisplay();
+			this.add(messageDisplay, BorderLayout.CENTER);
+			return messageDisplay;
 		}
 
 		private void runChecks() {
@@ -196,9 +229,14 @@ class MainWindow extends JFrame implements Reloadable {
 		private Footer() {
 			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-			JLabel verLabel = new JLabel(MessageFormat.format("version {0}", ProductInfo.VERSION));
+			this.initVerLabel();
+		}
+
+		private JLabel initVerLabel() {
+			JLabel verLabel = new JLabel(MessageFormat.format("version {0}", ProductInfo.getVersion()));
 			verLabel.setHorizontalAlignment(JLabel.CENTER);
 			this.add(verLabel, BorderLayout.CENTER);
+			return verLabel;
 		}
 	}
 }
