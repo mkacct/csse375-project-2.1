@@ -301,6 +301,22 @@ package domain.checks {
     -printType(t: TypeStructure, puml: StringBuilder): void
     -handleSubtypes(t: TypeStructure, puml: StringBuilder): void
   }
+
+  class ProgramToInterfaceNotImplementationCheck {
+    -{static} NAME: String
+    -{static} DOMAIN_PKG_NAME_KEY: String
+    -{static} DEFAULT_DOMAIN_PKG_NAME: String
+    -{static} ADAPTER_CLASS_NAME_REGEX_KEY: String
+    -{static} DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
+    -{static} ALLOWED_DEPENDENCIES_KEY: String
+    -{static} PRIMITIVE_TYPES: Set<String>
+    -{static} OBJECT_TYPE: String
+    -{static} PRIMITIVE_CLASSES: Set<String>
+    -{static} COMMON_INTERFACES: Set<String>
+    +run(classes: ClassDataCollection, config: Configuration): void
+    -isTypeOkay(typeFullName: String, classes: ClassDataCollection, domainPkgName: String, allowedDeps: Set<String>): boolean
+    -{static} stripArrayIndicators(typeFullName: String): String
+  }
 }
 
 exception IOException {
@@ -365,6 +381,7 @@ NoGlobalVariablesCheck --|> Check
 ObserverPatternCheck --|> GraphCheck
 ParameterCountCheck --|> Check
 PlantUMLGenerator --|> GraphCheck
+ProgramToInterfaceNotImplementationCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
