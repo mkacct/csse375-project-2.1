@@ -19,7 +19,7 @@ import general.ProductInfo;
 
 class MainWindow extends JFrame implements Reloadable {
 	private static final Dimension MIN_SIZE = new Dimension(640, 360);
-	private static final int INIT_HEIGHT = 480;
+	private static final int INIT_HEIGHT = 640;
 
 	private final App app;
 
