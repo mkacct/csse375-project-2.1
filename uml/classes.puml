@@ -555,6 +555,13 @@ package domain.javadata {
     +hashCode(): int
     +typeParam(): TypeStructure
   }
+
+  enum  VariableOperation {
+    GET
+    SET
+    RETURN
+    ~{static} parseOpcode(opcode: int): VariableOperation
+  }
 }
 
 exception IOException {
