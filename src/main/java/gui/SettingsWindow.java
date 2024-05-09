@@ -258,9 +258,8 @@ class SettingsWindow extends JDialog {
 					JSpinner valueSpinner = new JSpinner(
 						new SpinnerNumberModel(initInt != null ? initInt : 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1)
 					);
-					valueSpinner.setEnabled(intEnabledCheckBox.isSelected());
 					valueSpinner.setMaximumSize(new Dimension(valueSpinner.getPreferredSize().width, valueSpinner.getPreferredSize().height));
-					intEnabledCheckBox.addActionListener((e) -> {valueSpinner.setEnabled(intEnabledCheckBox.isSelected());});
+					valueSpinner.addChangeListener((e) -> {intEnabledCheckBox.setSelected(true);});
 					inputPanel.add(intEnabledCheckBox);
 					inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
 					inputPanel.add(valueSpinner);
@@ -287,9 +286,8 @@ class SettingsWindow extends JDialog {
 						// String (no enum options)
 						JCheckBox strEnabledCheckBox = new JCheckBox("", initStr != null);
 						JTextField valueField = new JTextField((initStr != null) ? initStr : "");
-						valueField.setEnabled(strEnabledCheckBox.isSelected());
 						valueField.setMaximumSize(new Dimension(Short.MAX_VALUE, valueField.getPreferredSize().height));
-						strEnabledCheckBox.addActionListener((e) -> {valueField.setEnabled(strEnabledCheckBox.isSelected());});
+						GuiUtil.addTextFieldDocumentUpdateListener(valueField, (e) -> {strEnabledCheckBox.setSelected(true);});
 						inputPanel.add(strEnabledCheckBox);
 						inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
 						inputPanel.add(valueField);
