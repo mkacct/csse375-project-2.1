@@ -215,6 +215,26 @@ package domain.checks {
     -checker: Function<char[], Boolean>
     +check(chars: char[]): boolean
   }
+
+  class NamingConventionsCheck {
+    -{static} NAME: String
+    -checkConvention(str: String, convention: NamingConventions): boolean
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -runClassChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions): void
+    -runMethodChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData): void
+    -runLocalVariableChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData): void
+    -runLocalVariableCheck(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData, lvar: VariableData): void
+    -handleParametersWithLocalVariables(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData, lvar: VariableData): void
+    -runFieldChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
+    -handleNonEnumFields(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
+    -handleEnumFields(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
+    -handleEnumField(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions, f: FieldData): void
+    -staticAndFinalCheck(classInfo: ClassData, maxLength: int, messages: Set<Message>, constantNames: NamingConventions, fieldNames: NamingConventions, f: FieldData): void
+    -runPackageChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean): void
+    -checkPackage(packages: Set<String>, maxLength: int, messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean, pckg: String): void
+    -handleIncorrectConventionsOrEmptyPackage(messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean, pckg: String): void
+    -runClassNameChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, abstractNames: NamingConventions, interfaceNames: NamingConventions, enumNames: NamingConventions, classNames: NamingConventions): void
+  }
 }
 
 exception IOException {
@@ -272,6 +292,7 @@ InformationHidingCheck --|> Check
 LowCouplingCheck ->"*" IntegerAndDegree
 IntegerAndDegree +- LowCouplingCheck
 MethodLengthCheck --|> Check
+NamingConventionsCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
