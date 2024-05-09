@@ -443,6 +443,17 @@ package domain.javadata {
     ~getFieldTypeFullName(): String
     ~getOperation(): VariableOperation
   }
+
+  class FieldNodeAdapter {
+    -fieldNode: FieldNode
+    +getName(): String
+    +getTypeFullName(): String
+    +getAccessModifier(): AccessModifier
+    +isStatic(): boolean
+    +isFinal(): boolean
+    +typeParam():  TypeStructure
+    +getAllTypeFullName(): Set<String>
+  }
 }
 
 exception IOException {
@@ -516,6 +527,7 @@ UnusedAbstractionsCheck --|> Check
 ClassNodeAdapter ..|> ClassData
 FieldInsnNodeAdapter ..|> FieldInstrData
 FieldInstrData --|> InstrData
+FieldNodeAdapter ..|> FieldData
 
 ' exceptions
 FileNotFoundException --|> IOException
