@@ -698,6 +698,10 @@ package gui {
     -pathField: JTextField
     -browse(): void
   }
+
+  class FileUtil {
+    +{static} currentWorkingDirectory(): File
+  }
 }
 
 exception IOException {
