@@ -564,6 +564,15 @@ package domain.javadata {
   }
 }
 
+package domain {
+  abstract class Check {
+    -name: String
+    -isEnabledByDefault: boolean
+    +isEnabled(configValue: Boolean): boolean
+    +{abstract} run(classes: ClassDataCollection, config: Configuration): Set<Message>
+  }
+}
+
 exception IOException {
 }
 
@@ -637,10 +646,12 @@ FieldInsnNodeAdapter ..|> FieldInstrData
 FieldInstrData --|> InstrData
 FieldNodeAdapter ..|> FieldData
 LocalVarInstrData --|> InstrData
-MethodInsnNodeAdapter ..|> MethodInsnData
+MethodInsnNodeAdapter ..|> MethodInstrData
 MethodNodeAdapter ..|> MethodData
 OtherInsnNodeAdapter ..|> InstrData
 VarInsnNodeAdapter ..|> LocalVarInstrData
+
+' domain
 
 ' exceptions
 FileNotFoundException --|> IOException
