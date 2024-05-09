@@ -436,6 +436,13 @@ package domain.javadata {
     +getFieldTypeFullName(): String
     +getOperation(): VariableOperation
   }
+
+  interface FieldInstrData {
+    ~getFieldOwnerFullName(): String
+    ~getFieldName(): String
+    ~getFieldTypeFullName(): String
+    ~getOperation(): VariableOperation
+  }
 }
 
 exception IOException {
@@ -507,6 +514,8 @@ UnusedAbstractionsCheck --|> Check
 
 ' domain.javadata
 ClassNodeAdapter ..|> ClassData
+FieldInsnNodeAdapter ..|> FieldInstrData
+FieldInstrData --|> InstrData
 
 ' exceptions
 FileNotFoundException --|> IOException
