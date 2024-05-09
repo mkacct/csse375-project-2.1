@@ -240,6 +240,23 @@ package domain.checks {
     -{static} NAME: String
     +run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
+
+  class ObserverPatternCheck {
+    -{static} NAME: String
+    +gRun(config: Configuration): Set<Message>
+    -checkInterfaces(checkInterface: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
+    -containsObserverInterfaceOrAbstracts(it: ClassGraphIterator, edges: Set<ClassGraphIterator>, obsClasses: Set<String>): boolean
+    -checkConcreteObservers(it: ClassGraphIterator, it2: ClassGraphIterator, obsClasses: Set<String>): boolean
+    -checkConcreteSubjectsWithInterfaces(it: ClassGraphIterator, it2: ClassGraphIterator, obsClasses: Set<String>, j: int): boolean
+    -checkAbstractClassesNonInterfaces(checkAbstract: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
+    -containsAbstractNonInterfaces(it: ClassGraphIterator, obsClasses: Set<String>): boolean]
+    -checkConcreteObserversWithAbstractNonInterfaces(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator): boolean
+    -checkForConcreteSubjects(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator, j: int): boolean
+    -checkConcreteClasses(checkConcrete: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
+    -containsObserverInterface(it: ClassGraphIterator, obsClasses: Set<String>): boolean
+    -containsConcreteImplementers(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator, patternFound: boolean): boolean
+    -isConcreteClass(it: ClassGraphIterator, it2: ClassGraphIterator, j: int): boolean
+  }
 }
 
 exception IOException {
@@ -294,11 +311,13 @@ ConstantInterfaceCheck --|> Check
 GraphCheck  --|> Check
 ImmutableExceptionsCheck --|> Check
 InformationHidingCheck --|> Check
+LowCouplingCheck --|> GraphCheck
 LowCouplingCheck ->"*" IntegerAndDegree
 IntegerAndDegree +- LowCouplingCheck
 MethodLengthCheck --|> Check
 NamingConventionsCheck --|> Check
 NoGlobalVariablesCheck --|> Check
+ObserverPatternCheck --|> GraphCheck
 
 ' exceptions
 FileNotFoundException --|> IOException
