@@ -615,6 +615,15 @@ package domain {
     +graphIterator(start: int): ClassGraphIterator
     +column(j: int): int[]
   }
+
+  class ClassGraphIterator {
+    -graph: ClassGraph
+    -vertex: int
+    -path: List<Integer>
+    +followEdge(): Set<ClassGraphIterator>
+    +followEdge(extend: int, implement: int, hasA: int, depends: int): Set<ClassGraphIterator>
+    +hasCycle(): boolean
+  }
 }
 
 exception IOException {
@@ -711,6 +720,7 @@ VarInsnNodeAdapter ..|> LocalVarInstrData
 ' domain
 CheckRoster ->"*" Check
 ClassGraph -> ClassDataCollection
+ClassGraphIterator -> ClassGraph
 
 ' exceptions
 FileNotFoundException --|> IOException
