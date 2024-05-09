@@ -317,6 +317,17 @@ package domain.checks {
     -isTypeOkay(typeFullName: String, classes: ClassDataCollection, domainPkgName: String, allowedDeps: Set<String>): boolean
     -{static} stripArrayIndicators(typeFullName: String): String
   }
+
+  class RequiredOverridesCheck {
+    -{static} NAME: String
+    -{static} TYPES_EMPTY: String[]
+    -{static} TYPES_1_OBJECT: String[]
+    +run(classes: ClassDataCollection, config: Configuration): void
+    -validateCompareToImpliesEquals(classData: ClassData, messages: Set<Message>): void
+    -validateEqualsImpliesHashCode(classData: ClassData, messages: Set<Message>): void
+    -{static} classHasMethod(classData: ClassData, methodName: String, paramTypes: String[]): boolean
+    -{static} paramTypesMatch(params: List<VariableData>, paramTypes: String[]): boolean
+  }
 }
 
 exception IOException {
@@ -382,6 +393,7 @@ ObserverPatternCheck --|> GraphCheck
 ParameterCountCheck --|> Check
 PlantUMLGenerator --|> GraphCheck
 ProgramToInterfaceNotImplementationCheck --|> Check
+RequiredOverridesCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
