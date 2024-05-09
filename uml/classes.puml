@@ -388,6 +388,24 @@ package domain.javadata {
     +getClasses(): Set<ClassData>
     +getClassesIncludingCompilerGenerated(): Set<ClassData>
   }
+
+  class ClassNodeAdapter {
+    -classNode: ClassNode
+    +getFullName(): String
+    +getSimpleName(): String
+    +getPackageName(): String
+    +getAccessModifier: AccessModifier
+    +getClassType(): ClassType
+    +isAbstract(): boolean
+    +isStatic(): boolean
+    +~isFinal(): boolean
+    +getSuperFullName(): String
+    +getInterfaceFullName(): Set<String>
+    +getFields(): Set<FieldData>
+    +getMethods(): Set<MethodData>
+    +getContainingClassFullName(): String
+    +getInnerClassFullNames(): Set<String>
+  }
 }
 
 exception IOException {
@@ -458,7 +476,7 @@ StrategyPatternCheck --|> Check
 UnusedAbstractionsCheck --|> Check
 
 ' domain.javadata
-
+ClassNodeAdapter ..|> ClassData
 
 ' exceptions
 FileNotFoundException --|> IOException
