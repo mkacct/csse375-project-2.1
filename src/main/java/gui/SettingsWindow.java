@@ -300,7 +300,7 @@ class SettingsWindow extends JDialog {
 					}
 					break;
 				default:
-					inputPanel.add(new JLabel("This setting cannot be edited using the GUI yet."));
+					inputPanel.add(new JLabel("This setting cannot be edited using the GUI."));
 					this.valueSupplier = null;
 			}
 			this.add(inputPanel);
