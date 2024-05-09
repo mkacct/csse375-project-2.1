@@ -499,6 +499,12 @@ package domain.javadata {
     +getMethodName(): String
     +getMethodReturnTypeFullName(): String
   }
+
+  interface MethodInstrData {
+    ~getMethodOwnerFullName(): String
+    ~getMethodName(): String
+    ~getMethodReturnTypeFullName(): String
+  }
 }
 
 exception IOException {
