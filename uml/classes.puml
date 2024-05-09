@@ -746,6 +746,23 @@ package gui {
 
   class Footer {
   }
+
+  class MessageDisplay {
+    -{static} NO_RESULTS_TEXT: String
+    -{static} NO_CHECKS_RUN_TEXT: String
+    -{static} NO_MESSAGES_TEXT: String
+    -tree: JTree
+    ~clearMessages(): void
+    ~displayMessages(checkResults: List<CheckResults>): void
+    -displayErrorMessageOnTree(errorMessage: String): void
+    -{static} createNodes(root: DefaultMutableTreeNode, checkResults: List<CheckResults>): void
+    -{static} formatCheckFolderText(resultsEntry: CheckResults): String
+  }
+
+  class MessageCellRenderer {
+    -{static} ICON_MAP: Map<MessageLevel, Icon>
+    +getTreeCellRendererComponent(tree: JTree, value: Object, isSelected: boolean, isExpanded: boolean, isLeaf: boolean, row: int, hasFocus: boolean): Component
+  }
 }
 
 exception IOException {
@@ -867,6 +884,8 @@ MainWindow -> MainPanel
 MainWindow +- Footer
 MainWindow -> Footer
 MainPanel ..|> Reloadable
+MessageDisplay +- MessageCellRenderer
+MessageCellRenderer ->"*" MessageLevel
 
 ' exceptions
 FileNotFoundException --|> IOException
