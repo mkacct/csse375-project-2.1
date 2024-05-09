@@ -571,6 +571,20 @@ package domain {
     +isEnabled(configValue: Boolean): boolean
     +{abstract} run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
+
+  class CheckRoster {
+    +{static} CHECKS: Check[]
+  }
+
+  class CheckUtil {
+    -{static} CLASS_FILE_EXT: String
+    -{static} ENABLE_KEY_PREFIX: String
+    -{static} SKIP_UNMARKED_CHECKS_KEY: String
+    +{static} readInClasses(classFiles: Set<byte[]>): ClassDataCollection
+    +{static} runAllChecks(checks: Check[], classes: ClassDataCollection, config: Configuration, msgTotals: Map<MessageLevel, Integer>, resultsHandler: BiConsumer<String, Set<Message>>): int
+    -{static} runCheck(check: Check, classes: ClassDataCollection, config: Configuration, msgTotals: Map<MessageLevel, Integer>, resultsHandler: BiConsumer<String, Set<Message>>): void
+    -{static} initMsgTotals(): void
+  }
 }
 
 exception IOException {
@@ -652,6 +666,7 @@ OtherInsnNodeAdapter ..|> InstrData
 VarInsnNodeAdapter ..|> LocalVarInstrData
 
 ' domain
+CheckRoster ->"*" Check
 
 ' exceptions
 FileNotFoundException --|> IOException
