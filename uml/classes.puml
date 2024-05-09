@@ -167,6 +167,38 @@ package domain.checks {
     -matchingMethodAndFieldName(field: FieldData, string1: String, string2: String, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
     -handlePublicFields(publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData, field: FieldData): void
   }
+
+  class LowCouplingCheck {
+    -maxInDegree: int
+    -maxOutDegree: int
+    -packageName: String
+    -checkCycles: boolean
+    -ignoreSelf: boolean
+    -{static} NAME: String
+    -messages: Set<Message>
+    -lowestInDegrees: PriorityQueue<IntegerAndDegree>
+    +gRun(config: Configuration): Set<Message>
+    -checkCycles(): Set<Message>
+    -recurseThroughClasses(): void
+    -checkGraphDegrees(): void
+    -handleExceededMaxOutDegree(i: int): void
+    -handleExceededMaxInDegree(i: int): void
+    -handleNegativeGraphDegrees(): void
+    -parseConfig(config: Configuration): void
+    -recursion(it: ClassGraphIterator, messages: Set<Message>, pq: PriorityQueue<IntegerAndDegree>, ignoreSelf: boolean): void
+    -recurseThroughEdges(it: ClassGraphIterator, messages: Set<Message>, pq: PriorityQueue<IntegerAndDegree>, ignoreSelf: boolean): void
+    -handleCycle(it: ClassGraphIterator, messages: Set<Message>, ignoreSelf: boolean): boolean
+    -cyclePrint(classes: List<String>): String
+  }
+
+  class IntegerAndDegree <<Comparable>> {
+    index: int
+    inDegree: int
+    compareTo(o: IntegerAndDegree): int
+  }
+
+  LowCouplingCheck ->"*" IntegerAndDegree
+  IntegerAndDegree +- LowCouplingCheck
 }
 
 exception IOException {
