@@ -763,6 +763,10 @@ package gui {
     -{static} ICON_MAP: Map<MessageLevel, Icon>
     +getTreeCellRendererComponent(tree: JTree, value: Object, isSelected: boolean, isExpanded: boolean, isLeaf: boolean, row: int, hasFocus: boolean): Component
   }
+
+  interface Reloadable {
+    ~reload(): void
+  }
 }
 
 exception IOException {
