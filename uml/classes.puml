@@ -334,6 +334,19 @@ package domain.checks {
     +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
     -{static} getClassFromName(className: String, classes: ClassDataCollection): ClassData
   }
+
+  class TypeValidator {
+    -validationFunc: Function<String, Boolean>
+    -messageLevel: MessageLevel
+    -classExemptionFunc: Function<ClassData, Boolean>
+    -fieldMessagePattern: String
+    -methodMessagePattern: String
+    -paramMessagePattern: String
+    +validateTypes(allClasses: Collection<ClassData>, messages: Set<Message>): void
+    -validateFieldTypes(classData: ClassData, messages: Set<Message>): void
+    -validateMethodTypes(classData: ClassData, messages: Set<Message>): void
+    -validateParamTypes(classData: ClassData, messages: Set<Message>): void
+  }
 }
 
 exception IOException {
