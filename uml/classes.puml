@@ -410,6 +410,13 @@ package domain.javadata {
   class ClassReaderUtil {
     +{static} read(javaBytecode: byte[]): ClassData
   }
+
+  enum ClassType {
+    CLASS
+    INTERFACE
+    ENUM
+    ~{static} parseOpcodes(access: int): ClassType
+  }
 }
 
 exception IOException {
