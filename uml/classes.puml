@@ -235,6 +235,11 @@ package domain.checks {
     -handleIncorrectConventionsOrEmptyPackage(messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean, pckg: String): void
     -runClassNameChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, abstractNames: NamingConventions, interfaceNames: NamingConventions, enumNames: NamingConventions, classNames: NamingConventions): void
   }
+
+  class NoGlobalVariablesCheck {
+    -{static} NAME: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+  }
 }
 
 exception IOException {
@@ -293,6 +298,7 @@ LowCouplingCheck ->"*" IntegerAndDegree
 IntegerAndDegree +- LowCouplingCheck
 MethodLengthCheck --|> Check
 NamingConventionsCheck --|> Check
+NoGlobalVariablesCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
