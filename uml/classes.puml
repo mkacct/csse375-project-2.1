@@ -522,6 +522,10 @@ package domain.javadata {
     +getLocalVariables(): Set<VariableData>
     +getInstructions(): List<InstrData>
   }
+
+  class NameUtil {
+    +{static} isCompilerGenerated(fullName: String): boolean
+  }
 }
 
 exception IOException {
