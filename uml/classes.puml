@@ -379,6 +379,15 @@ package domain.javadata {
     ~getContainingClassFullName(): String
     ~getInnerClassFullNames(): Set<String>
   }
+
+  class ClassDataCollection <<Collection<ClassData>>> {
+    -classesByFullName: Map<String, ClassData>
+    +containsFullName(fullName: String): boolean
+    +getFullNames(): Set<String>
+    +getFullNamesIncludingCompilerGenerated(): Set<String>
+    +getClasses(): Set<ClassData>
+    +getClassesIncludingCompilerGenerated(): Set<ClassData>
+  }
 }
 
 exception IOException {
