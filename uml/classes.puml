@@ -537,6 +537,15 @@ package domain.javadata {
     -subtypes: List<TypeStructure>
     +getAllFullTypeNames(): Set<String>
   }
+
+  class VarInsnNodeAdapter {
+    -insn: VarInsnNode
+    -localVariableNode: LocalVariableNode
+    +getInstrType(): InstrType
+    +getVarName(): String
+    +getVarTypeFullName(): String
+    +getOperation(): VariableOperation
+  }
 }
 
 exception IOException {
@@ -615,6 +624,7 @@ LocalVarInstrData --|> InstrData
 MethodInsnNodeAdapter ..|> MethodInsnData
 MethodNodeAdapter ..|> MethodData
 OtherInsnNodeAdapter ..|> InstrData
+VarInsnNodeAdapter ..|> LocalVarInstrData
 
 ' exceptions
 FileNotFoundException --|> IOException
