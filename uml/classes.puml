@@ -155,6 +155,18 @@ package domain.checks {
     +run(classes: ClassDataCollection, config: Configuration): Set<Message>
     -{static} checkExceptionsClass(classData: ClassData, messages: Set<Message>): void
   }
+
+  class InformationHidingCheck {
+    -{static} NAME: String
+    -{static} GETTER_SETTER_LENGTH: int
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -indicateFieldsWithInformationHiding(publicFieldsToClass: Map<String, ArrayList<String>): Set<Message>
+    -informationHidingClassCheck(classes: ClassDataCollection, publicFieldsToClass: Map<String, ArrayList<String>): void
+    -checkFieldModifiers(fields: Set<FieldData>, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
+    -checkForGettersAndSetters(field: FieldData, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
+    -matchingMethodAndFieldName(field: FieldData, string1: String, string2: String, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
+    -handlePublicFields(publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData, field: FieldData): void
+  }
 }
 
 exception IOException {
@@ -208,6 +220,7 @@ AdapterPatternCheck --|> Check
 ConstantInterfaceCheck --|> Check
 GraphCheck  --|> Check
 ImmutableExceptionsCheck --|> Check
+InformationHidingCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
