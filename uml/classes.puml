@@ -454,6 +454,10 @@ package domain.javadata {
     +typeParam():  TypeStructure
     +getAllTypeFullName(): Set<String>
   }
+
+  interface InstrData {
+    ~getInstrType(): InstrType
+  }
 }
 
 exception IOException {
