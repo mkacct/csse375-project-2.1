@@ -624,6 +624,16 @@ package domain {
     +followEdge(extend: int, implement: int, hasA: int, depends: int): Set<ClassGraphIterator>
     +hasCycle(): boolean
   }
+
+  class Message {
+    +level: MessageLevel
+    +text: String
+    +classFullNames: Set<String>
+    +toString(): String
+    +toStringWithoutLevel(): String
+    +equals(obj: Object): boolean
+    +hashCode(): int
+  }
 }
 
 exception IOException {
@@ -721,6 +731,7 @@ VarInsnNodeAdapter ..|> LocalVarInstrData
 CheckRoster ->"*" Check
 ClassGraph -> ClassDataCollection
 ClassGraphIterator -> ClassGraph
+Message -> MessageLevel
 
 ' exceptions
 FileNotFoundException --|> IOException
