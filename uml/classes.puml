@@ -702,6 +702,18 @@ package gui {
   class FileUtil {
     +{static} currentWorkingDirectory(): File
   }
+
+  class GuiUtil {
+    -{static} PAD: int
+    +{static} formatTitle(title: String): String
+    +{static} showError(parent: Component, message: String): void
+    +{static} withWaitCursor(component: Component, func: Runnable): void
+    +{static} createHeading(text: String): JLabel
+    +{static} createButton(text: String, action: ActionListener): JLabel
+    +{static} setPaddedContentPane(component: RootPaneContainer): void
+    +{static} addTextFieldDocumentUpdateListener(textField: JTextField, func: Consumer<DocumentEvent>): void
+    +{static} getScaledIcon(icon: Icon, scaleFactor: double): Icon
+  }
 }
 
 exception IOException {
