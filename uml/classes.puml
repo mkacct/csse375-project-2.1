@@ -427,6 +427,15 @@ package domain.javadata {
     ~typeParam():  TypeStructure
     ~getAllTypeFullName(): Set<String>
   }
+
+  class FieldInsnNodeAdapter {
+    -insn: FieldInsnNode
+    +getInstrType(): InstrType
+    +getFieldOwnerFullName(): String
+    +getFieldName(): String
+    +getFieldTypeFullName(): String
+    +getOperation(): VariableOperation
+  }
 }
 
 exception IOException {
