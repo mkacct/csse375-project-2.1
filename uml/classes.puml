@@ -657,6 +657,40 @@ package general {
   }
 }
 
+package gui {
+  class App {
+    ~{static} CONFIG_PATH: String
+    -{static} TARGET_PATH_KEY: String
+    -configSpec: ConfigSpec
+    -checks: Check[]
+    -configRW: ConfigRW
+    -config: Configuration
+    -configLoadEx: Exception
+    -configSaveEx: Exception
+    -msgTotals: Map<MessageLevel, Integer>
+    -checkResults: List<CheckResults>
+    -reloaders: Set<Reloadable>
+    -loadConfig(): void
+    ~retrieveConfigLoadEx(): Exception
+    -clearCheckResults(): void
+    -saveConfig(): void
+    ~retrieveConfigSaveEx(): Exception
+    ~canRunNow(): boolean
+    ~setTargetPath(targetPath: String): void
+    ~runChecks(): void
+    ~hasResults(): boolean
+    ~updateConfig(changes: Map<String, Object>): void
+    ~addReloader(): void
+    ~removeReloader(): void
+    -triggerReload(): void
+  }
+
+  class CheckResults {
+    -checkName: String
+    -msgs: List<Message>
+  }
+}
+
 exception IOException {
 }
 
@@ -678,10 +712,10 @@ exception IllegalStateException {
 exception ClassCastException {
 }
 ' cli package
-App ->"*" MessageLevel
-App ->"*" TerminalTextColor
-App -> ConfigRW
-App -> FilesLoader
+cli.App ->"*" MessageLevel
+cli.App ->"*" TerminalTextColor
+cli.App -> ConfigRW
+cli.App -> FilesLoader
 
 ' datasource.config package
 ConfigSpec +- Section
@@ -756,10 +790,17 @@ Message -> MessageLevel
 
 ' general
 
-
-
-
-
+' gui
+gui.App -> ConfigSpec
+gui.App ->"*" Check
+gui.App -> ConfigRW
+gui.App -> Configuration
+gui.App -> Exception
+gui.App ->"*" MessageLevel
+gui.App ->"*" Reloadable
+gui.App ..> IOException: <<throws>>
+gui.App ->"*" CheckResults
+gui.App +- CheckResults
 
 ' exceptions
 FileNotFoundException --|> IOException
