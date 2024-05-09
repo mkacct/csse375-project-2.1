@@ -546,6 +546,15 @@ package domain.javadata {
     +getVarTypeFullName(): String
     +getOperation(): VariableOperation
   }
+
+  class VariableData {
+    -name: String
+    -typeFullName: String
+    -signature: String
+    +equals(obj: Object): boolean
+    +hashCode(): int
+    +typeParam(): TypeStructure
+  }
 }
 
 exception IOException {
