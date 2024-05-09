@@ -406,6 +406,10 @@ package domain.javadata {
     +getContainingClassFullName(): String
     +getInnerClassFullNames(): Set<String>
   }
+
+  class ClassReaderUtil {
+    +{static} read(javaBytecode: byte[]): ClassData
+  }
 }
 
 exception IOException {
