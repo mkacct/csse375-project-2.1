@@ -197,8 +197,24 @@ package domain.checks {
     compareTo(o: IntegerAndDegree): int
   }
 
-  LowCouplingCheck ->"*" IntegerAndDegree
-  IntegerAndDegree +- LowCouplingCheck
+  class MethodLengthCheck {
+    -{static} NAME: String
+    -{static} MAX_METHOD_LENGTH_KEY: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -checkClass(classData: ClassData, maxMethodLengthInstrs: int, messages: Set<Messages>): void
+  }
+
+  enum NamingConventions {
+    lowercase
+    UPPERCASE
+    UPPER_CASE
+    lower_case
+    camelCase
+    PascalCase
+    ANY
+    -checker: Function<char[], Boolean>
+    +check(chars: char[]): boolean
+  }
 }
 
 exception IOException {
@@ -253,6 +269,9 @@ ConstantInterfaceCheck --|> Check
 GraphCheck  --|> Check
 ImmutableExceptionsCheck --|> Check
 InformationHidingCheck --|> Check
+LowCouplingCheck ->"*" IntegerAndDegree
+IntegerAndDegree +- LowCouplingCheck
+MethodLengthCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
