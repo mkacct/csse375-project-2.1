@@ -464,6 +464,12 @@ package domain.javadata {
     LOCAL_VARIABLE
     FIELD
   }
+
+  interface LocalVarInstrData {
+    ~getVarName(): String
+    ~getVarTypeFullName(): String
+    ~getOperation(): VariableOperation
+  }
 }
 
 exception IOException {
@@ -538,6 +544,7 @@ ClassNodeAdapter ..|> ClassData
 FieldInsnNodeAdapter ..|> FieldInstrData
 FieldInstrData --|> InstrData
 FieldNodeAdapter ..|> FieldData
+LocalVarInstrData --|> InstrData
 
 ' exceptions
 FileNotFoundException --|> IOException
