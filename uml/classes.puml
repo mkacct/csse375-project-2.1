@@ -417,6 +417,16 @@ package domain.javadata {
     ENUM
     ~{static} parseOpcodes(access: int): ClassType
   }
+
+  interface FieldData {
+    ~getName(): String
+    ~getTypeFullName(): String
+    ~getAccessModifier(): AccessModifier
+    ~isStatic(): boolean
+    ~isFinal(): boolean
+    ~typeParam():  TypeStructure
+    ~getAllTypeFullName(): Set<String>
+  }
 }
 
 exception IOException {
