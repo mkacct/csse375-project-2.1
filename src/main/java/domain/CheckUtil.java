@@ -19,7 +19,8 @@ public final class CheckUtil {
 	 */
 	public static final String CLASS_FILE_EXT = "class";
 
-	private static final String ENABLE_KEY_PREFIX = "enable_";
+	public static final String ENABLE_KEY_PREFIX = "enable_";
+
 	private static final String SKIP_UNMARKED_CHECKS_KEY = "skipUnmarkedChecks";
 
 	/**

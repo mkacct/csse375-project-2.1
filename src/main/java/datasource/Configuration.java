@@ -105,7 +105,13 @@ public final class Configuration {
 
 	public Configuration applyChanges(Map<String, Object> changes) {
 		Map<String, Object> newData = new HashMap<String, Object>(this.data);
-		newData.putAll(changes);
+		for (Map.Entry<String, Object> entry : changes.entrySet()) {
+			if (entry.getValue() == null) {
+				newData.remove(entry.getKey());
+			} else {
+				newData.put(entry.getKey(), entry.getValue());
+			}
+		}
 		return new Configuration(newData);
 	}
 

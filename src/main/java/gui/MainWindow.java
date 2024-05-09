@@ -44,6 +44,7 @@ class MainWindow extends JFrame implements Reloadable {
 		this.getRootPane().setDefaultButton(this.mainPanel.runButton);
 
 		this.pack();
+		this.setSize(new Dimension(this.getWidth(), this.getMinimumSize().height * 4 / 3));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		this.app.addReloader(this);
@@ -85,9 +86,7 @@ class MainWindow extends JFrame implements Reloadable {
 	}
 
 	private void openSettings() {
-		// TODO: make settings dialog
-		// new SettingsDialog(this);
-		GuiUtil.showError(this, "NYI");
+		new SettingsWindow(this, this.app);
 	}
 
 	@Override
