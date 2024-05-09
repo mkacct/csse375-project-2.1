@@ -474,6 +474,23 @@ package domain.javadata {
   class LocalVariableUtil {
     ~{static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
   }
+
+  interface MethodData {
+    -{static} CONSTRUCTOR_NAME: String
+    -{static} STATIC_INITIALIZER_NAME: String
+    ~getName(): String
+    ~getReturnTypeFullName(): String
+    ~getReturnTypeStructure(): TypeStructure
+    ~getAllReturnTypeFullName(): Set<String>
+    ~getAccessModifier(): AccessModifier
+    ~isStatic(): boolean
+    ~isFinal(): boolean
+    ~isAbstract(): boolean
+    ~getParams(): List<VariableData>
+    ~getExceptionTypeFullNames(): Set<String>
+    ~getLocalVariables(): Set<VariableData>
+    ~getInstructions(): List<InstrData>
+  }
 }
 
 exception IOException {
