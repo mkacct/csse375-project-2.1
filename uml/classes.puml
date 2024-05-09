@@ -585,6 +585,36 @@ package domain {
     -{static} runCheck(check: Check, classes: ClassDataCollection, config: Configuration, msgTotals: Map<MessageLevel, Integer>, resultsHandler: BiConsumer<String, Set<Message>>): void
     -{static} initMsgTotals(): void
   }
+
+  class ClassGraph {
+    -classDataCollection: ClassDataCollection
+    -classes: Map<String, Integer>
+    -inverse: Map<Integer, String>
+    -weightedEdges: int[][]
+    -numClasses: int
+    -removeArray(s: String): String
+    -retrieveClassInformation(): void
+    -initializeEdges(): void
+    -populateEdges(): void
+    -checkForDependencies(classInfo: ClassData, i: int): void
+    -checkForPreviousImplementsOrExtends(depSet: Set<String>, i: int): void
+    -removeDuplicatesFromMethods(methodsIterator: Iterator<MethodData>, depSet: Set<String>): void
+    -removeDuplicatesFromInstructions(mdTemp: MethodData, depSet: Set<String>): void
+    -removeDuplicatesFromParameters(mdTemp: MethodData, depSet: Set<String>): void
+    -removeDuplicatesFromLocalVariables(mdTemp: MethodData, depSet: Set<String>): void
+    -checkForComposition(classInfo: ClassData, i: int): void
+    -checkFieldTypes(fdTemp: FieldData, i: int): void
+    -checkForImplements(classInfo: ClassData, i: int): void
+    -checkForInheritance(classInfo: ClassData, i: int): void
+    +{static} checkExtend(weight: int): boolean
+    +{static} checkImplement(weight: int): boolean
+    +{static} checkHasA(weight: int): boolean
+    +{static} checkDepends(weight: int): boolean
+    +inDegree(v: int): int
+    +outDegree(v: int): int
+    +graphIterator(start: int): ClassGraphIterator
+    +column(j: int): int[]
+  }
 }
 
 exception IOException {
@@ -680,6 +710,7 @@ VarInsnNodeAdapter ..|> LocalVarInstrData
 
 ' domain
 CheckRoster ->"*" Check
+ClassGraph -> ClassDataCollection
 
 ' exceptions
 FileNotFoundException --|> IOException
