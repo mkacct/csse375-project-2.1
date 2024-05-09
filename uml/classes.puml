@@ -354,6 +354,16 @@ package domain.checks {
   }
 }
 
+package domain.javadata {
+  enum AccessModifier {
+    PUBLIC
+    PROTECTED
+    PACKAGE_PRIVATE
+    PRIVATE
+    ~parseOpcodes(access: int): AccessModifier
+  }
+}
+
 exception IOException {
 }
 
@@ -420,6 +430,9 @@ ProgramToInterfaceNotImplementationCheck --|> Check
 RequiredOverridesCheck --|> Check
 StrategyPatternCheck --|> Check
 UnusedAbstractionsCheck --|> Check
+
+' domain.javadata
+
 
 ' exceptions
 FileNotFoundException --|> IOException
