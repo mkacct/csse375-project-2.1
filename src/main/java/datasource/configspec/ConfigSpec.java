@@ -10,7 +10,7 @@ import java.util.List;
 public final class ConfigSpec {
 	private final List<Section> sections;
 
-	ConfigSpec(List<Section> sections) {
+	public ConfigSpec(List<Section> sections) {
 		if (sections == null) {throw new NullPointerException("sections");}
 		this.sections = new ArrayList<Section>(sections);
 	}
@@ -28,7 +28,7 @@ public final class ConfigSpec {
 		private final String entityType;
 		private final List<Setting> settings;
 
-		Section(String title, String checkName, String entityTypeOverride, List<Setting> settings) {
+		public Section(String title, String checkName, String entityTypeOverride, List<Setting> settings) {
 			if (title == null) {throw new NullPointerException("title");}
 			this.title = title;
 			this.checkName = checkName;
@@ -65,7 +65,7 @@ public final class ConfigSpec {
 
 		private final List<String> options;
 
-		Setting(String name, Type type, String desc, List<String> options) {
+		public Setting(String name, Type type, String desc, List<String> options) {
 			if (name == null) {throw new NullPointerException("name");}
 			if (type == null) {throw new NullPointerException("type");}
 			this.name = name;

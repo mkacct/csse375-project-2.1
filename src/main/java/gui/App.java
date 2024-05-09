@@ -14,6 +14,8 @@ import datasource.ConfigRW;
 import datasource.Configuration;
 import datasource.DirLoader;
 import datasource.FilesLoader;
+import datasource.configspec.ConfigSpec;
+import datasource.configspec.ConfigSpecLoader;
 import domain.Check;
 import domain.CheckUtil;
 import domain.Message;
@@ -28,6 +30,8 @@ class App {
 	static final String CONFIG_PATH = ".lpguiconfig.json";
 
 	private static final String TARGET_PATH_KEY = "guiAppTargetPath";
+
+	public final ConfigSpec configSpec;
 
 	private final Check[] checks;
 	private final ConfigRW configRW; // can be null in tests
@@ -44,9 +48,10 @@ class App {
 
 	// To initialize app (including loading config):
 
-	App(Check[] checks, ConfigRW configRW) {
+	App(Check[] checks, ConfigSpecLoader configSpecLoader, ConfigRW configRW) {
 		this.checks = checks;
 		this.configRW = configRW;
+		this.configSpec = configSpecLoader.loadConfigSpec();
 		this.loadConfig();
 		this.clearCheckResults();
 	}
@@ -172,6 +177,19 @@ class App {
 		public List<Message> getMessages() {
 			return Collections.unmodifiableList(this.msgs);
 		}
+	}
+
+	// To work with config:
+
+	Configuration getConfig() {
+		return this.config;
+	}
+
+	void updateConfig(Map<String, Object> changes) {
+		this.clearCheckResults();
+		this.config = this.config.applyChanges(changes);
+		this.saveConfig();
+		this.triggerReload();
 	}
 
 	// To manage GUI reloading:

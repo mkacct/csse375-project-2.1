@@ -1,7 +1,9 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
@@ -13,8 +15,12 @@ import java.util.function.Consumer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.RootPaneContainer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -40,10 +46,23 @@ final class GuiUtil {
 		}
 	}
 
+	public static JLabel createHeading(String text) {
+		JLabel label = new JLabel(text);
+		Font origFont = label.getFont();
+		label.setFont(origFont.deriveFont(origFont.getSize() * 1.5f).deriveFont(Font.BOLD));
+		return label;
+	}
+
 	public static JButton createButton(String text, ActionListener action) {
 		JButton button = new JButton(text);
 		button.addActionListener(action);
 		return button;
+	}
+
+	public static void setPaddedContentPane(RootPaneContainer component) {
+		JPanel contentPane = new JPanel(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
+		contentPane.setBorder(new EmptyBorder(GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD));
+		component.setContentPane(contentPane);
 	}
 
 	public static void addTextFieldDocumentUpdateListener(JTextField textField, Consumer<DocumentEvent> func) {

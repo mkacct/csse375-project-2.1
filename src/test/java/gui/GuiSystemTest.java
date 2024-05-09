@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import datasource.ConfigRW;
 import datasource.Configuration;
+import datasource.configspec.ConfigSpecLoader;
+import datasource.configspec.JsonFileConfigSpecLoader;
 import domain.Check;
 import domain.Message;
 import domain.MessageLevel;
@@ -29,6 +31,7 @@ import domain.checks.ParameterCountCheck;
 public class GuiSystemTest {
 	private static final String TEST_RESOURCES_DIR_PATH = "src/test/resources/system-test";
 	private static final String CLASS_DIR_PATH = TEST_RESOURCES_DIR_PATH + "/classes";
+	private static final String TEST_CONFIG_SPEC_RES_PATH = "/test-config-spec.json";
 
 	private static final Check[] CHECKS = new Check[] {
 		new NamingConventionsCheck(),
@@ -43,6 +46,10 @@ public class GuiSystemTest {
 		"maxMethodLengthInstrs", 20,
 		"maxNumParameters", 3
 	));
+
+	private static ConfigSpecLoader createTestConfigSpecLoader() {
+		return new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_RES_PATH);
+	}
 
 	private static FakeConfigRW createFakeConfigRW(Configuration config) {
 		return new FakeConfigRW() {
@@ -98,7 +105,7 @@ public class GuiSystemTest {
 
 	@Test
 	public void testDefaultInitialState() {
-		App app = new App(CHECKS, null);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), null);
 
 		assertNull(app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
@@ -109,7 +116,7 @@ public class GuiSystemTest {
 	@Test
 	public void testWithConfigInitialState() {
 		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
-		App app = new App(CHECKS, configRW);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
 		assertNull(app.retrieveConfigLoadEx());
 		assertTrue(app.canRunNow());
@@ -121,7 +128,7 @@ public class GuiSystemTest {
 	@Test
 	public void testWithNonexistentConfigInitialState() {
 		FakeConfigRW configRW = createNonexistentConfigRW();
-		App app = new App(CHECKS, configRW);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
 		assertNull(app.retrieveConfigLoadEx());
 		assertFalse(configRW.didTryToLoad());
@@ -133,7 +140,7 @@ public class GuiSystemTest {
 	@Test
 	public void testWithBadConfigInitialState() {
 		FakeConfigRW configRW = createBadConfigRW();
-		App app = new App(CHECKS, configRW);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
 		assertInstanceOf(IOException.class, app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
@@ -143,7 +150,7 @@ public class GuiSystemTest {
 
 	@Test
 	public void testRunInBadState() {
-		App app = new App(CHECKS, null);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), null);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
@@ -156,7 +163,7 @@ public class GuiSystemTest {
 
 	@Test
 	public void testRunWithBadPath() {
-		App app = new App(CHECKS, null);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), null);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 		app.setTargetPath("this is not a real directory");
@@ -174,7 +181,7 @@ public class GuiSystemTest {
 
 	@Test
 	public void testRunDefault() throws IOException {
-		App app = new App(CHECKS, null);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), null);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 		app.setTargetPath(CLASS_DIR_PATH);
@@ -211,7 +218,7 @@ public class GuiSystemTest {
 	@Test
 	public void testRunWithConfig() throws IOException {
 		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
-		App app = new App(CHECKS, configRW);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
@@ -247,7 +254,7 @@ public class GuiSystemTest {
 	@Test
 	public void testSaveTargetPathToConfig() {
 		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
-		App app = new App(CHECKS, configRW);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
