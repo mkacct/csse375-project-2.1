@@ -362,6 +362,23 @@ package domain.javadata {
     PRIVATE
     ~parseOpcodes(access: int): AccessModifier
   }
+
+  interface ClassData {
+    ~getFullName(): String
+    ~getSimpleName(): String
+    ~getPackageName(): String
+    ~getAccessModifier: AccessModifier
+    ~getClassType(): ClassType
+    ~isAbstract(): boolean
+    ~isStatic(): boolean
+    ~isFinal(): boolean
+    ~getSuperFullName(): String
+    ~getInterfaceFullName(): Set<String>
+    ~getFields(): Set<FieldData>
+    ~getMethods(): Set<MethodData>
+    ~getContainingClassFullName(): String
+    ~getInnerClassFullNames(): Set<String>
+  }
 }
 
 exception IOException {
