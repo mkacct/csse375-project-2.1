@@ -32,7 +32,7 @@ final class GuiUtil {
 	public static final int PAD = 8;
 
 	public static String formatTitle(String title) {
-		return (title != null) ? MessageFormat.format("{0} – {1}", ProductInfo.NAME, title) : ProductInfo.NAME;
+		return (title != null) ? MessageFormat.format("{0} – {1}", ProductInfo.getName(), title) : ProductInfo.getName();
 	}
 
 	public static void showError(Component parent, String message) {

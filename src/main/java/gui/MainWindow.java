@@ -233,7 +233,7 @@ class MainWindow extends JFrame implements Reloadable {
 		}
 
 		private JLabel initVerLabel() {
-			JLabel verLabel = new JLabel(MessageFormat.format("version {0}", ProductInfo.VERSION));
+			JLabel verLabel = new JLabel(MessageFormat.format("version {0}", ProductInfo.getVersion()));
 			verLabel.setHorizontalAlignment(JLabel.CENTER);
 			this.add(verLabel, BorderLayout.CENTER);
 			return verLabel;
