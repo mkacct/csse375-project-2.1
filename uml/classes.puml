@@ -714,6 +714,38 @@ package gui {
     +{static} addTextFieldDocumentUpdateListener(textField: JTextField, func: Consumer<DocumentEvent>): void
     +{static} getScaledIcon(icon: Icon, scaleFactor: double): Icon
   }
+
+  class MainWindow  {
+    -{static} MIN_WIDTH: int
+    -{static} MIN_HEIGHT: int
+    -app: App
+    -header: Header
+    -mainPanel: MainPanel
+    -footer: Footer
+    -exit(status: int): void
+    -checkForConfigLoadException(): void
+    -askWhetherToProceedWithBadConfig(configLoadEx: Exception): boolean
+    -openSettings(): void
+    -checkForConfigSaveException(): void
+  }
+
+  class Header {
+    -{static} SETTINGS_BUTTON_LABEL: String
+  }
+
+  class MainPanel {
+    -{static} NO_RESULTS_MSG: String
+    -{static} RUN_BUTTON_LABEL: String
+    -messageSummary: JLabel
+    -runButton: JButton
+    -messageDisplay: MessageDisplay
+    -runChecks(): void
+    -formatTotals(msgTotals: Map<MessageLevel, Integer>): String
+    -generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
+  }
+
+  class Footer {
+  }
 }
 
 exception IOException {
@@ -826,6 +858,15 @@ gui.App ->"*" Reloadable
 gui.App ..> IOException: <<throws>>
 gui.App ->"*" CheckResults
 gui.App +- CheckResults
+MainWindow ..|> Reloadable
+MainWindow -> gui.App
+MainWindow +- Header
+MainWindow -> Header
+MainWindow +- MainPanel
+MainWindow -> MainPanel
+MainWindow +- Footer
+MainWindow -> Footer
+MainPanel ..|> Reloadable
 
 ' exceptions
 FileNotFoundException --|> IOException
