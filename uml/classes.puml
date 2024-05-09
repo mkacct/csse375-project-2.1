@@ -608,6 +608,8 @@ exception IllegalStateException {
 exception ClassCastException {
 }
 ' cli package
+App ->"*" MessageLevel
+App ->"*" TerminalTextColor
 App -> ConfigRW
 App -> FilesLoader
 
@@ -637,7 +639,9 @@ PlantUMLGenerator ..> IOException: <<throws>>
 ' domain.checks package
 AdapterPatternCheck --|> Check
 ConstantInterfaceCheck --|> Check
+CountCheckPropertyValidator -> Message
 GraphCheck  --|> Check
+GraphCheck -> ClassGraph
 ImmutableExceptionsCheck --|> Check
 InformationHidingCheck --|> Check
 LowCouplingCheck --|> GraphCheck
@@ -652,17 +656,26 @@ PlantUMLGenerator --|> GraphCheck
 ProgramToInterfaceNotImplementationCheck --|> Check
 RequiredOverridesCheck --|> Check
 StrategyPatternCheck --|> Check
+TypeValidator -> MessageLevel
 UnusedAbstractionsCheck --|> Check
 
 ' domain.javadata
+ClassDataCollection ->"*" ClassData
+ClassNodeAdapter -> ClassNode
 ClassNodeAdapter ..|> ClassData
+FieldInsnNodeAdapter -> FieldInsnNode
 FieldInsnNodeAdapter ..|> FieldInstrData
 FieldInstrData --|> InstrData
+FieldNodeAdapter -> FieldNode
 FieldNodeAdapter ..|> FieldData
 LocalVarInstrData --|> InstrData
+MethodInsnNodeAdapter -> MethodInsnNode
 MethodInsnNodeAdapter ..|> MethodInstrData
+MethodNodeAdapter -> MethodNode
 MethodNodeAdapter ..|> MethodData
 OtherInsnNodeAdapter ..|> InstrData
+VarInsnNodeAdapter -> VarInsnNode
+VarInsnNodeAdapter -> LocalVariableNode
 VarInsnNodeAdapter ..|> LocalVarInstrData
 
 ' domain
