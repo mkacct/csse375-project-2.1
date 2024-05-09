@@ -257,6 +257,13 @@ package domain.checks {
     -containsConcreteImplementers(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator, patternFound: boolean): boolean
     -isConcreteClass(it: ClassGraphIterator, it2: ClassGraphIterator, j: int): boolean
   }
+
+  class ParameterCountCheck {
+    -{static} NAME: String
+    -{static} MAX_NUM_PARAMS_KEY: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
+    -checkClass(classData: ClassData, maxNumParams: int, messages: Set<Message>): void
+  }
 }
 
 exception IOException {
@@ -318,6 +325,7 @@ MethodLengthCheck --|> Check
 NamingConventionsCheck --|> Check
 NoGlobalVariablesCheck --|> Check
 ObserverPatternCheck --|> GraphCheck
+ParameterCountCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
