@@ -347,6 +347,11 @@ package domain.checks {
     -validateMethodTypes(classData: ClassData, messages: Set<Message>): void
     -validateParamTypes(classData: ClassData, messages: Set<Message>): void
   }
+
+  class UnusedAbstractionsCheck {
+    -{static} NAME: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
+  }
 }
 
 exception IOException {
@@ -414,6 +419,7 @@ PlantUMLGenerator --|> GraphCheck
 ProgramToInterfaceNotImplementationCheck --|> Check
 RequiredOverridesCheck --|> Check
 StrategyPatternCheck --|> Check
+UnusedAbstractionsCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
