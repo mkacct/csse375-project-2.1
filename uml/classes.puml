@@ -264,6 +264,43 @@ package domain.checks {
     +run(classes: ClassDataCollection, config: Configuration): Set<Message>
     -checkClass(classData: ClassData, maxNumParams: int, messages: Set<Message>): void
   }
+
+  class PlantUMLGenerator {
+    -{static} NAME: String
+    -{static} generateSVG(source: SourceStringReader): String
+    -isValidFormat(str: String): boolean
+    +gRun(config: Configuration): Set<Message>
+    -createFileOutput(puml: StringBuilder, pumlOut: String, svgOut: String): void
+    -checkClassRelationships(puml: StringBuilder, i: int, j: int, weight: int): void
+    -checkImplementsRelationships(puml: StringBuilder, i: int, j: int, weight: int): void
+    -checkHasRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
+    -checkExtendsRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
+    -checkDependsRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
+    -appendClassInfo(puml: StringBuilder, i: int, j: int, dependsArrow: String): void
+    -writeHeader(puml: StringBuilder): void
+    -generatePackage(ps: PackageStructure, puml: StringBuilder, numTabs: int): void
+    -addPackageToUML(puml: StringBuilder, numTabs: int, p: PackageStructure): void
+    -addClassToUML(puml: StringBuilder, c: String, numTabs: int): void
+    -writeClass(cd: ClassData, puml: StringBuilder, numTabs: int): void
+    -handleMethodWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
+    -handleFieldWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
+    -handleEnumWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
+    -handleNonConstructorMethod(puml: StringBuilder, m: MethodData): void
+    -{static} handleAdditionalParameters(puml: StringBuilder, m: MethodData, vi: int): void
+    -{static} handleNonNullVariable(puml: StringBuilder, v: VariableData): void
+    -appendAbstractStaticFinal(m: MethodData, numTabs: int, puml: StringBuilder): void
+    -appendStaticFinalModifiers(numTabs: int, puml: StringBuilder, f: FieldData): void
+    -handleEnumBasedOnField(cd: ClassData, puml: StringBuilder, numTabs: int, f: FieldData, enums: int): void
+    -calculateEnums(cd: ClassData): int
+    -printClassName(c: String, cd: ClassData, puml: StringBuilder, numTabs: int): void
+    -appendAccessModifiers(am: AccessModifier, puml: StringBuilder): void
+    -appendStatic(isStatic: boolean, puml: StringBuilder): void
+    -appendFinal(isFinal: boolean, puml: StringBuilder): void
+    -appendFinal(isAbstract: boolean, puml: StringBuilder): void
+    -appendTabs(numTabs: int, puml: StringBuilder): void
+    -printType(t: TypeStructure, puml: StringBuilder): void
+    -handleSubtypes(t: TypeStructure, puml: StringBuilder): void
+  }
 }
 
 exception IOException {
@@ -311,6 +348,7 @@ Configuration ..> ClassCastException: <<throws>>
 DataPrinter ..> FileNotFoundException: <<throws>>
 FilesLoader ..> IOException: <<throws>>
 FilesLoader ..> IllegalStateException: <<throws>>
+PlantUMLGenerator ..> IOException: <<throws>>
 
 ' domain.checks package
 AdapterPatternCheck --|> Check
@@ -326,6 +364,7 @@ NamingConventionsCheck --|> Check
 NoGlobalVariablesCheck --|> Check
 ObserverPatternCheck --|> GraphCheck
 ParameterCountCheck --|> Check
+PlantUMLGenerator --|> GraphCheck
 
 ' exceptions
 FileNotFoundException --|> IOException
