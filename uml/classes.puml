@@ -689,6 +689,15 @@ package gui {
     -checkName: String
     -msgs: List<Message>
   }
+
+  class FilePicker {
+    -TEXT_FIELD_MIN_COLS: int
+    -PATH_FIELD_PLACEHOLDER_TEXT: String
+    -BROWSE_BUTTON_LABEL: String
+    -pathUpdateHandler: Consumer<String>
+    -pathField: JTextField
+    -browse(): void
+  }
 }
 
 exception IOException {
