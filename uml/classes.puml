@@ -5,807 +5,274 @@ left to right direction
 
 package "cli" {
   class App {
-    -{static} MESSAGE_LEVEL_COLORS: Map<MessageLevel, TerminalTextColor>
-    -filesLoader: FilesLoader
-    -configLoader: ConfigRW
-    -outStream: PrintStream
-    -errStream: PrintStream
-    ~run(check: Check[]): boolean
-    -printCheckResults(checkName: String, generatedMsgs: Set<Message>): void
-    -{static} colorMessageTag(msg: Message): String
-    -printTotals(msgTotals: Map<MessageLevel, Integer>): void
-    -{static} generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
+
   }
 
   enum TerminalTextColor {
-    BLACK
-    RED
-    GREEN
-    YELLOW
-    BLUE
-    PURPLE
-    CYAN
-    WHITE
-    -{static} RESET: String
-   -ansiCode: String
-    +applyTo(text: String): String
+
   }
 }
 
 package datasource.configspec {
   class ConfigSpec {
-    -sections: List<Section>
   }
   class Section {
-    -{static} DEFAULT_ENTITY_TYPE: String
-    -title: String
-    -checkName: String
-    -entityType: String
-    -settings: List<Setting>
-    +representsCheck(): boolean
-    -validateRepresentsCheck(): void
-
   }
   class Setting {
-    -name: String
-    -type: Type
-    -desc: String
-    -options: List<String>
-    +hasStringOptions(): boolean
-    -validateCanHaveOptions(): void
   }
   enum Type {
-    BOOLEAN
-    INT
-    STRING
-    LIST_OF_BOOLEAN
-    LIST_OF_INT
-    LIST_OF_STRING
-    {static} parse(typeName: String): Type
   }
 
   interface ConfigSpecLoader {
-    loadConfigSpec(): ConfigSpec
   }
 
   class JsonFileConfigSpecLoader {
-    +{static} CONFIG_SPEC_PATH: String
-    -configSpecPath: String
-    +loadConfigSpec(): ConfigSpec
-    -readSelects(selectsJson: JSONObject): Map<String, List<String>>
-    -readSections(sectionsJson: JSONArray, selects: Map<String, List<String>>): List<ConfigSpec.Section>
-    -readSettings(sectionJson: JSONObject, selects: Map<String, List<String>>): List<ConfigSpec.Setting>
-    -readSetting(settingJson: JSONObject, selects: Map<String, List<String>>): ConfigSpec.Setting
-    -{static} getStringOrNull(jsonObject: JSONObject, key: String): String
   }
 }
 
 package datasource {
   interface ConfigRW {
-    sourceExists(): boolean
-    loadConfig(): Configuration
-    saveConfig(config: Configuration): void
   }
 
   class Configuration {
-    -data: Map<String, Object>
-    -checkKey(key: String): void
-    +applyChanges(changes: Map<String, Object>): Configuration
   }
 
   interface DataPrinter {
-    print(s: String): void
   }
 
   class DirLoader {
-    -path: String
-    +loadFiles(ext: String): Set<byte[]>
-    -addFilesFromDir(files: Set<byte[]>, dir: File, ext: String)
-    -readFile(file: File): byte[]
   }
 
   interface FilesLoader {
-    loadFiles(ext: String): Set<byte[]>
   }
 
   class FullFilePrinter {
-    -path: String
-    +print(s: String): void
   }
 
   class JsonFileConfigRW {
-    -{static} JSON_INDENT: int
-    -path: String
-    +sourceExists(): boolean
-    +loadConfig(): Configuration
-    +saveConfig(config: Configuration): void
   }
 }
 
 package domain.checks {
   class AdapterPatternCheck {
-    -{static} NAME: String
-    -{static} ADAPTER_CLASS_NAME_REGEX_KEY: String
-    -{static} DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -{static} findAdapters(classes: ClassDataCollection, adapterNamePattern: Pattern, messages: Set<Message>): Set<String>
-    -{static} validateUsageOfAdapters(classes: ClassDataCollection, adapterFullNames: Set<String>, messages: Set<Messages>): void
   }
 
   class ConstantInterfaceCheck {
-    -{static} NAME: String
-    -{static} ALLOW_MARKER_INTERFACES_KEY: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
 
   class CountCheckPropertyValidator {
-    -generatedMessage: Message
-    +validateGetInt(config: Configuration, key: String): Integer
   }
 
   abstract class GraphCheck {
-    #graph: ClassGraph
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    +{abstract} gRun(config: Configuration): Set<Message>
   }
 
   class ImmutableExceptionsCheck {
-    -{static} NAME: String
-    -{static} EXCEPTION_CLASS_NAME_REGEX: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -{static} checkExceptionsClass(classData: ClassData, messages: Set<Message>): void
   }
 
   class InformationHidingCheck {
-    -{static} NAME: String
-    -{static} GETTER_SETTER_LENGTH: int
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -indicateFieldsWithInformationHiding(publicFieldsToClass: Map<String, ArrayList<String>): Set<Message>
-    -informationHidingClassCheck(classes: ClassDataCollection, publicFieldsToClass: Map<String, ArrayList<String>): void
-    -checkFieldModifiers(fields: Set<FieldData>, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
-    -checkForGettersAndSetters(field: FieldData, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
-    -matchingMethodAndFieldName(field: FieldData, string1: String, string2: String, publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData): void
-    -handlePublicFields(publicFieldsToClass: Map<String, ArrayList<String>, currentClass: ClassData, field: FieldData): void
   }
 
   class LowCouplingCheck {
-    -maxInDegree: int
-    -maxOutDegree: int
-    -packageName: String
-    -checkCycles: boolean
-    -ignoreSelf: boolean
-    -{static} NAME: String
-    -messages: Set<Message>
-    -lowestInDegrees: PriorityQueue<IntegerAndDegree>
-    +gRun(config: Configuration): Set<Message>
-    -checkCycles(): Set<Message>
-    -recurseThroughClasses(): void
-    -checkGraphDegrees(): void
-    -handleExceededMaxOutDegree(i: int): void
-    -handleExceededMaxInDegree(i: int): void
-    -handleNegativeGraphDegrees(): void
-    -parseConfig(config: Configuration): void
-    -recursion(it: ClassGraphIterator, messages: Set<Message>, pq: PriorityQueue<IntegerAndDegree>, ignoreSelf: boolean): void
-    -recurseThroughEdges(it: ClassGraphIterator, messages: Set<Message>, pq: PriorityQueue<IntegerAndDegree>, ignoreSelf: boolean): void
-    -handleCycle(it: ClassGraphIterator, messages: Set<Message>, ignoreSelf: boolean): boolean
-    -cyclePrint(classes: List<String>): String
   }
 
   class IntegerAndDegree <<Comparable>> {
-    index: int
-    inDegree: int
-    compareTo(o: IntegerAndDegree): int
   }
 
   class MethodLengthCheck {
-    -{static} NAME: String
-    -{static} MAX_METHOD_LENGTH_KEY: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -checkClass(classData: ClassData, maxMethodLengthInstrs: int, messages: Set<Messages>): void
   }
 
   enum NamingConventions {
-    lowercase
-    UPPERCASE
-    UPPER_CASE
-    lower_case
-    camelCase
-    PascalCase
-    ANY
-    -checker: Function<char[], Boolean>
-    +check(chars: char[]): boolean
   }
 
   class NamingConventionsCheck {
-    -{static} NAME: String
-    -checkConvention(str: String, convention: NamingConventions): boolean
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -runClassChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions): void
-    -runMethodChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData): void
-    -runLocalVariableChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData): void
-    -runLocalVariableCheck(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData, lvar: VariableData): void
-    -handleParametersWithLocalVariables(classInfo: ClassData, maxLength: int, messages: Set<Message>, methodNames: NamingConventions, methodParamNames: NamingConventions, localVarNames: NamingConventions, m: MethodData, lvar: VariableData): void
-    -runFieldChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
-    -handleNonEnumFields(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
-    -handleEnumFields(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions): void
-    -handleEnumField(classInfo: ClassData, maxLength: int, messages: Set<Message>, enumConstantNames: NamingConventions, constantNames: NamingConventions, fieldNames: NamingConventions, f: FieldData): void
-    -staticAndFinalCheck(classInfo: ClassData, maxLength: int, messages: Set<Message>, constantNames: NamingConventions, fieldNames: NamingConventions, f: FieldData): void
-    -runPackageChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean): void
-    -checkPackage(packages: Set<String>, maxLength: int, messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean, pckg: String): void
-    -handleIncorrectConventionsOrEmptyPackage(messages: Set<Message>, packageNames: NamingConventions, allowEmptyPackage: boolean, pckg: String): void
-    -runClassNameChecks(classInfo: ClassData, maxLength: int, messages: Set<Message>, abstractNames: NamingConventions, interfaceNames: NamingConventions, enumNames: NamingConventions, classNames: NamingConventions): void
   }
 
   class NoGlobalVariablesCheck {
-    -{static} NAME: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
 
   class ObserverPatternCheck {
-    -{static} NAME: String
-    +gRun(config: Configuration): Set<Message>
-    -checkInterfaces(checkInterface: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
-    -containsObserverInterfaceOrAbstracts(it: ClassGraphIterator, edges: Set<ClassGraphIterator>, obsClasses: Set<String>): boolean
-    -checkConcreteObservers(it: ClassGraphIterator, it2: ClassGraphIterator, obsClasses: Set<String>): boolean
-    -checkConcreteSubjectsWithInterfaces(it: ClassGraphIterator, it2: ClassGraphIterator, obsClasses: Set<String>, j: int): boolean
-    -checkAbstractClassesNonInterfaces(checkAbstract: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
-    -containsAbstractNonInterfaces(it: ClassGraphIterator, obsClasses: Set<String>): boolean]
-    -checkConcreteObserversWithAbstractNonInterfaces(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator): boolean
-    -checkForConcreteSubjects(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator, j: int): boolean
-    -checkConcreteClasses(checkConcrete: boolean, dat: ClassData, it: ClassGraphIterator, messages: Set<Message>): void
-    -containsObserverInterface(it: ClassGraphIterator, obsClasses: Set<String>): boolean
-    -containsConcreteImplementers(it: ClassGraphIterator, obsClasses: Set<String>, it2: ClassGraphIterator, patternFound: boolean): boolean
-    -isConcreteClass(it: ClassGraphIterator, it2: ClassGraphIterator, j: int): boolean
   }
 
   class ParameterCountCheck {
-    -{static} NAME: String
-    -{static} MAX_NUM_PARAMS_KEY: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Message>
-    -checkClass(classData: ClassData, maxNumParams: int, messages: Set<Message>): void
   }
 
   class PlantUMLGenerator {
-    -{static} NAME: String
-    -{static} generateSVG(source: SourceStringReader): String
-    -isValidFormat(str: String): boolean
-    +gRun(config: Configuration): Set<Message>
-    -createFileOutput(puml: StringBuilder, pumlOut: String, svgOut: String): void
-    -checkClassRelationships(puml: StringBuilder, i: int, j: int, weight: int): void
-    -checkImplementsRelationships(puml: StringBuilder, i: int, j: int, weight: int): void
-    -checkHasRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
-    -checkExtendsRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
-    -checkDependsRelationship(puml: StringBuilder, i: int, j: int, weight: int): void
-    -appendClassInfo(puml: StringBuilder, i: int, j: int, dependsArrow: String): void
-    -writeHeader(puml: StringBuilder): void
-    -generatePackage(ps: PackageStructure, puml: StringBuilder, numTabs: int): void
-    -addPackageToUML(puml: StringBuilder, numTabs: int, p: PackageStructure): void
-    -addClassToUML(puml: StringBuilder, c: String, numTabs: int): void
-    -writeClass(cd: ClassData, puml: StringBuilder, numTabs: int): void
-    -handleMethodWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
-    -handleFieldWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
-    -handleEnumWriting(cd: ClassData, puml: StringBuilder, numTabs: int): void
-    -handleNonConstructorMethod(puml: StringBuilder, m: MethodData): void
-    -{static} handleAdditionalParameters(puml: StringBuilder, m: MethodData, vi: int): void
-    -{static} handleNonNullVariable(puml: StringBuilder, v: VariableData): void
-    -appendAbstractStaticFinal(m: MethodData, numTabs: int, puml: StringBuilder): void
-    -appendStaticFinalModifiers(numTabs: int, puml: StringBuilder, f: FieldData): void
-    -handleEnumBasedOnField(cd: ClassData, puml: StringBuilder, numTabs: int, f: FieldData, enums: int): void
-    -calculateEnums(cd: ClassData): int
-    -printClassName(c: String, cd: ClassData, puml: StringBuilder, numTabs: int): void
-    -appendAccessModifiers(am: AccessModifier, puml: StringBuilder): void
-    -appendStatic(isStatic: boolean, puml: StringBuilder): void
-    -appendFinal(isFinal: boolean, puml: StringBuilder): void
-    -appendFinal(isAbstract: boolean, puml: StringBuilder): void
-    -appendTabs(numTabs: int, puml: StringBuilder): void
-    -printType(t: TypeStructure, puml: StringBuilder): void
-    -handleSubtypes(t: TypeStructure, puml: StringBuilder): void
   }
 
   class ProgramToInterfaceNotImplementationCheck {
-    -{static} NAME: String
-    -{static} DOMAIN_PKG_NAME_KEY: String
-    -{static} DEFAULT_DOMAIN_PKG_NAME: String
-    -{static} ADAPTER_CLASS_NAME_REGEX_KEY: String
-    -{static} DEFAULT_ADAPTER_CLASS_NAME_REGEX: String
-    -{static} ALLOWED_DEPENDENCIES_KEY: String
-    -{static} PRIMITIVE_TYPES: Set<String>
-    -{static} OBJECT_TYPE: String
-    -{static} PRIMITIVE_CLASSES: Set<String>
-    -{static} COMMON_INTERFACES: Set<String>
-    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
-    -isTypeOkay(typeFullName: String, classes: ClassDataCollection, domainPkgName: String, allowedDeps: Set<String>): boolean
-    -{static} stripArrayIndicators(typeFullName: String): String
   }
 
   class RequiredOverridesCheck {
-    -{static} NAME: String
-    -{static} TYPES_EMPTY: String[]
-    -{static} TYPES_1_OBJECT: String[]
-    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
-    -validateCompareToImpliesEquals(classData: ClassData, messages: Set<Message>): void
-    -validateEqualsImpliesHashCode(classData: ClassData, messages: Set<Message>): void
-    -{static} classHasMethod(classData: ClassData, methodName: String, paramTypes: String[]): boolean
-    -{static} paramTypesMatch(params: List<VariableData>, paramTypes: String[]): boolean
   }
 
   class StrategyPatternCheck {
-    -{static} NAME: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
-    -{static} getClassFromName(className: String, classes: ClassDataCollection): ClassData
   }
 
   class TypeValidator {
-    -validationFunc: Function<String, Boolean>
-    -messageLevel: MessageLevel
-    -classExemptionFunc: Function<ClassData, Boolean>
-    -fieldMessagePattern: String
-    -methodMessagePattern: String
-    -paramMessagePattern: String
-    +validateTypes(allClasses: Collection<ClassData>, messages: Set<Message>): void
-    -validateFieldTypes(classData: ClassData, messages: Set<Message>): void
-    -validateMethodTypes(classData: ClassData, messages: Set<Message>): void
-    -validateParamTypes(classData: ClassData, messages: Set<Message>): void
   }
 
   class UnusedAbstractionsCheck {
-    -{static} NAME: String
-    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
   }
 }
 
 package domain.javadata {
   enum AccessModifier {
-    PUBLIC
-    PROTECTED
-    PACKAGE_PRIVATE
-    PRIVATE
-    ~parseOpcodes(access: int): AccessModifier
   }
 
   interface ClassData {
-    ~getFullName(): String
-    ~getSimpleName(): String
-    ~getPackageName(): String
-    ~getAccessModifier: AccessModifier
-    ~getClassType(): ClassType
-    ~isAbstract(): boolean
-    ~isStatic(): boolean
-    ~isFinal(): boolean
-    ~getSuperFullName(): String
-    ~getInterfaceFullName(): Set<String>
-    ~getFields(): Set<FieldData>
-    ~getMethods(): Set<MethodData>
-    ~getContainingClassFullName(): String
-    ~getInnerClassFullNames(): Set<String>
   }
 
   class ClassDataCollection <<Collection<ClassData>>> {
-    -classesByFullName: Map<String, ClassData>
-    +containsFullName(fullName: String): boolean
-    +getFullNames(): Set<String>
-    +getFullNamesIncludingCompilerGenerated(): Set<String>
-    +getClasses(): Set<ClassData>
-    +getClassesIncludingCompilerGenerated(): Set<ClassData>
   }
 
   class ClassNodeAdapter {
-    -classNode: ClassNode
-    +getFullName(): String
-    +getSimpleName(): String
-    +getPackageName(): String
-    +getAccessModifier: AccessModifier
-    +getClassType(): ClassType
-    +isAbstract(): boolean
-    +isStatic(): boolean
-    +~isFinal(): boolean
-    +getSuperFullName(): String
-    +getInterfaceFullName(): Set<String>
-    +getFields(): Set<FieldData>
-    +getMethods(): Set<MethodData>
-    +getContainingClassFullName(): String
-    +getInnerClassFullNames(): Set<String>
   }
 
   class ClassReaderUtil {
-    +{static} read(javaBytecode: byte[]): ClassData
   }
 
   enum ClassType {
-    CLASS
-    INTERFACE
-    ENUM
-    ~{static} parseOpcodes(access: int): ClassType
   }
 
   interface FieldData {
-    ~getName(): String
-    ~getTypeFullName(): String
-    ~getAccessModifier(): AccessModifier
-    ~isStatic(): boolean
-    ~isFinal(): boolean
-    ~typeParam():  TypeStructure
-    ~getAllTypeFullName(): Set<String>
   }
 
   class FieldInsnNodeAdapter {
-    -insn: FieldInsnNode
-    +getInstrType(): InstrType
-    +getFieldOwnerFullName(): String
-    +getFieldName(): String
-    +getFieldTypeFullName(): String
-    +getOperation(): VariableOperation
   }
 
   interface FieldInstrData {
-    ~getFieldOwnerFullName(): String
-    ~getFieldName(): String
-    ~getFieldTypeFullName(): String
-    ~getOperation(): VariableOperation
   }
 
   class FieldNodeAdapter {
-    -fieldNode: FieldNode
-    +getName(): String
-    +getTypeFullName(): String
-    +getAccessModifier(): AccessModifier
-    +isStatic(): boolean
-    +isFinal(): boolean
-    +typeParam():  TypeStructure
-    +getAllTypeFullName(): Set<String>
   }
 
   interface InstrData {
-    ~getInstrType(): InstrType
   }
 
   enum InstrType {
-    METHOD
-    LOCAL_VARIABLE
-    FIELD
   }
 
   interface LocalVarInstrData {
-    ~getVarName(): String
-    ~getVarTypeFullName(): String
-    ~getOperation(): VariableOperation
   }
 
   class LocalVariableUtil {
-    ~{static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
   }
 
   interface MethodData {
-    -{static} CONSTRUCTOR_NAME: String
-    -{static} STATIC_INITIALIZER_NAME: String
-    ~getName(): String
-    ~getReturnTypeFullName(): String
-    ~getReturnTypeStructure(): TypeStructure
-    ~getAllReturnTypeFullName(): Set<String>
-    ~getAccessModifier(): AccessModifier
-    ~isStatic(): boolean
-    ~isFinal(): boolean
-    ~isAbstract(): boolean
-    ~getParams(): List<VariableData>
-    ~getExceptionTypeFullNames(): Set<String>
-    ~getLocalVariables(): Set<VariableData>
-    ~getInstructions(): List<InstrData>
   }
 
   class MethodInsnNodeAdapter {
-    -insn: MethodInsnNode
-    +getInstrType(): InstrType
-    +getMethodOwnerFullName(): String
-    +getMethodName(): String
-    +getMethodReturnTypeFullName(): String
   }
 
   interface MethodInstrData {
-    ~getMethodOwnerFullName(): String
-    ~getMethodName(): String
-    ~getMethodReturnTypeFullName(): String
   }
 
   class MethodNodeAdapter {
-    -{static} THIS: String
-    -methodNode: MethodNode
-    +getName(): String
-    +getReturnTypeFullName(): String
-    +getReturnTypeStructure(): TypeStructure
-    +getAllReturnTypeFullName(): Set<String>
-    +getAccessModifier(): AccessModifier
-    +isStatic(): boolean
-    +isFinal(): boolean
-    +isAbstract(): boolean
-    +getParams(): List<VariableData>
-    +getExceptionTypeFullNames(): Set<String>
-    +getLocalVariables(): Set<VariableData>
-    +getInstructions(): List<InstrData>
   }
 
   class NameUtil {
-    +{static} isCompilerGenerated(fullName: String): boolean
   }
 
   class OtherInsnNodeAdapter {
-    +getInstrType(): InstrType
   }
 
   class TypeStructure {
-    -baseTypeFullNamee: String
-    -numOfArray: int
-    -subtypes: List<TypeStructure>
-    +getAllFullTypeNames(): Set<String>
   }
 
   class VarInsnNodeAdapter {
-    -insn: VarInsnNode
-    -localVariableNode: LocalVariableNode
-    +getInstrType(): InstrType
-    +getVarName(): String
-    +getVarTypeFullName(): String
-    +getOperation(): VariableOperation
   }
 
   class VariableData {
-    -name: String
-    -typeFullName: String
-    -signature: String
-    +equals(obj: Object): boolean
-    +hashCode(): int
-    +typeParam(): TypeStructure
   }
 
   enum  VariableOperation {
-    GET
-    SET
-    RETURN
-    ~{static} parseOpcode(opcode: int): VariableOperation
   }
 }
 
 package domain {
   abstract class Check {
-    -name: String
-    -isEnabledByDefault: boolean
-    +isEnabled(configValue: Boolean): boolean
-    +{abstract} run(classes: ClassDataCollection, config: Configuration): Set<Message>
   }
 
   class CheckRoster {
-    +{static} CHECKS: Check[]
   }
 
   class CheckUtil {
-    -{static} CLASS_FILE_EXT: String
-    -{static} ENABLE_KEY_PREFIX: String
-    -{static} SKIP_UNMARKED_CHECKS_KEY: String
-    +{static} readInClasses(classFiles: Set<byte[]>): ClassDataCollection
-    +{static} runAllChecks(checks: Check[], classes: ClassDataCollection, config: Configuration, msgTotals: Map<MessageLevel, Integer>, resultsHandler: BiConsumer<String, Set<Message>>): int
-    -{static} runCheck(check: Check, classes: ClassDataCollection, config: Configuration, msgTotals: Map<MessageLevel, Integer>, resultsHandler: BiConsumer<String, Set<Message>>): void
-    -{static} initMsgTotals(): void
   }
 
   class ClassGraph {
-    -classDataCollection: ClassDataCollection
-    -classes: Map<String, Integer>
-    -inverse: Map<Integer, String>
-    -weightedEdges: int[][]
-    -numClasses: int
-    -removeArray(s: String): String
-    -retrieveClassInformation(): void
-    -initializeEdges(): void
-    -populateEdges(): void
-    -checkForDependencies(classInfo: ClassData, i: int): void
-    -checkForPreviousImplementsOrExtends(depSet: Set<String>, i: int): void
-    -removeDuplicatesFromMethods(methodsIterator: Iterator<MethodData>, depSet: Set<String>): void
-    -removeDuplicatesFromInstructions(mdTemp: MethodData, depSet: Set<String>): void
-    -removeDuplicatesFromParameters(mdTemp: MethodData, depSet: Set<String>): void
-    -removeDuplicatesFromLocalVariables(mdTemp: MethodData, depSet: Set<String>): void
-    -checkForComposition(classInfo: ClassData, i: int): void
-    -checkFieldTypes(fdTemp: FieldData, i: int): void
-    -checkForImplements(classInfo: ClassData, i: int): void
-    -checkForInheritance(classInfo: ClassData, i: int): void
-    +{static} checkExtend(weight: int): boolean
-    +{static} checkImplement(weight: int): boolean
-    +{static} checkHasA(weight: int): boolean
-    +{static} checkDepends(weight: int): boolean
-    +inDegree(v: int): int
-    +outDegree(v: int): int
-    +graphIterator(start: int): ClassGraphIterator
-    +column(j: int): int[]
   }
 
   class ClassGraphIterator {
-    -graph: ClassGraph
-    -vertex: int
-    -path: List<Integer>
-    +followEdge(): Set<ClassGraphIterator>
-    +followEdge(extend: int, implement: int, hasA: int, depends: int): Set<ClassGraphIterator>
-    +hasCycle(): boolean
   }
 
   class Message {
-    +level: MessageLevel
-    +text: String
-    +classFullNames: Set<String>
-    +toString(): String
-    +toStringWithoutLevel(): String
-    +equals(obj: Object): boolean
-    +hashCode(): int
   }
 
   enum MessageLevel {
-    ERROR
-    WARNING
-    INFO
-    +abbreviation: String
   }
 
   class PackageStructure {
-    -thisPackageName: String
-    -subPackages: Set<PackageStructure>
-    -classes: Set<String>
-    -parseClasses(classes: Map<String, String>): void
   }
 }
 
 package general {
   class ProductInfo {
-    -{static} NAME: String
-    -{static} VERSION: String
   }
 }
 
 package gui {
   class App {
-    ~{static} CONFIG_PATH: String
-    -{static} TARGET_PATH_KEY: String
-    -configSpec: ConfigSpec
-    -checks: Check[]
-    -configRW: ConfigRW
-    -config: Configuration
-    -configLoadEx: Exception
-    -configSaveEx: Exception
-    -msgTotals: Map<MessageLevel, Integer>
-    -checkResults: List<CheckResults>
-    -reloaders: Set<Reloadable>
-    -loadConfig(): void
-    ~retrieveConfigLoadEx(): Exception
-    -clearCheckResults(): void
-    -saveConfig(): void
-    ~retrieveConfigSaveEx(): Exception
-    ~canRunNow(): boolean
-    ~setTargetPath(targetPath: String): void
-    ~runChecks(): void
-    ~hasResults(): boolean
-    ~updateConfig(changes: Map<String, Object>): void
-    ~addReloader(): void
-    ~removeReloader(): void
-    -triggerReload(): void
   }
 
   class CheckResults {
-    -checkName: String
-    -msgs: List<Message>
   }
 
   class FilePicker {
-    -TEXT_FIELD_MIN_COLS: int
-    -PATH_FIELD_PLACEHOLDER_TEXT: String
-    -BROWSE_BUTTON_LABEL: String
-    -pathUpdateHandler: Consumer<String>
-    -pathField: JTextField
-    -browse(): void
   }
 
   class FileUtil {
-    +{static} currentWorkingDirectory(): File
   }
 
   class GuiUtil {
-    -{static} PAD: int
-    +{static} formatTitle(title: String): String
-    +{static} showError(parent: Component, message: String): void
-    +{static} withWaitCursor(component: Component, func: Runnable): void
-    +{static} createHeading(text: String): JLabel
-    +{static} createButton(text: String, action: ActionListener): JLabel
-    +{static} setPaddedContentPane(component: RootPaneContainer): void
-    +{static} addTextFieldDocumentUpdateListener(textField: JTextField, func: Consumer<DocumentEvent>): void
-    +{static} getScaledIcon(icon: Icon, scaleFactor: double): Icon
   }
 
   class MainWindow  {
-    -{static} MIN_WIDTH: int
-    -{static} MIN_HEIGHT: int
-    -app: App
-    -header: Header
-    -mainPanel: MainPanel
-    -footer: Footer
-    -exit(status: int): void
-    -checkForConfigLoadException(): void
-    -askWhetherToProceedWithBadConfig(configLoadEx: Exception): boolean
-    -openSettings(): void
-    -checkForConfigSaveException(): void
   }
 
   class Header {
-    -{static} SETTINGS_BUTTON_LABEL: String
   }
 
   class MainPanel {
-    -{static} NO_RESULTS_MSG: String
-    -{static} RUN_BUTTON_LABEL: String
-    -messageSummary: JLabel
-    -runButton: JButton
-    -messageDisplay: MessageDisplay
-    -runChecks(): void
-    -formatTotals(msgTotals: Map<MessageLevel, Integer>): String
-    -generateTotalsTerm(totalsTerms: List<String>, level: MessageLevel, count: int): void
   }
 
   class Footer {
   }
 
   class MessageDisplay {
-    -{static} NO_RESULTS_TEXT: String
-    -{static} NO_CHECKS_RUN_TEXT: String
-    -{static} NO_MESSAGES_TEXT: String
-    -tree: JTree
-    ~clearMessages(): void
-    ~displayMessages(checkResults: List<CheckResults>): void
-    -displayErrorMessageOnTree(errorMessage: String): void
-    -{static} createNodes(root: DefaultMutableTreeNode, checkResults: List<CheckResults>): void
-    -{static} formatCheckFolderText(resultsEntry: CheckResults): String
   }
 
   class MessageCellRenderer {
-    -{static} ICON_MAP: Map<MessageLevel, Icon>
-    +getTreeCellRendererComponent(tree: JTree, value: Object, isSelected: boolean, isExpanded: boolean, isLeaf: boolean, row: int, hasFocus: boolean): Component
   }
 
   interface Reloadable {
-    ~reload(): void
   }
 
   class SettingsWindow {
-    -{static} TITLE: String
-    -{static} MIN_WIDTH: int
-    -{static} MIN_HEIGHT: int
-    -{static} CTRL_PAD: int
-    -{static} BOOLEAN_OPTIONS: Boolean[]
-    -{static} BOOLEAN_OPTION_NAMES: String[]
-    -{static} NO_SELECTION_STRING: String
-    -app: App
-    -sidebar: Sidebar
-    -mainPanel: MainPanel
-    -footer: Footer
-    -getSectionNames(): String[]
-    -saveAndClose(): void
-    -onCloseButton(): void
   }
 
   class Sidebar {
   }
 
   class MainPanel {
-    -sectionPanels: Set<SettingsSectionPanel>
-    -setSection(sectionName: String)
-    ~getAllSettingControls(): Set<SettingControl>
   }
 
   class SettingsSectionPanel {
-    -settingsControls: Set<SettingControl>
-    -createInnerPanel(): JPanel
   }
 
   class SettingControl {
-    -setting: ConfigSpec.Setting
-    -valueSupplier: Supplier<Object>
   }
 
   class Footer {
-    -saveButton: JButton
   }
 }
 
