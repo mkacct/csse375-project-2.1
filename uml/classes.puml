@@ -470,6 +470,10 @@ package domain.javadata {
     ~getVarTypeFullName(): String
     ~getOperation(): VariableOperation
   }
+
+  class LocalVariableUtil {
+    ~{static} findLocalVariableNode(var: int, localVars: List<LocalVariableNode>): LocalVariableNode
+  }
 }
 
 exception IOException {
