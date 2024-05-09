@@ -650,6 +650,13 @@ package domain {
   }
 }
 
+package general {
+  class ProductInfo {
+    -{static} NAME: String
+    -{static} VERSION: String
+  }
+}
+
 exception IOException {
 }
 
@@ -746,6 +753,13 @@ CheckRoster ->"*" Check
 ClassGraph -> ClassDataCollection
 ClassGraphIterator -> ClassGraph
 Message -> MessageLevel
+
+' general
+
+
+
+
+
 
 ' exceptions
 FileNotFoundException --|> IOException
