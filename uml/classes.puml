@@ -313,7 +313,7 @@ package domain.checks {
     -{static} OBJECT_TYPE: String
     -{static} PRIMITIVE_CLASSES: Set<String>
     -{static} COMMON_INTERFACES: Set<String>
-    +run(classes: ClassDataCollection, config: Configuration): void
+    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
     -isTypeOkay(typeFullName: String, classes: ClassDataCollection, domainPkgName: String, allowedDeps: Set<String>): boolean
     -{static} stripArrayIndicators(typeFullName: String): String
   }
@@ -322,11 +322,17 @@ package domain.checks {
     -{static} NAME: String
     -{static} TYPES_EMPTY: String[]
     -{static} TYPES_1_OBJECT: String[]
-    +run(classes: ClassDataCollection, config: Configuration): void
+    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
     -validateCompareToImpliesEquals(classData: ClassData, messages: Set<Message>): void
     -validateEqualsImpliesHashCode(classData: ClassData, messages: Set<Message>): void
     -{static} classHasMethod(classData: ClassData, methodName: String, paramTypes: String[]): boolean
     -{static} paramTypesMatch(params: List<VariableData>, paramTypes: String[]): boolean
+  }
+
+  class StrategyPatternCheck {
+    -{static} NAME: String
+    +run(classes: ClassDataCollection, config: Configuration): Set<Messages>
+    -{static} getClassFromName(className: String, classes: ClassDataCollection): ClassData
   }
 }
 
@@ -394,6 +400,7 @@ ParameterCountCheck --|> Check
 PlantUMLGenerator --|> GraphCheck
 ProgramToInterfaceNotImplementationCheck --|> Check
 RequiredOverridesCheck --|> Check
+StrategyPatternCheck --|> Check
 
 ' exceptions
 FileNotFoundException --|> IOException
