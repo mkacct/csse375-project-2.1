@@ -27,7 +27,7 @@ public final class Main {
 	}
 
 	private static void printInfo() {
-		System.out.println(MessageFormat.format("{0} version {1}", ProductInfo.NAME, ProductInfo.VERSION));
+		System.out.println(MessageFormat.format("{0} version {1}", ProductInfo.getName(), ProductInfo.getVersion()));
 		System.out.println("usage: <command to run LinterProject> <classdir> [<config>]");
 	}
 }

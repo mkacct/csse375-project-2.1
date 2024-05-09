@@ -31,12 +31,17 @@ class MessageDisplay extends JScrollPane {
 	MessageDisplay() {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		this.tree = new JTree();
-		this.setViewportView(this.tree);
-		ToolTipManager.sharedInstance().registerComponent(this.tree);
-		this.tree.setCellRenderer(new MessageCellRenderer());
+		this.tree = this.initTree();
 
 		this.clearMessages();
+	}
+
+	private JTree initTree() {
+		JTree tree = new JTree();
+		this.setViewportView(tree);
+		ToolTipManager.sharedInstance().registerComponent(tree);
+		tree.setCellRenderer(new MessageCellRenderer());
+		return tree;
 	}
 
 	void clearMessages() {
