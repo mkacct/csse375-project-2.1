@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import domain.MessageLevel;
 import general.ProductInfo;
@@ -21,30 +20,19 @@ import general.ProductInfo;
 class MainWindow extends JFrame implements Reloadable {
 	private static final int MIN_WIDTH = 640, MIN_HEIGHT = 360;
 
-	private App app;
+	private final App app;
 
-	private Header header;
-	private MainPanel mainPanel;
-	private Footer footer;
+	private final Header header;
+	private final MainPanel mainPanel;
+	private final Footer footer;
 
 	MainWindow(App app) {
 		super(GuiUtil.formatTitle(null));
 		this.app = app;
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
-		this.initContents();
-		this.pack();
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);
-		this.app.addReloader(this);
-		this.checkForConfigLoadException();
-	}
 
-	private void initContents() {
-		JPanel contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD));
-		contentPane.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
-		this.setContentPane(contentPane);
+		GuiUtil.setPaddedContentPane(this);
 
 		this.header = new Header();
 		this.add(this.header, BorderLayout.PAGE_START);
@@ -54,6 +42,13 @@ class MainWindow extends JFrame implements Reloadable {
 		this.add(this.footer, BorderLayout.PAGE_END);
 
 		this.getRootPane().setDefaultButton(this.mainPanel.runButton);
+
+		this.pack();
+		this.setSize(new Dimension(this.getWidth(), this.getMinimumSize().height * 4 / 3));
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+		this.app.addReloader(this);
+		this.checkForConfigLoadException();
 	}
 
 	private void exit(int status) {
@@ -91,9 +86,7 @@ class MainWindow extends JFrame implements Reloadable {
 	}
 
 	private void openSettings() {
-		// TODO: make settings dialog
-		// new SettingsDialog(this);
-		GuiUtil.showError(this, "NYI");
+		new SettingsWindow(this, this.app);
 	}
 
 	@Override
@@ -115,12 +108,8 @@ class MainWindow extends JFrame implements Reloadable {
 		private static final String SETTINGS_BUTTON_LABEL = "Settings…";
 
 		private Header() {
-			super();
-			this.initContents();
-		}
+			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-		private void initContents() {
-			this.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 			this.add(new FilePicker(MainWindow.this.app.getTargetPath(), MainWindow.this.app::setTargetPath), BorderLayout.CENTER);
 			this.add(GuiUtil.createButton(SETTINGS_BUTTON_LABEL, (e) -> {MainWindow.this.openSettings();}), BorderLayout.LINE_END);
 		}
@@ -130,21 +119,14 @@ class MainWindow extends JFrame implements Reloadable {
 		private static final String NO_RESULTS_MSG = "No results yet";
 		private static final String RUN_BUTTON_LABEL = "Run checks";
 
-		private JLabel messageSummary;
-		private JButton runButton;
-		private MessageDisplay messageDisplay;
+		private final JLabel messageSummary;
+		private final JButton runButton;
+		private final MessageDisplay messageDisplay;
 
 		private MainPanel() {
-			super();
-			this.initContents();
-			MainWindow.this.app.addReloader(this);
-		}
+			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-		private void initContents() {
-			this.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
-
-			JPanel header = new JPanel();
-			header.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
+			JPanel header = new JPanel(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 			this.messageSummary = new JLabel();
 			header.add(this.messageSummary, BorderLayout.LINE_START);
 			this.runButton = GuiUtil.createButton(RUN_BUTTON_LABEL, (e) -> {this.runChecks();});
@@ -155,6 +137,8 @@ class MainWindow extends JFrame implements Reloadable {
 			this.add(this.messageDisplay, BorderLayout.CENTER);
 
 			this.reload();
+
+			MainWindow.this.app.addReloader(this);
 		}
 
 		private void runChecks() {
@@ -210,12 +194,8 @@ class MainWindow extends JFrame implements Reloadable {
 
 	private class Footer extends JPanel {
 		private Footer() {
-			super();
-			this.initContents();
-		}
+			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-		private void initContents() {
-			this.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 			JLabel verLabel = new JLabel(MessageFormat.format("version {0}", ProductInfo.VERSION));
 			verLabel.setHorizontalAlignment(JLabel.CENTER);
 			this.add(verLabel, BorderLayout.CENTER);

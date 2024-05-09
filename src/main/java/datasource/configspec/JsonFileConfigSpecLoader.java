@@ -1,8 +1,7 @@
 package datasource.configspec;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,18 +15,23 @@ import org.json.JSONObject;
  * Loads the GUI configuration specification from the JSON file.
  */
 public class JsonFileConfigSpecLoader implements ConfigSpecLoader {
-	public static final String CONFIG_SPEC_PATH = "src/main/resources/config-spec.json";
+	public static final String CONFIG_SPEC_RES_PATH = "/config-spec.json";
 
-	private final String configSpecPath;
+	private final String configSpecResPath;
 
 	public JsonFileConfigSpecLoader(String configSpecPath) {
-		this.configSpecPath = configSpecPath;
+		this.configSpecResPath = configSpecPath;
 	}
 
 	@Override
-	public ConfigSpec loadConfigSpec() throws IOException {
-		List<String> lines = Files.readAllLines(Path.of(this.configSpecPath));
-		String json = String.join("\n", lines);
+	public ConfigSpec loadConfigSpec() {
+		InputStream inputStream = this.getClass().getResourceAsStream(configSpecResPath);
+		String json;
+		try {
+			json = new String(inputStream.readAllBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		JSONObject jsonObject = new JSONObject(json);
 		Map<String, List<String>> selects = readSelects(jsonObject.getJSONObject("selects"));
 		List<ConfigSpec.Section> sections = readSections(jsonObject.getJSONArray("sections"), selects);

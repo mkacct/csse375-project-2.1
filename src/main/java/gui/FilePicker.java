@@ -17,15 +17,12 @@ public class FilePicker extends JPanel {
 
 	private final Consumer<String> pathUpdateHandler;
 
-	private JTextField pathField;
+	private final JTextField pathField;
 
 	public FilePicker(String targetPath, Consumer<String> pathUpdateHandler) {
+		super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 		this.pathUpdateHandler = pathUpdateHandler;
-		this.initContents(targetPath);
-	}
 
-	private void initContents(String targetPath) {
-		this.setLayout(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 		this.pathField = new JTextField(targetPath, TEXT_FIELD_MIN_COLS);
 		this.pathField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, PATH_FIELD_PLACEHOLDER_TEXT);
 		GuiUtil.addTextFieldDocumentUpdateListener(this.pathField, (e) -> {

@@ -13,14 +13,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class JsonFileConfigSpecLoaderTest {
-	private static final String TEST_CONFIG_SPEC_PATH = "src/test/resources/test-config-spec.json";
+	private static final String TEST_CONFIG_SPEC_RES_PATH = "/test-config-spec.json";
 	private static final String CHECK_ENTITY_TYPE = "check";
 
 	private ConfigSpec configSpec;
 
 	@BeforeEach
 	public void setup() throws IOException {
-		JsonFileConfigSpecLoader loader = new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_PATH);
+		ConfigSpecLoader loader = new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_RES_PATH);
 		this.configSpec = loader.loadConfigSpec();
 	}
 

@@ -26,19 +26,17 @@ class MessageDisplay extends JScrollPane {
 	private static final String NO_CHECKS_RUN_TEXT = "No checks were run. Please enable at least one check to see output.";
 	private static final String NO_MESSAGES_TEXT = "(no messages)";
 
-	private JTree tree;
+	private final JTree tree;
 
 	MessageDisplay() {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		this.initContents();
-		this.clearMessages();
-	}
 
-	private void initContents() {
 		this.tree = new JTree();
 		this.setViewportView(this.tree);
 		ToolTipManager.sharedInstance().registerComponent(this.tree);
 		this.tree.setCellRenderer(new MessageCellRenderer());
+
+		this.clearMessages();
 	}
 
 	void clearMessages() {

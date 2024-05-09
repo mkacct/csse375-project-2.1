@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The linter configuration read from the JSON file.
+ * The linter configuration read from the JSON file. Immutable.
  */
 public final class Configuration {
 	private final Map<String, Object> data;
@@ -51,7 +51,7 @@ public final class Configuration {
 		return (List<String>)this.data.get(key);
 	}
 
-	public boolean getBoolean(String key, boolean fallback) {
+	public Boolean getBoolean(String key, Boolean fallback) {
 		try {
 			return this.getBoolean(key);
 		} catch (IllegalArgumentException | ClassCastException ex) {
@@ -59,7 +59,7 @@ public final class Configuration {
 		}
 	}
 
-	public int getInt(String key, int fallback) {
+	public Integer getInt(String key, Integer fallback) {
 		try {
 			return this.getInt(key);
 		} catch (IllegalArgumentException | ClassCastException ex) {
@@ -105,7 +105,13 @@ public final class Configuration {
 
 	public Configuration applyChanges(Map<String, Object> changes) {
 		Map<String, Object> newData = new HashMap<String, Object>(this.data);
-		newData.putAll(changes);
+		for (Map.Entry<String, Object> entry : changes.entrySet()) {
+			if (entry.getValue() == null) {
+				newData.remove(entry.getKey());
+			} else {
+				newData.put(entry.getKey(), entry.getValue());
+			}
+		}
 		return new Configuration(newData);
 	}
 
