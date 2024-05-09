@@ -458,6 +458,12 @@ package domain.javadata {
   interface InstrData {
     ~getInstrType(): InstrType
   }
+
+  enum InstrType {
+    METHOD
+    LOCAL_VARIABLE
+    FIELD
+  }
 }
 
 exception IOException {
