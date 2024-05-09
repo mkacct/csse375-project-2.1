@@ -3,8 +3,10 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -46,6 +48,14 @@ final class GuiUtil {
 		}
 	}
 
+	public static void initWindow(Window window, Window parent, Dimension minSize, int initHeight) {
+		window.setMinimumSize(minSize);
+		window.pack();
+		window.setSize(new Dimension(window.getWidth(), initHeight));
+		window.setLocationRelativeTo(parent);
+		window.setVisible(true);
+	}
+
 	public static JLabel createHeading(String text) {
 		JLabel label = new JLabel(text);
 		Font origFont = label.getFont();
@@ -59,7 +69,7 @@ final class GuiUtil {
 		return button;
 	}
 
-	public static void setPaddedContentPane(RootPaneContainer component) {
+	public static void initPaddedContentPane(RootPaneContainer component) {
 		JPanel contentPane = new JPanel(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 		contentPane.setBorder(new EmptyBorder(GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD));
 		component.setContentPane(contentPane);

@@ -43,7 +43,8 @@ import domain.CheckUtil;
 
 class SettingsWindow extends JDialog {
 	private static final String TITLE = "Settings";
-	private static final int MIN_WIDTH = 640, MIN_HEIGHT = 360;
+	private static final Dimension MIN_SIZE = new Dimension(640, 360);
+	private static final int INIT_HEIGHT = 480;
 	private static final int CTRL_PAD = 4;
 
 	private static final Boolean[] BOOLEAN_OPTIONS = {false, null, true};
@@ -52,9 +53,7 @@ class SettingsWindow extends JDialog {
 
 	private final App app;
 
-	private final Sidebar sidebar;
 	private final MainPanel mainPanel;
-	private final Footer footer;
 
 	SettingsWindow(Window parent, App app) {
 		super(parent, GuiUtil.formatTitle(TITLE), ModalityType.APPLICATION_MODAL);
@@ -66,23 +65,32 @@ class SettingsWindow extends JDialog {
 				SettingsWindow.this.onCloseButton();
 			}
 		});
-		this.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
 
-		GuiUtil.setPaddedContentPane(this);
+		GuiUtil.initPaddedContentPane(this);
+		this.initSidebar();
+		this.mainPanel = this.initMainPanel();
+		Footer footer = this.initFooter();
+		this.getRootPane().setDefaultButton(footer.saveButton);
 
-		this.sidebar = new Sidebar();
-		this.add(this.sidebar, BorderLayout.LINE_START);
-		this.mainPanel = new MainPanel();
-		this.add(this.mainPanel, BorderLayout.CENTER);
-		this.footer = new Footer();
-		this.add(this.footer, BorderLayout.PAGE_END);
+		GuiUtil.initWindow(this, parent, MIN_SIZE, INIT_HEIGHT);
+	}
 
-		this.getRootPane().setDefaultButton(this.footer.saveButton);
+	private Sidebar initSidebar() {
+		Sidebar sidebar = new Sidebar();
+		this.add(sidebar, BorderLayout.LINE_START);
+		return sidebar;
+	}
 
-		this.pack();
-		this.setSize(new Dimension(this.getWidth(), this.getMinimumSize().height * 4 / 3));
-		this.setLocationRelativeTo(parent);
-		this.setVisible(true);
+	private MainPanel initMainPanel() {
+		MainPanel mainPanel = new MainPanel();
+		this.add(mainPanel, BorderLayout.CENTER);
+		return mainPanel;
+	}
+
+	private Footer initFooter() {
+		Footer footer = new Footer();
+		this.add(footer, BorderLayout.PAGE_END);
+		return footer;
 	}
 
 	private String[] getSectionNames() {
@@ -120,6 +128,13 @@ class SettingsWindow extends JDialog {
 		private Sidebar() {
 			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
+			JList<String> sectionList = this.initSectionList();
+			this.add(new JScrollPane(
+				sectionList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+			), BorderLayout.CENTER);
+		}
+
+		private JList<String> initSectionList() {
 			JList<String> sectionList = new JList<String>(SettingsWindow.this.getSectionNames());
 			sectionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			sectionList.setSelectedIndex(0);
@@ -127,29 +142,31 @@ class SettingsWindow extends JDialog {
 				if (sectionList.getSelectedIndex() == -1) {return;}
 				SettingsWindow.this.mainPanel.setSection(sectionList.getSelectedValue());
 			});
-
-			this.add(new JScrollPane(
-				sectionList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-			), BorderLayout.CENTER);
+			return sectionList;
 		}
 	}
 
 	private class MainPanel extends JPanel {
-		private Set<SettingsSectionPanel> sectionPanels = new HashSet<SettingsSectionPanel>();
+		private final Set<SettingsSectionPanel> sectionPanels = new HashSet<SettingsSectionPanel>();
 
 		private MainPanel() {
 			super(new CardLayout());
 
+			ConfigSpec configSpec = SettingsWindow.this.app.configSpec;
+			this.initSectionPanels();
+			this.setSection(configSpec.getSections().get(0).title);
+		}
+
+		private void initSectionPanels() {
 			ConfigSpec configSpec = SettingsWindow.this.app.configSpec;
 			for (ConfigSpec.Section section : configSpec.getSections()) {
 				SettingsSectionPanel sectionPanel = new SettingsSectionPanel(section, SettingsWindow.this.app.getConfig());
 				this.sectionPanels.add(sectionPanel);
 				this.add(sectionPanel, section.title);
 			}
-			this.setSection(configSpec.getSections().get(0).title);
 		}
 
-		private void setSection(String sectionName) {
+		void setSection(String sectionName) {
 			((CardLayout)this.getLayout()).show(this, sectionName);
 		}
 
@@ -167,21 +184,43 @@ class SettingsWindow extends JDialog {
 
 		private SettingsSectionPanel(ConfigSpec.Section section, Configuration initialConfig) {
 			super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			JPanel innerPanel = this.createInnerPanel();
+			JPanel innerPanel = this.initInnerPanel();
 
-			innerPanel.add(GuiUtil.createHeading(section.title));
-			innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
+			this.initTitleLabel(innerPanel, section);
 			if (section.representsCheck()) {
-				SettingControl enableControl = new SettingControl(new ConfigSpec.Setting(
-					CheckUtil.ENABLE_KEY_PREFIX + section.getCheckName(),
-					ConfigSpec.Setting.Type.BOOLEAN,
-					MessageFormat.format("Enable this {0}?", section.getEntityType()),
-					null
-				), initialConfig);
-				this.settingControls.add(enableControl);
-				innerPanel.add(enableControl);
-				innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
+				this.initEnableControl(innerPanel, section, initialConfig);
 			}
+			this.initSettingControls(innerPanel, section, initialConfig);
+		}
+
+		private JPanel initInnerPanel() {
+			JPanel innerPanel = new JPanel();
+			innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.PAGE_AXIS));
+			innerPanel.setBorder(new EmptyBorder(GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD));
+			this.setViewportView(innerPanel);
+			return innerPanel;
+		}
+
+		private JLabel initTitleLabel(JPanel innerPanel, ConfigSpec.Section section) {
+			JLabel titleLabel = GuiUtil.createHeading(section.title);
+			innerPanel.add(titleLabel);
+			innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
+			return titleLabel;
+		}
+
+		private void initEnableControl(JPanel innerPanel, ConfigSpec.Section section, Configuration initialConfig) {
+			SettingControl enableControl = new SettingControl(new ConfigSpec.Setting(
+				CheckUtil.ENABLE_KEY_PREFIX + section.getCheckName(),
+				ConfigSpec.Setting.Type.BOOLEAN,
+				MessageFormat.format("Enable this {0}?", section.getEntityType()),
+				null
+			), initialConfig);
+			this.settingControls.add(enableControl);
+			innerPanel.add(enableControl);
+			innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
+		}
+
+		private void initSettingControls(JPanel innerPanel, ConfigSpec.Section section, Configuration initialConfig) {
 			for (ConfigSpec.Setting setting : section.getSettings()) {
 				SettingControl settingControl = new SettingControl(setting, initialConfig);
 				if (settingControl.doesSupplySettingValue()) {
@@ -190,15 +229,6 @@ class SettingsWindow extends JDialog {
 				innerPanel.add(settingControl);
 				innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
 			}
-			innerPanel.add(Box.createVerticalGlue());
-		}
-
-		private JPanel createInnerPanel() {
-			JPanel innerPanel = new JPanel();
-			innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.PAGE_AXIS));
-			innerPanel.setBorder(new EmptyBorder(GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD, GuiUtil.PAD));
-			this.setViewportView(innerPanel);
-			return innerPanel;
 		}
 
 		Set<SettingControl> getSettingControls() {
@@ -210,98 +240,123 @@ class SettingsWindow extends JDialog {
 		private final ConfigSpec.Setting setting;
 		private final Supplier<Object> valueSupplier;
 
-		// it is actually not feasible to make this constructor shorter
-		// on account of how java requires final fields be initialized directly within
-		// it is a tradeoff
 		private SettingControl(ConfigSpec.Setting setting, Configuration initialConfig) {
 			super();
 			this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-			this.setAlignmentX(LEFT_ALIGNMENT);
 			this.setting = setting;
+			this.setAlignmentX(LEFT_ALIGNMENT);
 
-			JLabel titleLabel = new JLabel(setting.name);
-			titleLabel.setAlignmentX(LEFT_ALIGNMENT);
-			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
-			this.add(titleLabel);
+			this.initTitleLabel();
 			if (setting.desc != null) {
-				this.add(new JLabel(setting.desc));
+				this.initDescLabel();
 			}
 
-			JPanel inputPanel = new JPanel();
-			inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.LINE_AXIS));
-			inputPanel.setAlignmentX(LEFT_ALIGNMENT);
-			inputPanel.setBorder(new EmptyBorder(CTRL_PAD, CTRL_PAD, CTRL_PAD, CTRL_PAD));
+			JPanel inputPanel = this.initInputPanel();
 			switch (setting.type) {
 				case BOOLEAN:
 					Boolean initBool = initialConfig.getBoolean(setting.name, null);
-					// Boolean
-					Map<JRadioButton, Boolean> radioOptions = new HashMap<JRadioButton, Boolean>();
-					ButtonGroup radioGroup = new ButtonGroup();
-					for (int i = 0; i < BOOLEAN_OPTIONS.length; i++) {
-						JRadioButton radioButton = new JRadioButton(BOOLEAN_OPTION_NAMES[i], BOOLEAN_OPTIONS[i] == initBool);
-						radioOptions.put(radioButton, BOOLEAN_OPTIONS[i]);
-						radioGroup.add(radioButton);
-						inputPanel.add(radioButton);
-						inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
-					}
-					this.valueSupplier = () -> {
-						for (Map.Entry<JRadioButton, Boolean> entry : radioOptions.entrySet()) {
-							if (entry.getKey().isSelected()) {return entry.getValue();}
-						}
-						return null;
-					};
+					this.valueSupplier = this.initBooleanControl(inputPanel, initBool);
 					break;
 				case INT:
 					Integer initInt = initialConfig.getInt(setting.name, null);
-					// Integer
-					JCheckBox intEnabledCheckBox = new JCheckBox("", initInt != null);
-					JSpinner valueSpinner = new JSpinner(
-						new SpinnerNumberModel(initInt != null ? initInt : 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1)
-					);
-					valueSpinner.setMaximumSize(new Dimension(valueSpinner.getPreferredSize().width, valueSpinner.getPreferredSize().height));
-					valueSpinner.addChangeListener((e) -> {intEnabledCheckBox.setSelected(true);});
-					inputPanel.add(intEnabledCheckBox);
-					inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
-					inputPanel.add(valueSpinner);
-					this.valueSupplier = () -> {
-						if (!intEnabledCheckBox.isSelected()) {return null;}
-						return valueSpinner.getValue();
-					};
+					this.valueSupplier = this.initIntegerControl(inputPanel, initInt);
 					break;
 				case STRING:
 					String initStr = initialConfig.getString(setting.name, null);
 					if (setting.hasStringOptions()) {
 						if (!setting.getStringOptions().contains(initStr)) {initStr = null;}
-						// String with enum options
-						List<String> options = new ArrayList<String>(List.of(NO_SELECTION_STRING));
-						options.addAll(setting.getStringOptions());
-						JComboBox<String> optionComboBox = new JComboBox<String>(options.toArray(new String[0]));
-						optionComboBox.setSelectedItem((initStr != null) ? initStr : NO_SELECTION_STRING);
-						inputPanel.add(optionComboBox);
-						this.valueSupplier = () -> {
-							if (optionComboBox.getSelectedIndex() == 0) {return null;}
-							return optionComboBox.getSelectedItem();
-						};
+						this.valueSupplier = this.initEnumStringControl(inputPanel, initStr);
 					} else {
-						// String (no enum options)
-						JCheckBox strEnabledCheckBox = new JCheckBox("", initStr != null);
-						JTextField valueField = new JTextField((initStr != null) ? initStr : "");
-						valueField.setMaximumSize(new Dimension(Short.MAX_VALUE, valueField.getPreferredSize().height));
-						GuiUtil.addTextFieldDocumentUpdateListener(valueField, (e) -> {strEnabledCheckBox.setSelected(true);});
-						inputPanel.add(strEnabledCheckBox);
-						inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
-						inputPanel.add(valueField);
-						this.valueSupplier = () -> {
-							if (!strEnabledCheckBox.isSelected()) {return null;}
-							return valueField.getText();
-						};
+						this.valueSupplier = this.initStringControl(inputPanel, initStr);
 					}
 					break;
 				default:
 					inputPanel.add(new JLabel("This setting cannot be edited using the GUI."));
 					this.valueSupplier = null;
 			}
+		}
+
+		private JLabel initTitleLabel() {
+			JLabel titleLabel = new JLabel(setting.name);
+			titleLabel.setAlignmentX(LEFT_ALIGNMENT);
+			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+			this.add(titleLabel);
+			return titleLabel;
+		}
+
+		private JLabel initDescLabel() {
+			JLabel descLabel = new JLabel(setting.desc);
+			this.add(descLabel);
+			return descLabel;
+		}
+
+		private JPanel initInputPanel() {
+			JPanel inputPanel = new JPanel();
+			inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.LINE_AXIS));
+			inputPanel.setAlignmentX(LEFT_ALIGNMENT);
+			inputPanel.setBorder(new EmptyBorder(CTRL_PAD, CTRL_PAD, CTRL_PAD, CTRL_PAD));
 			this.add(inputPanel);
+			return inputPanel;
+		}
+
+		private Supplier<Object> initBooleanControl(JPanel inputPanel, Boolean initVal) {
+			Map<JRadioButton, Boolean> radioOptions = new HashMap<JRadioButton, Boolean>();
+			ButtonGroup radioGroup = new ButtonGroup();
+			for (int i = 0; i < BOOLEAN_OPTIONS.length; i++) {
+				JRadioButton radioButton = new JRadioButton(BOOLEAN_OPTION_NAMES[i], BOOLEAN_OPTIONS[i] == initVal);
+				radioOptions.put(radioButton, BOOLEAN_OPTIONS[i]);
+				radioGroup.add(radioButton);
+				inputPanel.add(radioButton);
+				inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
+			}
+			return () -> {
+				for (Map.Entry<JRadioButton, Boolean> entry : radioOptions.entrySet()) {
+					if (entry.getKey().isSelected()) {return entry.getValue();}
+				}
+				return null;
+			};
+		}
+
+		private Supplier<Object> initIntegerControl(JPanel inputPanel, Integer initVal) {
+			JCheckBox enabledCheckBox = new JCheckBox("", initVal != null);
+			JSpinner valueSpinner = new JSpinner(
+				new SpinnerNumberModel(initVal != null ? initVal : 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1)
+			);
+			valueSpinner.setMaximumSize(new Dimension(valueSpinner.getPreferredSize().width, valueSpinner.getPreferredSize().height));
+			valueSpinner.addChangeListener((e) -> {enabledCheckBox.setSelected(true);});
+			inputPanel.add(enabledCheckBox);
+			inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
+			inputPanel.add(valueSpinner);
+			return () -> {
+				if (!enabledCheckBox.isSelected()) {return null;}
+				return valueSpinner.getValue();
+			};
+		}
+
+		private Supplier<Object> initStringControl(JPanel inputPanel, String initVal) {
+			JCheckBox strEnabledCheckBox = new JCheckBox("", initVal != null);
+			JTextField valueField = new JTextField((initVal != null) ? initVal : "");
+			valueField.setMaximumSize(new Dimension(Short.MAX_VALUE, valueField.getPreferredSize().height));
+			GuiUtil.addTextFieldDocumentUpdateListener(valueField, (e) -> {strEnabledCheckBox.setSelected(true);});
+			inputPanel.add(strEnabledCheckBox);
+			inputPanel.add(Box.createRigidArea(new Dimension(GuiUtil.PAD, GuiUtil.PAD)));
+			inputPanel.add(valueField);
+			return () -> {
+				if (!strEnabledCheckBox.isSelected()) {return null;}
+				return valueField.getText();
+			};
+		}
+
+		private Supplier<Object> initEnumStringControl(JPanel inputPanel, String initVal) {
+			List<String> options = new ArrayList<String>(List.of(NO_SELECTION_STRING));
+			options.addAll(setting.getStringOptions());
+			JComboBox<String> optionComboBox = new JComboBox<String>(options.toArray(new String[0]));
+			optionComboBox.setSelectedItem((initVal != null) ? initVal : NO_SELECTION_STRING);
+			inputPanel.add(optionComboBox);
+			return () -> {
+				if (optionComboBox.getSelectedIndex() == 0) {return null;}
+				return optionComboBox.getSelectedItem();
+			};
 		}
 
 		String getSettingName() {return this.setting.name;}
@@ -315,8 +370,13 @@ class SettingsWindow extends JDialog {
 		private Footer() {
 			super(new BorderLayout(GuiUtil.PAD, GuiUtil.PAD));
 
-			this.saveButton = GuiUtil.createButton("Save", (e) -> {SettingsWindow.this.saveAndClose();});
-			this.add(this.saveButton, BorderLayout.LINE_END);
+			this.saveButton = this.initSaveButton();
+		}
+
+		private JButton initSaveButton() {
+			JButton saveButton = GuiUtil.createButton("Save", (e) -> {SettingsWindow.this.saveAndClose();});
+			this.add(saveButton, BorderLayout.LINE_END);
+			return saveButton;
 		}
 	}
 }
