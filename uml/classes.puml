@@ -767,6 +767,46 @@ package gui {
   interface Reloadable {
     ~reload(): void
   }
+
+  class SettingsWindow {
+    -{static} TITLE: String
+    -{static} MIN_WIDTH: int
+    -{static} MIN_HEIGHT: int
+    -{static} CTRL_PAD: int
+    -{static} BOOLEAN_OPTIONS: Boolean[]
+    -{static} BOOLEAN_OPTION_NAMES: String[]
+    -{static} NO_SELECTION_STRING: String
+    -app: App
+    -sidebar: Sidebar
+    -mainPanel: MainPanel
+    -footer: Footer
+    -getSectionNames(): String[]
+    -saveAndClose(): void
+    -onCloseButton(): void
+  }
+
+  class Sidebar {
+  }
+
+  class MainPanel {
+    -sectionPanels: Set<SettingsSectionPanel>
+    -setSection(sectionName: String)
+    ~getAllSettingControls(): Set<SettingControl>
+  }
+
+  class SettingsSectionPanel {
+    -settingsControls: Set<SettingControl>
+    -createInnerPanel(): JPanel
+  }
+
+  class SettingControl {
+    -setting: ConfigSpec.Setting
+    -valueSupplier: Supplier<Object>
+  }
+
+  class Footer {
+    -saveButton: JButton
+  }
 }
 
 exception IOException {
@@ -890,6 +930,17 @@ MainWindow -> Footer
 MainPanel ..|> Reloadable
 MessageDisplay +- MessageCellRenderer
 MessageCellRenderer ->"*" MessageLevel
+SettingsWindow -> gui.App
+SettingsWindow -> Sidebar
+SettingsWindow -> MainPanel
+SettingsWindow -> Footer
+MainPanel ->"*" SettingsSectionPanel
+SettingsSectionPanel ->"*" SettingControl
+SettingControl -> ConfigSpec
+SettingsWindow +- MainPanel
+SettingsWindow +- SettingsSectionPanel
+SettingsWindow +- SettingControl
+SettingsWindow +- Footer
 
 ' exceptions
 FileNotFoundException --|> IOException
