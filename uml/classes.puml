@@ -530,6 +530,13 @@ package domain.javadata {
   class OtherInsnNodeAdapter {
     +getInstrType(): InstrType
   }
+
+  class TypeStructure {
+    -baseTypeFullNamee: String
+    -numOfArray: int
+    -subtypes: List<TypeStructure>
+    +getAllFullTypeNames(): Set<String>
+  }
 }
 
 exception IOException {
