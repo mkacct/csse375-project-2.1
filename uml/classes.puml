@@ -526,6 +526,10 @@ package domain.javadata {
   class NameUtil {
     +{static} isCompilerGenerated(fullName: String): boolean
   }
+
+  class OtherInsnNodeAdapter {
+    +getInstrType(): InstrType
+  }
 }
 
 exception IOException {
@@ -603,6 +607,7 @@ FieldNodeAdapter ..|> FieldData
 LocalVarInstrData --|> InstrData
 MethodInsnNodeAdapter ..|> MethodInsnData
 MethodNodeAdapter ..|> MethodData
+OtherInsnNodeAdapter ..|> InstrData
 
 ' exceptions
 FileNotFoundException --|> IOException
