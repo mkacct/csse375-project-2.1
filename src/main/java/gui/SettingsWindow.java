@@ -265,7 +265,7 @@ class SettingsWindow extends JDialog {
 					String initStr = initialConfig.getString(setting.name, null);
 					if (setting.hasStringOptions()) {
 						if (!setting.getStringOptions().contains(initStr)) {initStr = null;}
-						this.valueSupplier = this.initEnumStringControl(inputPanel, initStr);
+						this.valueSupplier = this.initSelectStringControl(inputPanel, initStr);
 					} else {
 						this.valueSupplier = this.initStringControl(inputPanel, initStr);
 					}
@@ -347,7 +347,7 @@ class SettingsWindow extends JDialog {
 			};
 		}
 
-		private Supplier<Object> initEnumStringControl(JPanel inputPanel, String initVal) {
+		private Supplier<Object> initSelectStringControl(JPanel inputPanel, String initVal) {
 			List<String> options = new ArrayList<String>(List.of(NO_SELECTION_STRING));
 			options.addAll(setting.getStringOptions());
 			JComboBox<String> optionComboBox = new JComboBox<String>(options.toArray(new String[0]));
