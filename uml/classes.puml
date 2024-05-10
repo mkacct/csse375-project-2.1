@@ -1,0 +1,412 @@
+@startuml
+left to right direction
+' scale 1024 width
+' scale 768 height
+
+package "cli" {
+  class App {
+
+  }
+
+  enum TerminalTextColor {
+
+  }
+}
+
+package datasource.configspec {
+  class ConfigSpec {
+  }
+  class Section {
+  }
+  class Setting {
+  }
+  enum Type {
+  }
+
+  interface ConfigSpecLoader {
+  }
+
+  class JsonFileConfigSpecLoader {
+  }
+}
+
+package datasource {
+  interface ConfigRW {
+  }
+
+  class Configuration {
+  }
+
+  interface DataPrinter {
+  }
+
+  class DirLoader {
+  }
+
+  interface FilesLoader {
+  }
+
+  class FullFilePrinter {
+  }
+
+  class JsonFileConfigRW {
+  }
+}
+
+package domain.checks {
+  class AdapterPatternCheck {
+  }
+
+  class ConstantInterfaceCheck {
+  }
+
+  class CountCheckPropertyValidator {
+  }
+
+  abstract class GraphCheck {
+  }
+
+  class ImmutableExceptionsCheck {
+  }
+
+  class InformationHidingCheck {
+  }
+
+  class LowCouplingCheck {
+  }
+
+  class IntegerAndDegree <<Comparable>> {
+  }
+
+  class MethodLengthCheck {
+  }
+
+  enum NamingConventions {
+  }
+
+  class NamingConventionsCheck {
+  }
+
+  class NoGlobalVariablesCheck {
+  }
+
+  class ObserverPatternCheck {
+  }
+
+  class ParameterCountCheck {
+  }
+
+  class PlantUMLGenerator {
+  }
+
+  class ProgramToInterfaceNotImplementationCheck {
+  }
+
+  class RequiredOverridesCheck {
+  }
+
+  class StrategyPatternCheck {
+  }
+
+  class TypeValidator {
+  }
+
+  class UnusedAbstractionsCheck {
+  }
+}
+
+package domain.javadata {
+  enum AccessModifier {
+  }
+
+  interface ClassData {
+  }
+
+  class ClassDataCollection <<Collection<ClassData>>> {
+  }
+
+  class ClassNodeAdapter {
+  }
+
+  class ClassReaderUtil {
+  }
+
+  enum ClassType {
+  }
+
+  interface FieldData {
+  }
+
+  class FieldInsnNodeAdapter {
+  }
+
+  interface FieldInstrData {
+  }
+
+  class FieldNodeAdapter {
+  }
+
+  interface InstrData {
+  }
+
+  enum InstrType {
+  }
+
+  interface LocalVarInstrData {
+  }
+
+  class LocalVariableUtil {
+  }
+
+  interface MethodData {
+  }
+
+  class MethodInsnNodeAdapter {
+  }
+
+  interface MethodInstrData {
+  }
+
+  class MethodNodeAdapter {
+  }
+
+  class NameUtil {
+  }
+
+  class OtherInsnNodeAdapter {
+  }
+
+  class TypeStructure {
+  }
+
+  class VarInsnNodeAdapter {
+  }
+
+  class VariableData {
+  }
+
+  enum  VariableOperation {
+  }
+}
+
+package domain {
+  abstract class Check {
+  }
+
+  class CheckRoster {
+  }
+
+  class CheckUtil {
+  }
+
+  class ClassGraph {
+  }
+
+  class ClassGraphIterator {
+  }
+
+  class Message {
+  }
+
+  enum MessageLevel {
+  }
+
+  class PackageStructure {
+  }
+}
+
+package general {
+  class ProductInfo {
+  }
+}
+
+package gui {
+  class App {
+  }
+
+  class CheckResults {
+  }
+
+  class FilePicker {
+  }
+
+  class FileUtil {
+  }
+
+  class GuiUtil {
+  }
+
+  class MainWindow  {
+  }
+
+  class Header {
+  }
+
+  class MainPanel {
+  }
+
+  class Footer {
+  }
+
+  class MessageDisplay {
+  }
+
+  class MessageCellRenderer {
+  }
+
+  interface Reloadable {
+  }
+
+  class SettingsWindow {
+  }
+
+  class Sidebar {
+  }
+
+  class MainPanel {
+  }
+
+  class SettingsSectionPanel {
+  }
+
+  class SettingControl {
+  }
+
+  class Footer {
+  }
+}
+
+exception IOException {
+}
+
+exception Exception {
+}
+
+exception IllegalArgumentException {
+}
+
+exception RuntimeException {
+}
+
+exception FileNotFoundException {
+}
+
+exception IllegalStateException {
+}
+
+exception ClassCastException {
+}
+' cli package
+cli.App ->"*" MessageLevel
+cli.App ->"*" TerminalTextColor
+cli.App -> ConfigRW
+cli.App -> FilesLoader
+
+' datasource.config package
+ConfigSpec +- Section
+ConfigSpec ->"*" Section
+Section +- Setting
+Section ->"*" Setting
+Setting +- Type
+Setting -> Type
+JsonFileConfigSpecLoader .|> ConfigSpecLoader
+
+' datasource package
+DirLoader ..|> FilesLoader
+FullFilePrinter ..|> DataPrinter
+JsonFileConfigRW ..|> ConfigRW
+ConfigSpecLoader ..> IOException: <<throws>>
+JsonFileConfigSpecLoader ..> IOException: <<throws>>
+ConfigRW ..> IOException: <<throws>>
+Configuration ..> IllegalArgumentException: <<throws>>
+Configuration ..> ClassCastException: <<throws>>
+DataPrinter ..> FileNotFoundException: <<throws>>
+FilesLoader ..> IOException: <<throws>>
+FilesLoader ..> IllegalStateException: <<throws>>
+PlantUMLGenerator ..> IOException: <<throws>>
+
+' domain.checks package
+AdapterPatternCheck --|> Check
+ConstantInterfaceCheck --|> Check
+CountCheckPropertyValidator -> Message
+GraphCheck  --|> Check
+GraphCheck -> ClassGraph
+ImmutableExceptionsCheck --|> Check
+InformationHidingCheck --|> Check
+LowCouplingCheck --|> GraphCheck
+LowCouplingCheck ->"*" IntegerAndDegree
+IntegerAndDegree +- LowCouplingCheck
+MethodLengthCheck --|> Check
+NamingConventionsCheck --|> Check
+NoGlobalVariablesCheck --|> Check
+ObserverPatternCheck --|> GraphCheck
+ParameterCountCheck --|> Check
+PlantUMLGenerator --|> GraphCheck
+ProgramToInterfaceNotImplementationCheck --|> Check
+RequiredOverridesCheck --|> Check
+StrategyPatternCheck --|> Check
+TypeValidator -> MessageLevel
+UnusedAbstractionsCheck --|> Check
+
+' domain.javadata
+ClassDataCollection ->"*" ClassData
+ClassNodeAdapter ..|> ClassData
+FieldInsnNodeAdapter ..|> FieldInstrData
+FieldInstrData --|> InstrData
+FieldNodeAdapter ..|> FieldData
+LocalVarInstrData --|> InstrData
+MethodInsnNodeAdapter ..|> MethodInstrData
+MethodNodeAdapter ..|> MethodData
+OtherInsnNodeAdapter ..|> InstrData
+VarInsnNodeAdapter ..|> LocalVarInstrData
+
+' domain
+CheckRoster ->"*" Check
+ClassGraph -> ClassDataCollection
+ClassGraphIterator -> ClassGraph
+Message -> MessageLevel
+
+' general
+
+' gui
+gui.App -> ConfigSpec
+gui.App ->"*" Check
+gui.App -> ConfigRW
+gui.App -> Configuration
+gui.App -> Exception
+gui.App ->"*" MessageLevel
+gui.App ->"*" Reloadable
+gui.App ..> IOException: <<throws>>
+gui.App ->"*" CheckResults
+gui.App +- CheckResults
+MainWindow ..|> Reloadable
+MainWindow -> gui.App
+MainWindow +- Header
+MainWindow -> Header
+MainWindow +- MainPanel
+MainWindow -> MainPanel
+MainWindow +- Footer
+MainWindow -> Footer
+MainPanel ..|> Reloadable
+MessageDisplay +- MessageCellRenderer
+MessageCellRenderer ->"*" MessageLevel
+SettingsWindow -> gui.App
+SettingsWindow -> Sidebar
+SettingsWindow -> MainPanel
+SettingsWindow -> Footer
+MainPanel ->"*" SettingsSectionPanel
+SettingsSectionPanel ->"*" SettingControl
+SettingControl -> ConfigSpec
+SettingsWindow +- MainPanel
+SettingsWindow +- SettingsSectionPanel
+SettingsWindow +- SettingControl
+SettingsWindow +- Footer
+
+' exceptions
+FileNotFoundException --|> IOException
+IOException --|> Exception
+ClassCastException --|> RuntimeException
+IllegalStateException --|> RuntimeException
+IllegalArgumentException --|> RuntimeException
+RuntimeException --|> Exception
+@enduml
