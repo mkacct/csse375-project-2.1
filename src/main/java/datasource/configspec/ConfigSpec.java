@@ -38,11 +38,11 @@ public final class ConfigSpec {
 		private static final String DEFAULT_ENTITY_TYPE = "check";
 
 		public final String title;
+		public final String desc;
 
 		private final String checkName;
 		private final String entityType;
 		private final List<Setting> settings;
-		private final String desc;
 
 		public Section(String title, String checkName, String desc, String entityTypeOverride, List<Setting> settings) {
 			if (title == null) {throw new NullPointerException("title");}
@@ -58,10 +58,6 @@ public final class ConfigSpec {
 		public String getCheckName() {
 			this.validateRepresentsCheck();
 			return this.checkName;
-		}
-
-		public String getDesc() {
-			return this.desc;
 		}
 
 		public String getEntityType() {

@@ -25,67 +25,67 @@
 			"checkName": "namingConventions",
 			"settings": [
 				{
-					"name": "Package",
+					"name": "convPackage",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Class",
+					"name": "convClass",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Interface",
+					"name": "convInterface",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Abstract",
+					"name": "convAbstract",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Enum",
+					"name": "convEnum",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Field",
+					"name": "convField",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Method",
+					"name": "convMethod",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "Constant",
+					"name": "convConstant",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "EnumConstant",
+					"name": "convEnumConstant",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "LocalVar",
+					"name": "convLocalVar",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "MethodParam",
+					"name": "convMethodParam",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "AllowEmptyPackage",
+					"name": "convAllowEmptyPackage",
 					"type": "boolean",
 					"desc": "Whether to allow empty package names, i.e. \"\". Defaults to false."
 				},
 				{
-					"name": "MaxLength",
+					"name": "convMaxLength",
 					"type": "int",
 					"desc": "Maximum length. Default is no max."
 				}
