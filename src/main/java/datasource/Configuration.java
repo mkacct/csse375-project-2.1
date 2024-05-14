@@ -118,4 +118,17 @@ public final class Configuration {
 	Map<String, Object> getData() {
 		return Collections.unmodifiableMap(this.data);
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {return true;}
+		if (!(obj instanceof Configuration)) {return false;}
+		Configuration other = (Configuration)obj;
+		return this.data.equals(other.data);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.data.hashCode();
+	}
 }
