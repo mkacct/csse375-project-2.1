@@ -58,6 +58,7 @@ public class JsonFileConfigSpecLoader implements ConfigSpecLoader {
 			sections.add(new ConfigSpec.Section(
 				sectionJson.getString("title"),
 				getStringOrNull(sectionJson, "checkName"),
+				getStringOrNull(sectionJson, "desc"),
 				getStringOrNull(sectionJson, "entityTypeOverride"),
 				readSettings(sectionJson, selects)
 			));

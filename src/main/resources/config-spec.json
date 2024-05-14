@@ -115,23 +115,28 @@
 		},
 		{
 			"title": "No Global Variables",
-			"checkName": "noGlobalVariables"
+			"checkName": "noGlobalVariables",
+			"desc": "Checks for static, non-final fields."
 		},
 		{
 			"title": "Required Overrides",
-			"checkName": "requiredOverrides"
+			"checkName": "requiredOverrides",
+			"desc": "Checks for classes that extends the Comparable interface and implements compareTo() without implementing equals() and classes that implement equals() without implementing hashCode()."
 		},
 		{
 			"title": "Unused Abstractions",
-			"checkName": "unusedAbstractions"
+			"checkName": "unusedAbstractions",
+			"desc": "Checks for any abstract classes that don't have any classes that extend it, or interfaces that don't have any classes implementing it."
 		},
 		{
 			"title": "Immutable Exceptions",
-			"checkName": "immutableExceptions"
+			"checkName": "immutableExceptions",
+			"desc": "Checks for exception classes without non-final fields. Any class whose name ends with 'Exception' or 'Error' will be checked."
 		},
 		{
 			"title": "Information Hiding",
-			"checkName": "informationHiding"
+			"checkName": "informationHiding",
+			"desc": "Checks for classes whose fields violate information hiding"
 		},
 		{
 			"title": "Program to Interface, Not Implementation",
@@ -147,7 +152,8 @@
 					"type": "String[]",
 					"desc": "List of user-specified allowed dependencies (add known interfaces and/or data classes here)."
 				}
-			]
+			],
+			"desc": "Checks for classes who program to concrete implementations rather than interfaces. Programming to interfaces generally provides more flexibility in applications."
 		},
 		{
 			"title": "Low Coupling",
@@ -178,11 +184,13 @@
 					"type": "boolean",
 					"desc": "Specifies whether Classes that reference themselves will be reported (cycles like A → A). Defaults to true."
 				}
-			]
+			],
+			"desc": "Checks for classes who are too closely dependent on one another, when alternative solutions allowing such classes to exist more independently are available."
 		},
 		{
 			"title": "Strategy Pattern",
-			"checkName": "strategyPattern"
+			"checkName": "strategyPattern",
+			"desc": "Checks if a class implements the Strategy pattern by checking for interfaces in its fields and if a concrete subclass implements it."
 		},
 		{
 			"title": "Observer Pattern",
@@ -203,11 +211,13 @@
 					"type": "boolean",
 					"desc": "Specifies whether to check for patterns with only a concrete subject, and no abstract subject."
 				}
-			]
+			],
+			"desc": "Checks if classes properly implement ways to notify multiple objects about events its observing. The observer pattern allows classes to subscribe and unsubscribe from watching for a certain event."
 		},
 		{
 			"title": "Adapter Pattern",
-			"checkName": "adapterPattern"
+			"checkName": "adapterPattern",
+			"desc": "Check if an adapter class does not implement an interface."
 		},
 		{
 			"title": "Constant Interface",
@@ -218,7 +228,8 @@
 					"type": "boolean",
 					"desc": "If true, interfaces with no fields nor methods (\"marker interfaces\") will be ignored. (Defaults to false.)"
 				}
-			]
+			],
+			"desc": "Checks for any interfaces that contains only fields and no methods. This is similar to Data Classes."
 		},
 		{
 			"title": "PlantUML Generator",

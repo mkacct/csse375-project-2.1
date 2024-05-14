@@ -204,6 +204,10 @@ class SettingsWindow extends JDialog {
 		private JLabel initTitleLabel(JPanel innerPanel, ConfigSpec.Section section) {
 			JLabel titleLabel = GuiUtil.createHeading(section.title);
 			innerPanel.add(titleLabel);
+			if (section.desc != null) {
+				JLabel descLabel = new JLabel(section.desc);
+				innerPanel.add(descLabel);
+			}
 			innerPanel.add(Box.createVerticalStrut(GuiUtil.PAD));
 			return titleLabel;
 		}

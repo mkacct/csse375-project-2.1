@@ -38,15 +38,17 @@ public final class ConfigSpec {
 		private static final String DEFAULT_ENTITY_TYPE = "check";
 
 		public final String title;
+		public final String desc;
 
 		private final String checkName;
 		private final String entityType;
 		private final List<Setting> settings;
 
-		public Section(String title, String checkName, String entityTypeOverride, List<Setting> settings) {
+		public Section(String title, String checkName, String desc, String entityTypeOverride, List<Setting> settings) {
 			if (title == null) {throw new NullPointerException("title");}
 			this.title = title;
 			this.checkName = checkName;
+			this.desc = desc;
 			this.entityType = (checkName != null) ? ((entityTypeOverride != null) ? entityTypeOverride : DEFAULT_ENTITY_TYPE) : null;
 			this.settings = (settings != null) ? new ArrayList<Setting>(settings) : null;
 		}
@@ -79,6 +81,7 @@ public final class ConfigSpec {
 			Section other = (Section)obj;
 			return CmpUtil.areEqual(this.title, other.title)
 				&& CmpUtil.areEqual(this.checkName, other.checkName)
+				&& CmpUtil.areEqual(this.desc, other.desc)
 				&& CmpUtil.areEqual(this.entityType, other.entityType)
 				&& CmpUtil.areEqual(this.settings, other.settings);
 		}
