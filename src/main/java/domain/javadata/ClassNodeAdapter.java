@@ -31,7 +31,7 @@ class ClassNodeAdapter implements ClassData {
 	@Override
 	public String getPackageName() {
 		String name = this.getFullName();
-		String[] terms = name.split("\\.|\\$");
+		String[] terms = name.split("\\.");
 		if (terms.length == 1) {
 			return "";
 		}
