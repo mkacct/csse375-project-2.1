@@ -60,8 +60,7 @@ public final class ConfigSpec {
 			return this.checkName;
 		}
 
-		public String getDescName() {
-			this.validateRepresentsCheck();
+		public String getDesc() {
 			return this.desc;
 		}
 
