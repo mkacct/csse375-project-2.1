@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import general.CmpUtil;
+
 /**
- * The configuration specification, for generating GUI settings.
+ * The configuration specification, for generating GUI settings. Immutable.
  */
 public final class ConfigSpec {
 	private final List<Section> sections;
@@ -17,6 +19,19 @@ public final class ConfigSpec {
 
 	public List<Section> getSections() {
 		return Collections.unmodifiableList(this.sections);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {return true;}
+		if (obj == null || !(obj instanceof ConfigSpec)) {return false;}
+		ConfigSpec other = (ConfigSpec)obj;
+		return CmpUtil.areEqual(this.sections, other.sections);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.sections.hashCode();
 	}
 
 	public static final class Section {
@@ -56,6 +71,22 @@ public final class ConfigSpec {
 			if (this.settings == null) {return List.of();}
 			return Collections.unmodifiableList(this.settings);
 		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {return true;}
+			if (obj == null || !(obj instanceof Section)) {return false;}
+			Section other = (Section)obj;
+			return CmpUtil.areEqual(this.title, other.title)
+				&& CmpUtil.areEqual(this.checkName, other.checkName)
+				&& CmpUtil.areEqual(this.entityType, other.entityType)
+				&& CmpUtil.areEqual(this.settings, other.settings);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.title.hashCode();
+		}
 	}
 
 	public static final class Setting {
@@ -92,6 +123,22 @@ public final class ConfigSpec {
 
 		private void validateCanHaveOptions() {
 			if (this.type != Type.STRING) {throw new IllegalStateException("Only String type can have options");}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {return true;}
+			if (obj == null || !(obj instanceof Setting)) {return false;}
+			Setting other = (Setting)obj;
+			return CmpUtil.areEqual(this.name, other.name)
+				&& CmpUtil.areEqual(this.type, other.type)
+				&& CmpUtil.areEqual(this.desc, other.desc)
+				&& CmpUtil.areEqual(this.options, other.options);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
 		}
 
 		public static enum Type {

@@ -3,7 +3,6 @@ package gui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import datasource.ConfigRW;
 import datasource.Configuration;
+import datasource.configspec.ConfigSpec;
 import datasource.configspec.ConfigSpecLoader;
 import datasource.configspec.JsonFileConfigSpecLoader;
 import domain.Check;
@@ -32,6 +32,7 @@ public class GuiSystemTest {
 	private static final String TEST_RESOURCES_DIR_PATH = "src/test/resources/system-test";
 	private static final String CLASS_DIR_PATH = TEST_RESOURCES_DIR_PATH + "/classes";
 	private static final String TEST_CONFIG_SPEC_RES_PATH = "/test-config-spec.json";
+	private static final ConfigSpec TEST_CONFIG_SPEC = (new JsonFileConfigSpecLoader(TEST_CONFIG_SPEC_RES_PATH)).loadConfigSpec();
 
 	private static final Check[] CHECKS = new Check[] {
 		new NamingConventionsCheck(),
@@ -107,6 +108,7 @@ public class GuiSystemTest {
 	public void testDefaultInitialState() {
 		App app = new App(CHECKS, createTestConfigSpecLoader(), null);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertNull(app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
@@ -118,6 +120,7 @@ public class GuiSystemTest {
 		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
 		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertNull(app.retrieveConfigLoadEx());
 		assertTrue(app.canRunNow());
 		assertEquals(CLASS_DIR_PATH, app.getTargetPath());
@@ -130,6 +133,7 @@ public class GuiSystemTest {
 		FakeConfigRW configRW = createNonexistentConfigRW();
 		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertNull(app.retrieveConfigLoadEx());
 		assertFalse(configRW.didTryToLoad());
 		assertFalse(app.canRunNow());
@@ -142,6 +146,7 @@ public class GuiSystemTest {
 		FakeConfigRW configRW = createBadConfigRW();
 		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertInstanceOf(IOException.class, app.retrieveConfigLoadEx());
 		assertFalse(app.canRunNow());
 		assertEquals("", app.getTargetPath());
@@ -154,6 +159,7 @@ public class GuiSystemTest {
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertFalse(app.canRunNow());
 		assertThrows(IllegalStateException.class, () -> {
 			app.runChecks();
@@ -169,6 +175,7 @@ public class GuiSystemTest {
 		app.setTargetPath("this is not a real directory");
 		assertEquals(1, reloadCounter.getReloadCount());
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertTrue(app.canRunNow());
 		assertThrows(IOException.class, () -> {
 			app.runChecks();
@@ -187,6 +194,7 @@ public class GuiSystemTest {
 		app.setTargetPath(CLASS_DIR_PATH);
 		assertEquals(1, reloadCounter.getReloadCount());
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertTrue(app.canRunNow());
 		app.runChecks();
 		assertEquals(2, reloadCounter.getReloadCount());
@@ -222,6 +230,7 @@ public class GuiSystemTest {
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertTrue(app.canRunNow());
 		app.runChecks();
 		assertEquals(1, reloadCounter.getReloadCount());
@@ -258,18 +267,48 @@ public class GuiSystemTest {
 		ReloadCounter reloadCounter = new ReloadCounter();
 		app.addReloader(reloadCounter);
 
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
 		assertTrue(app.canRunNow());
 		assertEquals(CLASS_DIR_PATH, app.getTargetPath());
 		assertNull(configRW.retrieveLastSavedConfig());
 		app.setTargetPath("asdf");
 		Configuration savedConfig = configRW.retrieveLastSavedConfig();
-		assertNotNull(savedConfig);
-		assertEquals("asdf", savedConfig.getString("guiAppTargetPath"));
+		assertEquals(CONFIG.applyChanges(Map.of("guiAppTargetPath", "asdf")), savedConfig);
 		assertEquals("asdf", app.getTargetPath());
 
 		assertNoResults(app);
 		assertTrue(app.canRunNow());
 		assertNull(configRW.retrieveLastSavedConfig());
+	}
+
+	@Test
+	public void testGetConfig() {
+		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
+
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
+		assertEquals(CONFIG, app.getConfig());
+		assertNull(configRW.retrieveLastSavedConfig());
+	}
+
+	@Test
+	public void testUpdateConfig() {
+		FakeConfigRW configRW = createFakeConfigRW(CONFIG);
+		App app = new App(CHECKS, createTestConfigSpecLoader(), configRW);
+		ReloadCounter reloadCounter = new ReloadCounter();
+		app.addReloader(reloadCounter);
+
+		assertEquals(TEST_CONFIG_SPEC, app.configSpec);
+		Map<String, Object> changes = Map.of(
+			"convConstant", "snake_case",
+			"foo", 43
+		);
+		Configuration expectedConfig = CONFIG.applyChanges(changes);
+		app.updateConfig(changes);
+		assertEquals(1, reloadCounter.getReloadCount());
+		assertEquals(expectedConfig, app.getConfig());
+		Configuration savedConfig = configRW.retrieveLastSavedConfig();
+		assertEquals(expectedConfig, savedConfig);
 	}
 
 	private static void assertNoResults(App app) {

@@ -53,7 +53,7 @@ public final class Message {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
-		if (obj == null || this.getClass() != obj.getClass()) {return false;}
+		if (obj == null || !(obj instanceof Message)) {return false;}
 		Message other = (Message)obj;
 		return (this.level == other.level) && this.text.equals(other.text) && this.classFullNames.equals(other.classFullNames);
 	}

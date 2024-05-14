@@ -28,7 +28,7 @@ public final class VariableData {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
-		if (obj == null || this.getClass() != obj.getClass()) {return false;}
+		if (obj == null || !(obj instanceof VariableData)) {return false;}
 		VariableData other = (VariableData)obj;
 		return this.name.equals(other.name) && this.typeFullName.equals(other.typeFullName);
 	}
