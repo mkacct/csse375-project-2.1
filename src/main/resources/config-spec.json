@@ -25,67 +25,67 @@
 			"checkName": "namingConventions",
 			"settings": [
 				{
-					"name": "convPackage",
+					"name": "Package",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convClass",
+					"name": "Class",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convInterface",
+					"name": "Interface",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convAbstract",
+					"name": "Abstract",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convEnum",
+					"name": "Enum",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convField",
+					"name": "Field",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convMethod",
+					"name": "Method",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convConstant",
+					"name": "Constant",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convEnumConstant",
+					"name": "EnumConstant",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convLocalVar",
+					"name": "LocalVar",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convMethodParam",
+					"name": "MethodParam",
 					"type": "String",
 					"select": "namingConvention"
 				},
 				{
-					"name": "convAllowEmptyPackage",
+					"name": "AllowEmptyPackage",
 					"type": "boolean",
 					"desc": "Whether to allow empty package names, i.e. \"\". Defaults to false."
 				},
 				{
-					"name": "convMaxLength",
+					"name": "MaxLength",
 					"type": "int",
 					"desc": "Maximum length. Default is no max."
 				}
@@ -115,23 +115,28 @@
 		},
 		{
 			"title": "No Global Variables",
-			"checkName": "noGlobalVariables"
+			"checkName": "noGlobalVariables",
+			"desc": "Checks for static, non-final fields."
 		},
 		{
 			"title": "Required Overrides",
-			"checkName": "requiredOverrides"
+			"checkName": "requiredOverrides",
+			"desc": "Checks for classes that extends the Comparable interface and implements compareTo() without implementing equals() and classes that implement equals() without implementing hashCode()."
 		},
 		{
 			"title": "Unused Abstractions",
-			"checkName": "unusedAbstractions"
+			"checkName": "unusedAbstractions",
+			"desc": "Checks for any abstract classes that don't have any classes that extend it, or interfaces that don't have any classes implementing it."
 		},
 		{
 			"title": "Immutable Exceptions",
-			"checkName": "immutableExceptions"
+			"checkName": "immutableExceptions",
+			"desc": "Checks for exception classes without non-final fields. Any class whose name ends with 'Exception' or 'Error' will be checked."
 		},
 		{
 			"title": "Information Hiding",
-			"checkName": "informationHiding"
+			"checkName": "informationHiding",
+			"desc": "Checks for classes whose fields violate information hiding"
 		},
 		{
 			"title": "Program to Interface, Not Implementation",
@@ -182,7 +187,8 @@
 		},
 		{
 			"title": "Strategy Pattern",
-			"checkName": "strategyPattern"
+			"checkName": "strategyPattern",
+			"desc": "Checks if a class implements the Strategy pattern by checking for interfaces in its fields and if a concrete subclass implements it."
 		},
 		{
 			"title": "Observer Pattern",
@@ -207,7 +213,8 @@
 		},
 		{
 			"title": "Adapter Pattern",
-			"checkName": "adapterPattern"
+			"checkName": "adapterPattern",
+			"desc": "Check if an adapter class does not implement an interface."
 		},
 		{
 			"title": "Constant Interface",
